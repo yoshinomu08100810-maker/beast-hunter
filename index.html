@@ -34,11 +34,40 @@ input[type=text]{font:inherit;font-size:16px;padding:9px;border:2px solid var(--
 .job b{font-size:18px}
 .item{border:1px solid #444d57;border-left:4px solid var(--gold);padding:8px;margin:6px 0;background:rgba(255,255,255,.045);display:flex;justify-content:space-between;align-items:center;gap:8px}
 .item.lock{border-left-color:#555;opacity:.6}
+.splash,.titlescr,.opening{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:auto;text-align:center}
+.logo b{display:block;font-size:30px;letter-spacing:2px;color:#ffe08a;text-shadow:3px 3px 0 #3a1a10,0 0 12px rgba(255,200,100,.35)}
+.logo small{display:block;color:var(--bone);margin-top:4px;text-shadow:2px 2px 0 #000}
+.logo.big b{font-size:34px}
+.splash .tap{margin-top:36vh;color:#fff;text-shadow:2px 2px 0 #000;animation:bt 1s infinite alternate}
+.splash .ld{margin-top:8px;color:var(--bone2);font-size:11px}
+.titlescr .logo{margin-top:-20vh}
+.tbtns{margin-top:30vh;display:flex;flex-direction:column;gap:8px;min-width:200px}
+.tbtns button{margin:0;padding:12px;font-size:16px}
+.titlescr .ver{position:absolute;bottom:10px;color:var(--bone2)}
+.opening{justify-content:flex-end;padding-bottom:22vh}
+.optext{color:#fff;font-size:17px;text-shadow:2px 2px 0 #000;padding:0 20px;animation:ft .8s ease-out}
+@keyframes ft{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.opskip{position:absolute;right:10px;top:10px;margin:0;padding:6px 12px;font-size:12px}
+.opdots{margin-top:16px;display:flex;gap:6px}
+.opdots i{width:6px;height:6px;background:#555;display:block}
+.opdots i.on{background:#ffe08a}
+.gear{position:absolute;right:8px;top:8px;width:40px;height:40px;margin:0;padding:0;font-size:22px;line-height:36px;text-align:center;pointer-events:auto;background:rgba(10,13,16,.72);border:2px solid #6b6152;color:var(--bone);z-index:5}
+.hud .tag[onpointerdown]{pointer-events:auto;cursor:pointer}
 .hud .vlv{pointer-events:auto;cursor:pointer;color:var(--gold);border-color:#e0b34e;background:rgba(10,13,16,.75);margin-left:6px}
 .guide{position:absolute;left:8px;right:8px;top:74px;background:rgba(10,13,16,.9);border:2px solid #7fc8f5;padding:7px 8px;color:var(--bone);font-size:13px;line-height:1.5;pointer-events:auto}
 .guide .gh{color:#7fc8f5;font-size:11px;margin-bottom:2px}
 .guide b{color:#fff}
 .guide button{margin:4px 0 0;padding:4px 8px;font-size:11px}
+.fpond{position:relative;height:34px;margin:4px auto 2px;width:120px;background:radial-gradient(#3f86c8,#2f6fb0);border:2px solid #6b6152}
+.fpond i{position:absolute;left:50%;top:50%;width:6px;height:4px;margin:-2px -3px;border:1px solid rgba(255,255,255,.75);border-radius:50%;opacity:0;animation:rp 2.4s infinite}
+.fpond i:nth-child(2){animation-delay:.8s}
+.fpond i:nth-child(3){animation-delay:1.6s}
+@keyframes rp{0%{transform:scale(.4);opacity:.85}100%{transform:scale(7);opacity:0}}
+.pri.bite{animation:bt .4s infinite alternate}
+@keyframes bt{from{filter:brightness(1)}to{filter:brightness(1.35)}}
+.fbar{position:relative;height:22px;margin:10px 0;border:2px solid #6b6152;background:#12171c}
+.fbar .z{position:absolute;left:62%;width:26%;top:0;bottom:0;background:rgba(159,224,122,.55)}
+.fbar span{position:absolute;top:-2px;bottom:-2px;width:4px;background:#ffd35a;box-shadow:0 0 0 1px #000}
 .qty{align-items:center;gap:4px;margin:4px 0;flex-wrap:wrap}
 .qty small{color:var(--bone2)}
 .qty button{margin:0;padding:6px 8px;min-width:38px}
@@ -81,6 +110,7 @@ input[type=text]{font:inherit;font-size:16px;padding:9px;border:2px solid var(--
 .bctl{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:8px 8px calc(10px + env(safe-area-inset-bottom));pointer-events:auto;background:linear-gradient(transparent,rgba(0,0,0,.4))}
 .bctl button{margin:0;height:68px;padding:0;font-size:14px;line-height:1.15;position:relative;overflow:hidden}
 #party{margin-top:4px}
+.tutbar{position:absolute;left:6px;right:6px;top:calc(46% - 10px);display:none;background:rgba(10,13,16,.88);border:2px solid #7fc8f5;padding:6px 8px;color:#fff;font-size:13px;line-height:1.45;text-shadow:1px 1px 0 #000;pointer-events:none}
 .pslots{position:absolute;right:8px;bottom:calc(92px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:5px;pointer-events:auto}
 .pslots button{margin:0;padding:6px 8px;font-size:12px;min-width:86px;text-align:center;background:linear-gradient(#5a6b4f,#3f4d38);border-color:#7f9070}
 .pslots button:disabled{opacity:.45}
@@ -362,8 +392,8 @@ function brewHTML(){const P=S.p;return`<div class="panel sheet one"><h2>調合�
 function cureSt(p,k){if(!p.st)p.st={};if(k)p.st[k]=0;else{for(const x in p.st)p.st[x]=0;}}
 function hasSt(p,k){return !!(p.st&&p.st[k]>0);}
 function giveSt(p,k,sec){if(!p.st)p.st={};if(p.d.res&&p.d.res[k])sec*=1-p.d.res[k];if(sec<=0)return;
- if((p.st[k]||0)<=0&&p===B.p){flash(ST[k].name+'になった！','#ff9a8a');sfx('hurt');}p.st[k]=Math.max(p.st[k]||0,sec);}
-const MATS={tusk:'牙',hide:'皮',king:'王の牙',hane:'風切り羽',kara:'甲殻',rin:'竜鱗',kemo:'狼の牙',doku:'蛇の毒牙',ito:'蜘蛛の糸',shin:'獣の心珠'};
+ if((p.st[k]||0)<=0&&p===B.p){flash(ST[k].name+'になった！','#ff9a8a');sfx('hurt');tutSay('ail','状態異常だ。右下の道具で治せる。村のポーチに解毒薬などを入れておこう','#a0ff5a');}p.st[k]=Math.max(p.st[k]||0,sec);}
+const MATS={tusk:'牙',hide:'皮',king:'王の牙',hane:'風切り羽',kara:'甲殻',rin:'竜鱗',kemo:'狼の牙',doku:'蛇の毒牙',ito:'蜘蛛の糸',shin:'獣の心珠',gold:'亜種の輝片'};
 const GEAR={
  w_wood_sword:{name:'木の剣',slot:'w',type:'sword',atk:3,price:80},
  w_wood_bow:{name:'木の弓',slot:'w',type:'bow',atkD:3,price:80},
@@ -404,6 +434,10 @@ const GEAR={
  c_wind:{name:'疾風の護符',slot:'c',cd:-0.04,craft:{hane:4},gold:350,desc:'待ち時間-4%'},
  c_venom:{name:'猛毒の護符',slot:'c',throwMul:1.5,craft:{doku:3,ito:2},gold:400,desc:'投げ道具の効き目が1.5倍'},
  c_hunt:{name:'狩人の護符',slot:'c',partMul:0.75,craft:{kemo:3,tusk:3},gold:400,desc:'部位が壊れやすくなる（必要ダメージ-25%）'},
+ w_gold_sword:{name:'輝剣',slot:'w',type:'sword',atk:24,cd:-0.05,craft:{gold:3,rin:2},gold:900},
+ w_gold_bow:{name:'輝弓',slot:'w',type:'bow',atkD:24,cd:-0.05,craft:{gold:3,rin:2},gold:900},
+ w_gold_staff:{name:'輝杖',slot:'w',type:'staff',atkM:24,heal:10,craft:{gold:3,rin:2},gold:900},
+ c_gold:{name:'輝きの護符',slot:'c',hp:15,luck:1,craft:{gold:5},gold:1200,desc:'HP+15・亜種が出やすくなる（3%→6%）'},
  c_dragon:{name:'竜の護符',slot:'c',hp:20,res:{poison:0.5,para:0.5,weak:0.5},craft:{rin:3,shin:1},gold:800,desc:'HP+20・全状態異常の時間が半分'},
  a_kara:{name:'甲の鎧',slot:'a',hp:48,def:22,cd:0.05,craft:{kara:3},gold:250},
 };
@@ -440,8 +474,8 @@ function grantRune(){const P=S.p;if(!P.runeBag)P.runeBag={};const pool=RUNE_IDS.
 const UPG_MAX=5,UPG_HARD=8;
 function upgCost(lv){return lv<UPG_MAX?{tusk:1+lv,hide:lv,gold:Math.round(40*(lv+1)*upgMul())}:{shin:1,rin:2,gold:Math.round(300*(lv-4)*upgMul())};}
 const SHOP_LIST=['w_wood_sword','w_wood_bow','w_wood_staff','a_cloth','a_leather','c_anti','c_calm','c_bold'];
-const SMITH_LIST=['w_tusk_sword','w_tusk_bow','w_tusk_staff','a_boar','w_hane_sword','w_hane_bow','w_hane_staff','a_hane','w_kemo_sword','a_kemo','w_kara_sword','w_kara_bow','w_kara_staff','a_kara','w_doku_sword','w_doku_bow','w_doku_staff','w_ito_bow','w_ito_staff','a_ito','c_life','c_wind','c_venom','c_hunt','c_dragon','w_king_sword','w_king_bow','w_king_staff','a_king','w_rin_sword','w_rin_bow','w_rin_staff','a_rin'];
-const MAT_NOTE={tusk:'牙：攻撃寄り',hide:'皮：体力寄り',hane:'風切り羽：軽く、待ち時間が短くなる',kemo:'狼の牙：攻撃と身軽さの両立',kara:'甲殻：硬いが重く、待ち時間が伸びる',doku:'蛇の毒牙：弓・杖・短剣の火力が高い',ito:'蜘蛛の糸：とても軽く、防御も高い',king:'王の牙：総合的に強い',rin:'竜鱗：最上位。重さもない'};
+const SMITH_LIST=['w_tusk_sword','w_tusk_bow','w_tusk_staff','a_boar','w_hane_sword','w_hane_bow','w_hane_staff','a_hane','w_kemo_sword','a_kemo','w_kara_sword','w_kara_bow','w_kara_staff','a_kara','w_doku_sword','w_doku_bow','w_doku_staff','w_ito_bow','w_ito_staff','a_ito','c_life','c_wind','c_venom','c_hunt','c_dragon','w_gold_sword','w_gold_bow','w_gold_staff','c_gold','w_king_sword','w_king_bow','w_king_staff','a_king','w_rin_sword','w_rin_bow','w_rin_staff','a_rin'];
+const MAT_NOTE={tusk:'牙：攻撃寄り',hide:'皮：体力寄り',hane:'風切り羽：軽く、待ち時間が短くなる',kemo:'狼の牙：攻撃と身軽さの両立',kara:'甲殻：硬いが重く、待ち時間が伸びる',doku:'蛇の毒牙：弓・杖・短剣の火力が高い',ito:'蜘蛛の糸：とても軽く、防御も高い',gold:'亜種の輝片：亜種だけが落とす。特別な装備の材料',king:'王の牙：総合的に強い',rin:'竜鱗：最上位。重さもない'};
 // TODO(マルチ): パーティ人数で m.hp を補正。入力は時刻付きでP2P送信すれば同期できる構造
 
 // ===== ドット絵 =====
@@ -646,6 +680,9 @@ const W_ART={
  w_doku_sword :{t:'sword',style:'bone',     len:11,w:2,col:'#e8f0c0',edge:'#8aa050',grip:'#5c3a7a',pom:'#3a2450'},
  w_ito_bow    :{t:'bow',  style:'feather',  r:9, col:'#5a6a80',str:'#f2f6ff',orn:'#dce8f6'},
  w_ito_staff  :{t:'staff',style:'orb',      len:15,col:'#5a6a80',head:'#f2f6ff',glow:'#ffffff'},
+ w_gold_sword :{t:'sword',style:'great',    len:13,w:3,col:'#ffe08a',edge:'#c9a23a',grip:'#8a5a34',pom:'#e0b34e'},
+ w_gold_bow   :{t:'bow',  style:'crest',    r:10,col:'#e0b34e',str:'#fff6c8',orn:'#ffd35a'},
+ w_gold_staff :{t:'staff',style:'orb',      len:16,col:'#c9a23a',head:'#fff6c8',glow:'#ffd35a'},
 };
 const OUTW=OUTLINE;
 function px(g,x,y,w,h,c){g.fillStyle=c;g.fillRect(Math.round(x),Math.round(y),w,h);}
@@ -920,6 +957,8 @@ const SPIDER=[[
 const JOB_GEAR_ALIAS={yugeki:'kenshi',seikishi:'shugo',makenshi:'kenja',juujutsu:'karyudo',shura:'bouken',yakushi:'iyashi'};
 const SPR_MON={boar:BOAR,bird:BIRD,beetle:BEETLE,dragon:DRAGON,wolf:WOLF,snake:SNAKE,spider:SPIDER};
 function monRows(tier,f){const d=MONSTER_TIERS[tier];return (SPR_MON[d.spr]||BOAR)[f];}
+function monSpriteV(tier,f,sp){const D=MONSTER_TIERS[tier];const V=VARIANTS[sp];
+ return sprite(SPR_MON[D.spr][f],Object.assign({},D.pal,V.pal),'MV'+tier+f);}
 function monSprite(tier,f,rage){const D=MONSTER_TIERS[tier];const p=(rage&&D.pal2)?D.pal2:D.pal;const key='M'+tier+f+(rage&&D.pal2?'R':'');if(sprCache.has(key))return sprCache.get(key);
  const o=composite([monRows(tier,f)],[Object.assign({e:'#f7e36b',n:'#e39aa0',u:'#f6f1dc'},p)],OUTLINE);sprCache.set(key,o);return o;}
 function monFlash(tier,col){const key='MF'+tier+col;if(sprCache.has(key))return sprCache.get(key);const r=monRows(tier,0);const o=composite([r],[flatPal(r,col)],col);sprCache.set(key,o);return o;}
@@ -942,7 +981,57 @@ addEventListener('resize',resize);resize();
 function drawSpr(img,x,y,flip,sc){sc=sc||1;const w=img.width*sc,h=img.height*sc;if(flip){ctx.save();ctx.translate(Math.round(x+w/2),Math.round(y));ctx.scale(-1,1);ctx.drawImage(img,-w/2,0,w,h);ctx.restore();}else ctx.drawImage(img,Math.round(x),Math.round(y),w,h);}
 
 // ===== 効果音 =====
-const AU={ctx:null,nb:null,dead:false};
+const AU={ctx:null,nb:null,dead:false,bgm:null,bgmKey:'',bus:null,amb:null};
+function bgmOn(){return !S||!S.opt||S.opt.bgm!==false;}
+function bus(){const c=ac();if(!c)return null;if(!AU.bus){AU.bus=c.createGain();AU.bus.gain.value=0.5*volMul();AU.bus.connect(c.destination);}return AU.bus;}
+// 曲データ：音名の並び（休符は0）。ゆるやかなループ
+const BGM={
+ village:{bpm:92,vol:0.05,wave:'triangle',bass:'sine',
+  mel:[62,0,65,67,0,69,67,65,62,0,60,62,0,65,0,0, 67,0,69,72,0,71,69,67,65,0,62,60,0,62,0,0],
+  bas:[38,0,0,0,45,0,0,0,43,0,0,0,40,0,0,0, 38,0,0,0,45,0,0,0,41,0,0,0,43,0,0,0]},
+ farm:{bpm:80,vol:0.045,wave:'sine',bass:'sine',
+  mel:[67,0,69,0,71,0,69,67,65,0,67,0,62,0,0,0, 65,0,67,0,69,0,67,65,62,0,60,0,62,0,0,0],
+  bas:[43,0,0,0,48,0,0,0,45,0,0,0,40,0,0,0, 43,0,0,0,46,0,0,0,41,0,0,0,43,0,0,0]},
+ battle:{bpm:132,vol:0.05,wave:'square',bass:'triangle',
+  mel:[57,57,60,62,57,57,62,64,65,64,62,60,57,0,55,0, 57,57,60,62,64,64,65,67,69,67,65,64,62,0,57,0],
+  bas:[33,33,0,33,40,0,33,0,31,31,0,31,38,0,31,0, 33,33,0,33,40,0,33,0,36,36,0,36,43,0,36,0]},
+ title:{bpm:76,vol:0.05,wave:'triangle',bass:'sine',
+  mel:[57,0,60,0,64,0,62,60,59,0,57,0,55,0,0,0, 57,0,60,0,64,0,67,65,64,0,62,0,64,0,0,0],
+  bas:[33,0,0,0,40,0,0,0,31,0,0,0,38,0,0,0, 33,0,0,0,40,0,0,0,36,0,0,0,40,0,0,0]},
+ boss:{bpm:148,vol:0.055,wave:'sawtooth',bass:'square',
+  mel:[53,53,56,53,58,56,53,51,53,53,56,58,60,58,56,53, 51,51,55,51,56,55,51,50,48,50,51,53,55,56,58,60],
+  bas:[29,29,29,0,36,0,29,0,27,27,27,0,34,0,27,0, 29,29,29,0,36,0,29,0,24,24,24,0,31,0,24,0]},
+};
+function hz(n){return 440*Math.pow(2,(n-69)/12);}
+function stopBgm(){if(AU.bgm){try{clearInterval(AU.bgm.timer);}catch(e){}try{AU.bgm.g.gain.setTargetAtTime(0,ac()?ac().currentTime:0,0.12);}catch(e){}AU.bgm=null;AU.bgmKey='';}}
+function playBgm(key){if(!bgmOn()){stopBgm();return;}
+ if(AU.bgmKey===key)return;
+ const c=ac();if(!c)return;stopBgm();
+ const B0=BGM[key];if(!B0)return;
+ const g=c.createGain();g.gain.value=0;g.connect(bus());
+ g.gain.setTargetAtTime(B0.vol,c.currentTime,0.4);
+ const step=60/B0.bpm/2;let i=0;
+ const play=()=>{if(!AU.bgm)return;if(c.state!=='running'){try{c.resume();}catch(e){}return;}const t=c.currentTime+0.02;
+  const mn=B0.mel[i%B0.mel.length],bn=B0.bas[i%B0.bas.length];
+  const mk=(n,wave,dur,vol)=>{if(!n)return;const o=c.createOscillator(),gg=c.createGain();
+   o.type=wave;o.frequency.setValueAtTime(hz(n),t);
+   gg.gain.setValueAtTime(0,t);gg.gain.linearRampToValueAtTime(vol,t+0.02);gg.gain.exponentialRampToValueAtTime(0.0008,t+dur);
+   o.connect(gg);gg.connect(g);o.start(t);o.stop(t+dur+0.02);};
+  mk(mn,B0.wave,step*1.6,0.5);mk(bn,B0.bass,step*1.9,0.42);
+  i++;};
+ const timer=setInterval(play,step*1000);
+ AU.bgm={g,timer};AU.bgmKey=key;play();}
+function ambient(kind){ // 環境音（村＝小鳥、農場＝風、夜＝虫）
+ const c=ac();if(!c)return;
+ if(AU.amb&&AU.amb.kind===kind)return;
+ if(AU.amb){try{clearInterval(AU.amb.timer);}catch(e){}AU.amb=null;}
+ if(!kind||!bgmOn())return;
+ const timer=setInterval(()=>{if(!sfxOn())return;
+  if(kind==='bird'&&Math.random()<0.5){tone(2100,2600,0.05,'sine',0.02);tone(2600,2200,0.05,'sine',0.02,0.07);}
+  if(kind==='wind'&&Math.random()<0.6)noise(0.5,0.012,400,180);
+  if(kind==='night'&&Math.random()<0.7){tone(3200,3200,0.03,'sine',0.012);tone(3200,3200,0.03,'sine',0.012,0.06);}
+ },2600);
+ AU.amb={kind,timer};}
 function sfxOn(){return !S||!S.opt||S.opt.sfx!==false;}
 function ac(){if(AU.dead)return null;
  if(!AU.ctx){try{const C=window.AudioContext||window.webkitAudioContext;if(!C){AU.dead=true;return null;}AU.ctx=new C();}catch(e){AU.dead=true;return null;}}
@@ -950,12 +1039,12 @@ function ac(){if(AU.dead)return null;
  return AU.ctx;}
 function nbuf(c){if(AU.nb)return AU.nb;const n=c.createBuffer(1,c.sampleRate*0.4,c.sampleRate),d=n.getChannelData(0);
  for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;AU.nb=n;return n;}
-function tone(f0,f1,dur,type,vol,dly){const c=ac();if(!c)return;const t=c.currentTime+(dly||0);
+function tone(f0,f1,dur,type,vol,dly){const c=ac();if(!c||c.state!=='running')return;const t=c.currentTime+(dly||0);
  const o=c.createOscillator(),g=c.createGain();o.type=type||'square';o.frequency.setValueAtTime(f0,t);
  if(f1&&f1!==f0)o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t+dur);
  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol||0.08,t+0.008);g.gain.exponentialRampToValueAtTime(0.0008,t+dur);
  o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+dur+0.02);}
-function noise(dur,vol,f0,f1,dly){const c=ac();if(!c)return;const t=c.currentTime+(dly||0);
+function noise(dur,vol,f0,f1,dly){const c=ac();if(!c||c.state!=='running')return;const t=c.currentTime+(dly||0);
  const s=c.createBufferSource();s.buffer=nbuf(c);const f=c.createBiquadFilter();f.type='bandpass';f.frequency.setValueAtTime(f0||900,t);
  if(f1)f.frequency.exponentialRampToValueAtTime(Math.max(60,f1),t+dur);f.Q.value=1.1;
  const g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol||0.08,t+0.006);g.gain.exponentialRampToValueAtTime(0.0008,t+dur);
@@ -989,7 +1078,7 @@ function newPlayer(name){const st={};STAT_KEYS.forEach(k=>st[k]=BASE);const mats
 function newSave(p){return{ver:6,p,farm:{plots:[{planted:false,stage:0}]},rec:{q:{},jobs:{},mons:{},streak:0},opt:{sfx:true},daily:{date:'',done:false},lastPlay:0};}
 function save(){if(!S)return;noteJob();try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){}}
 function noteJob(){if(!S||!S.rec)return;S.rec.jobs[computeJob(S.p.stats)]=true;const a=computeAdv(S.p);if(a)S.rec.jobs[a]=true;}
-function migrate(){const P=S.p;if(!P.upg)P.upg={};if(!P.runes)P.runes=[];if(!P.runeBag)P.runeBag={};if(P.eq.c===undefined)P.eq.c=null;Object.keys(ITEMS).forEach(k=>{if(P.items[k]===undefined)P.items[k]=0;});if(!P.crops)P.crops={anti:0,vital:0};if(!P.seen){P.seen={};Object.keys(MATS).forEach(k=>{if((P.mats[k]||0)>0)P.seen[k]=true;});(P.gear||[]).forEach(id=>{const g=GEAR[id];if(g&&g.craft)Object.keys(g.craft).forEach(k=>{P.seen[k]=true;});});}if(!P.resets)P.resets=0;if(!P.mats)P.mats={};Object.keys(MATS).forEach(k=>{if(P.mats[k]===undefined)P.mats[k]=0;});if(!S.rec)S.rec={q:{},jobs:{},mons:{}};if(!S.rec.mons)S.rec.mons={};if(!S.opt)S.opt={sfx:true};if(!S.daily)S.daily={date:'',done:false};if(!S.today)S.today={date:'',done:[],bonus:false};if(!S.net)S.net={turn:null};if(!S.rescueLog)S.rescueLog=[];Object.keys(S.rec.q||{}).forEach(k=>{const r=S.rec.q[k];if(!r.ch)r.ch=[false,false,false];if(!r.dl)r.dl=1;});if(S.rec.streak===undefined)S.rec.streak=0;if(S.rec.mrank===undefined)S.rec.mrank=0;if(!S.rec.mseed)S.rec.mseed=1;if(!S.rec.parts)S.rec.parts={};if(!S.rec)S.rec={q:{},jobs:{}};if(!S.rec.q)S.rec.q={};if(!S.rec.jobs)S.rec.jobs={};S.farm.plots.forEach(pl=>{if(pl.planted&&pl.stage===0)pl.stage=1;});}
+function migrate(){const P=S.p;if(!P.upg)P.upg={};if(!P.runes)P.runes=[];if(!P.runeBag)P.runeBag={};if(P.eq.c===undefined)P.eq.c=null;Object.keys(ITEMS).forEach(k=>{if(P.items[k]===undefined)P.items[k]=0;});if(!P.crops)P.crops={anti:0,vital:0};if(!P.seen){P.seen={};Object.keys(MATS).forEach(k=>{if((P.mats[k]||0)>0)P.seen[k]=true;});(P.gear||[]).forEach(id=>{const g=GEAR[id];if(g&&g.craft)Object.keys(g.craft).forEach(k=>{P.seen[k]=true;});});}if(!P.resets)P.resets=0;if(!P.mats)P.mats={};Object.keys(MATS).forEach(k=>{if(P.mats[k]===undefined)P.mats[k]=0;});if(!S.rec)S.rec={q:{},jobs:{},mons:{}};if(!S.rec.mons)S.rec.mons={};if(!S.opt)S.opt={sfx:true};if(!S.daily)S.daily={date:'',done:false};if(!S.today)S.today={date:'',done:[],bonus:false};if(!S.net)S.net={turn:null};if(S.gt===undefined)S.gt=0;if(!S.rescueLog)S.rescueLog=[];Object.keys(S.rec.q||{}).forEach(k=>{const r=S.rec.q[k];if(!r.ch)r.ch=[false,false,false];if(!r.dl)r.dl=1;});if(S.rec.streak===undefined)S.rec.streak=0;if(S.rec.mrank===undefined)S.rec.mrank=0;if(!S.rec.mseed)S.rec.mseed=1;if(!S.rec.parts)S.rec.parts={};if(!S.rec.var)S.rec.var={};if(!S.rec)S.rec={q:{},jobs:{}};if(!S.rec.q)S.rec.q={};if(!S.rec.jobs)S.rec.jobs={};S.farm.plots.forEach(pl=>{if(pl.planted&&pl.stage===0)pl.stage=1;});}
 function qrec(id){if(!S.rec.q[id])S.rec.q[id]={n:0,best:0};return S.rec.q[id];}
 function fmtTime(ms){if(!ms)return'--';const t=Math.round(ms/100)/10;const m=Math.floor(t/60),sec=(t-m*60).toFixed(1);return m?m+'分'+sec+'秒':sec+'秒';}
 function dateKey(d){d=d||new Date();return ''+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');}
@@ -1040,6 +1129,16 @@ const MODS={
  numb:{name:'痺れ持ち',desc:'前後同時の技でしびれる',ail:'para',ailT:3,both:1},
 };
 const MOD_IDS=Object.keys(MODS);
+function weekKey(){const d=new Date();const on=new Date(d.getFullYear(),0,1);const w=Math.floor(((d-on)/86400000+on.getDay())/7);return d.getFullYear()+'W'+w;}
+const WEEK_POOL=[3,6,7,9,11,13];   // 手強い相手から選ぶ
+const WEEK_MODS=[['tough','brutal'],['swift','relent'],['armored','venom'],['brutal','numb'],['tough','swift'],['relent','venom']];
+function weekly(){const k=weekKey();const h=hashStr('wk'+k);
+ const tier=WEEK_POOL[h%WEEK_POOL.length];const mods=WEEK_MODS[(h>>3)%WEEK_MODS.length];
+ return {key:k,tier,mods,name:'週の獣：'+MONSTER_TIERS[tier].name};}
+function weeklyRec(){if(!S.week||S.week.key!==weekKey())S.week={key:weekKey(),n:0,claimed:false,best:0};return S.week;}
+function weeklyOpen(){return QUESTS.some(q=>q.rank>=4&&qrec(q.id).n>0);}
+function weeklyQuest(){const W0=weekly();const D=MONSTER_TIERS[W0.tier];
+ return {id:'w',weekly:true,rank:6,name:W0.name,desc:D.name+'（'+W0.mods.map(k=>MODS[k].name).join('・')+'）',obj:D.name+'の討伐',party:'1〜4人',req:0,maxHit:3,tier:W0.tier,exp:900,gold:1500,drops:{shin:2,gold:1}};}
 function missionOpen(){return QUESTS.some(q=>q.rank>=6&&qrec(q.id).n>0);}
 function missionGen(rank){const seed=hashStr('m'+rank+'_'+((S.rec&&S.rec.mseed)||1));
  const pool=[2,3,4,5,6,7,9,10,11,13].filter(t=>MONSTER_TIERS[t]);
@@ -1110,8 +1209,132 @@ function newsHTML(){if(!RESCUE_NEWS||panel)return'';const n=RESCUE_NEWS;
 function guideHTML(){const g=guideStep();if(!g||panel||RESCUE_NEWS)return'';
  return`<div class="guide"><div class="gh">つぎにやること</div><b>${g.t}</b><br><small>${g.hint}</small>
  <button class="small" onpointerdown="event.preventDefault();hideGuide()">もう出さない</button></div>`;}
-function hideGuide(){S.guideOff=true;save();toast('手引きを止めました（記録から戻せます）');rerender();}
+function hideGuide(){S.guideOff=true;save();toast('手引きを止めました（右上の⚙から戻せます）');rerender();}
+function toggleSfx(){if(!S.opt)S.opt={};S.opt.sfx=!sfxOn();save();rerender();}
+function toggleBgm(){if(!S.opt)S.opt={};S.opt.bgm=!bgmOn();save();
+ if(bgmOn()){if(scene==='battle')playBgm('battle');else if(W.map==='farm')playBgm('farm');else playBgm('village');}
+ else{stopBgm();ambient(null);}rerender();}
+function volMul(){return (S&&S.opt&&S.opt.vol)||1;}
+function setVol(v){if(!S.opt)S.opt={};S.opt.vol=v;save();if(AU.bus)AU.bus.gain.value=0.5*v;try{sfx('ui');}catch(e){}rerender();}
+function resetTut(){S.tut={};S.guideOff=false;save();toast('戦闘の手引きを最初から出します');rerender();}
+function settingsHTML(){const v=volMul();
+ const row=(label,on,f)=>`<div class="item"><div><b>${label}</b></div><button class="small ${on?'pri':''}" onclick="${f}">${on?'入':'切'}</button></div>`;
+ return`<div class="panel sheet one"><h2>設定</h2>
+ <p><small style="color:var(--gold)">音</small></p>
+ ${row('効果音',sfxOn(),'toggleSfx()')}
+ ${row('音楽・環境音',bgmOn(),'toggleBgm()')}
+ <div class="item"><div><b>音量</b></div><div class="row">${[[0.5,'小'],[1,'中'],[1.6,'大']].map(([x,l])=>`<button class="small ${v===x?'on':''}" onclick="setVol(${x})">${l}</button>`).join('')}</div></div>
+ <p style="margin-top:10px"><small style="color:var(--gold)">手引き</small></p>
+ ${row('「つぎにやること」の表示',!S.guideOff,S.guideOff?'showGuide()':'hideGuide()')}
+ <div class="item"><div><b>戦闘の手引きをもう一度見る</b><br><small>最初の戦闘で出た説明を、次の戦闘からまた出します</small></div><button class="small" onclick="resetTut()">戻す</button></div>
+ <button onclick="closePanel()">閉じる</button></div>`;}
 function showGuide(){S.guideOff=false;save();toast('手引きを再開しました');rerender();}
+const NPCS=[
+ {id:'granny',name:'薬売りの老婆',x:48,y:32,col:{c:'#8a5a34',C:'#a3724a',h:'#d8d0c0'},
+  asks:[{need:{herb:3},give:{gold:200,items:{antidote:2}},say:'薬草が足りなくてねぇ。3つ分けてくれないかい',thanks:'助かったよ。解毒薬を持っていきな'},
+        {need:{mats:{hide:2}},give:{gold:300,items:{hipotion:1}},say:'獣の皮が2枚あれば、包帯が作れるんだが',thanks:'これで村の怪我人が助かる'}]},
+ {id:'smithboy',name:'鍛冶屋の弟子',x:82,y:160,col:{c:'#5a5a62',C:'#8a8a92',h:'#3a2a18'},
+  asks:[{need:{mats:{tusk:3}},give:{gold:250,items:{atkpot:1}},say:'牙を3つ。研ぎの練習に使いたいんだ',thanks:'ありがとう！これ、親方から預かった薬だ'},
+        {need:{mats:{kara:2}},give:{gold:500,mats:{king:1}},say:'甲殻を2つ、鎧の試作に欲しい',thanks:'助かった。倉から王の牙を1つ持っていけ'}]},
+ {id:'hunter',name:'古参の狩人',x:28,y:240,col:{c:'#6b6257',C:'#8f8578',h:'#453f37'},
+  asks:[{need:{mats:{kemo:2}},give:{gold:400,items:{vial:2}},say:'狼の牙を2つ。若いのに見せてやりたい',thanks:'いい牙だ。毒瓶をくれてやる'},
+        {need:{clear:{q:5,n:1}},give:{gold:600,items:{flash:2}},say:'岩甲虫を一度でも倒してこい。話はそれからだ',thanks:'甲殻を割ったか。閃光玉を持っていけ'}]},
+ {id:'kid',name:'村の子ども',x:122,y:200,col:{c:'#4c8ec7',C:'#7fc8f5',h:'#5c4133'},
+  asks:[{need:{items:{seed:2}},give:{gold:120,items:{potion:2}},say:'畑の種を2つちょうだい！ぼくも育ててみたい',thanks:'わーい！これ、母ちゃんの回復薬'},
+        {need:{clear:{q:10,n:1}},give:{gold:350,mats:{hide:3}},say:'夜に響く声のヤツ、やっつけてよ。怖くて眠れないんだ',thanks:'すごい！これ、父ちゃんの皮あげる'}]},
+];
+function npcRec(id){if(!S.npc)S.npc={};if(!S.npc[id])S.npc[id]={step:0,done:false};return S.npc[id];}
+function npcAsk(n){const r=npcRec(n.id);return r.step<n.asks.length?n.asks[r.step]:null;}
+function askOk(a){const P=S.p;
+ if(a.need.herb&&P.herb<a.need.herb)return false;
+ if(a.need.items)for(const k in a.need.items)if((P.items[k]||0)<a.need.items[k])return false;
+ if(a.need.mats)for(const k in a.need.mats)if((P.mats[k]||0)<a.need.mats[k])return false;
+ if(a.need.clear&&qrec(a.need.clear.q).n<a.need.clear.n)return false;
+ return true;}
+function askText(a){const o=[];
+ if(a.need.herb)o.push('薬草×'+a.need.herb);
+ if(a.need.items)for(const k in a.need.items)o.push(ITEMS[k].name+'×'+a.need.items[k]);
+ if(a.need.mats)for(const k in a.need.mats)o.push(MATS[k]+'×'+a.need.mats[k]);
+ if(a.need.clear){const q=QUESTS.find(x=>x.id===a.need.clear.q);o.push('「'+(q?q.name:'?')+'」の討伐');}
+ return o.join('・');}
+function rewardText(g){const o=[];if(g.gold)o.push(g.gold+'G');
+ if(g.items)for(const k in g.items)o.push(ITEMS[k].name+'×'+g.items[k]);
+ if(g.mats)for(const k in g.mats)o.push(MATS[k]+'×'+g.mats[k]);
+ return o.join('・');}
+function npcGive(id){const n=NPCS.find(x=>x.id===id);const r=npcRec(id);const a=npcAsk(n);if(!a||!askOk(a))return;
+ const P=S.p;
+ if(a.need.herb)P.herb-=a.need.herb;
+ if(a.need.items)for(const k in a.need.items)P.items[k]-=a.need.items[k];
+ if(a.need.mats)for(const k in a.need.mats)P.mats[k]-=a.need.mats[k];
+ const g=a.give;if(g.gold)P.gold+=g.gold;
+ if(g.items)for(const k in g.items)P.items[k]=(P.items[k]||0)+g.items[k];
+ if(g.mats)for(const k in g.mats){P.mats[k]=(P.mats[k]||0)+g.mats[k];seeMat(k,g.mats[k]);}
+ r.step++;if(r.step>=n.asks.length)r.done=true;
+ save();sfx('buy');toast(a.thanks+'（'+rewardText(g)+'）');rerender();}
+function npcSay(n){const a=npcAsk(n);if(!a)return'「いつも助かっているよ」';
+ return'「'+a.say+'」';}
+function npcActs(n){const a=npcAsk(n);if(!a)return[];
+ return[{l:'渡す（'+askText(a)+'）',f:()=>npcGive(n.id),dis:!askOk(a)}];}
+function npcBadge(){return NPCS.filter(n=>{const a=npcAsk(n);return a&&askOk(a);}).length;}
+const FISH=[
+ {id:'ayu',name:'小魚',w:40,gold:30,exp:4,col:'#9fd8f5'},
+ {id:'masu',name:'斑魚',w:26,gold:70,exp:8,col:'#e0a04a'},
+ {id:'koi',name:'大鯉',w:16,gold:160,exp:16,col:'#e0507a'},
+ {id:'namazu',name:'髭魚',w:10,gold:260,exp:24,col:'#6b6257'},
+ {id:'kin',name:'金鱗魚',w:5,gold:600,exp:40,col:'#ffd35a',rare:1},
+ {id:'boot',name:'古い長靴',w:3,gold:5,exp:1,col:'#5f3c20',junk:1},
+];
+function fishPick(){const mw=f=>f.w*((timeBand()==='morning'&&f.rare)?3:1);const tot=FISH.reduce((a,f)=>a+mw(f),0);let r=Math.random()*tot;
+ for(const f of FISH){r-=mw(f);if(r<=0)return f;}return FISH[0];}
+function fishRec(){if(!S.fish)S.fish={n:0,best:'',kinds:{}};return S.fish;}
+let FS=null;   // 釣りの状態
+function openFish(){FS={phase:'wait',t:0,wait:0.8+Math.random()*2.2,fish:null,res:null,bar:0,dir:1};openPanel('fish');fishPaint();fishLoop();}
+function closeFish(){FS=null;closePanel();}
+function fishLoop(){if(!FS||panel!=='fish')return;
+ const dt=1/30;FS.t+=dt;
+ if(FS.phase==='wait'&&FS.t>=FS.wait){FS.phase='bite';FS.t=0;FS.fish=fishPick();try{sfx('warn');}catch(e){}}
+ else if(FS.phase==='bite'&&FS.t>0.9){FS.phase='miss';FS.res='見送ってしまった';FS.t=0;try{sfx('lose');}catch(e){}}
+ else if(FS.phase==='hook'){FS.bar+=FS.dir*dt*1.6;if(FS.bar>1){FS.bar=1;FS.dir=-1;}if(FS.bar<0){FS.bar=0;FS.dir=1;}}
+ fishPaint();
+ FS.timer=setTimeout(fishLoop,33);}
+function fishPaint(){const F=FS;if(!F)return;
+ const msg=$('#fmsg'),wrap=$('#fbarwrap'),mk=$('#fmk'),btn=$('#fbtn'),rec=$('#frec');
+ if(!msg||!btn)return;
+ const dots='・'.repeat(1+Math.floor(F.t*2)%3);
+ const html=F.phase==='wait'?'<span style="color:#9fd8f5">水面を見ている'+dots+'</span><br><small>魚が食いついたら「引く！」が出ます</small>'
+  :F.phase==='bite'?'<b style="color:var(--gold);font-size:20px">！ 引いている</b><br><small>今すぐ押す</small>'
+  :F.phase==='hook'?'<small>緑の帯で止める</small>'
+  :F.phase==='catch'?'<b style="color:'+F.res.col+'">'+F.res.name+'</b> を釣った！<br><small>'+F.res.gold+'G'+(F.res.junk?'':'・経験値'+F.res.exp)+(F.res.rare?'・獣の心珠×1':'')+'</small>'
+  :'<small>'+(typeof F.res==='string'?F.res:'逃げられた')+'</small>';
+ if(msg.dataset.h!==html){msg.dataset.h=html;msg.innerHTML=html;}
+ if(wrap)wrap.style.display=F.phase==='hook'?'block':'none';
+ if(mk&&F.phase==='hook')mk.style.left=Math.round(F.bar*100)+'%';
+ if(F.phase==='wait'){btn.style.visibility='hidden';}
+ else{btn.style.visibility='visible';const lab=F.phase==='hook'?'止める':F.phase==='bite'?'引く！':'もう一度';
+  if(btn.textContent!==lab)btn.textContent=lab;
+  btn.className=(F.phase==='bite'||F.phase==='hook')?'pri bite':'pri';}
+ if(rec){const r=fishRec();const t='釣った数 '+r.n+'　種類 '+Object.keys(r.kinds).length+'/'+FISH.length;if(rec.textContent!==t)rec.textContent=t;}}
+function fishTap(){if(!FS)return;fishTapInner();fishPaint();}
+function fishTapInner(){if(!FS)return;
+ if(FS.phase==='wait')return;   // 待機中は押す操作がない
+ if(FS.phase==='bite'){FS.phase='hook';FS.t=0;FS.bar=0;FS.dir=1;try{sfx('ui');}catch(e){}return;}
+ if(FS.phase==='hook'){const good=FS.bar>0.62&&FS.bar<0.88;
+  if(good){const f=FS.fish;FS.phase='catch';FS.res=f;
+   const P=S.p;P.gold+=f.gold;const r=fishRec();r.n++;r.kinds[f.id]=(r.kinds[f.id]||0)+1;
+   if(!f.junk){const ups=gainExp(P,f.exp);if(ups.length)toast('レベルアップ！ Lv'+ups[ups.length-1]);}
+   if(f.rare)P.mats.shin=(P.mats.shin||0)+1;
+   save();try{sfx(f.rare?'crit':'win');}catch(e){}}
+  else{FS.phase='miss';FS.res='逃げられた';try{sfx('lose');}catch(e){}}
+  return;}
+ if(FS.phase==='miss'||FS.phase==='catch'){FS.phase='wait';FS.t=0;FS.wait=0.8+Math.random()*2.2;FS.fish=null;FS.res=null;}}
+function fishHTML(){if(!FS)return'';
+ return`<div class="panel sheet one" style="text-align:center"><h2>釣り</h2>
+ <div class="fpond" id="fpond"><i></i><i></i><i></i></div>
+ <p id="fmsg" style="font-size:16px;min-height:42px"></p>
+ <div class="fbar" id="fbarwrap" style="display:none"><i class="z"></i><span id="fmk"></span></div>
+ <button class="pri" id="fbtn" onclick="fishTap()" style="font-size:17px;padding:14px 26px">待つ</button>
+ <p><small id="frec"></small></p>
+ <button onclick="closeFish()">やめる</button></div>`;}
 function boardBadge(){const T=todayRec();return Math.max(0,3-T.done.length);}
 function gearKnown(id){const g=GEAR[id];if(!g.craft)return true;return Object.keys(g.craft).every(k=>matSeen(k));}
 function gearName(id){const lv=(S&&S.p.upg&&S.p.upg[id])||0;return GEAR[id].name+(lv?' +'+lv:'');}
@@ -1172,7 +1395,7 @@ function presetRow(){return`<div class="row"><small>おまかせ：</small>${PRE
 function jobList(){return`<details><summary>ジョブ一覧と発現条件</summary>${Object.keys(JOBS).map(k=>{const a=ADV_IDS.find(x=>ADV_JOBS[x].base===k);const A=a?ADV_JOBS[a]:null;
  return`<p><b style="color:${JOBS[k].dark}">${JOBS[k].name}</b>：${JOBS[k].rule}<br><small>${JOBS[k].skill}：${JOBS[k].skillDesc}</small>${A?`<br><small style="color:var(--gold)">↑上位 ${A.name}：${A.ratioTxt}・${A.statTxt}・Lv${ADV_LV}以上・危険度2クリア</small><br><small>${A.skill}：${A.skillDesc}</small>`:''}</p>`;}).join('')}</details>`;}
 function hudHTML(){const P=S.p,d=derived(P);const vn=villageNext();
- return`<div class="hud"><b>${esc(P.name)}</b> Lv${P.lv} <span class="tag" style="color:${JOBS[d.job].dark}">${d.jobName}</span>${d.adv?'<span class="tag" style="color:var(--gold)">上位</span>':''}<span class="tag vlv" onpointerdown="event.preventDefault();openPanel('village')">村Lv${villageLv()}${villageNext()?'<small style="color:#8c8474"> あと'+villageNext().left+'</small>':''}</span><br>${P.gold}G　回復薬 ${P.items.potion}　薬草 ${P.herb}　種 ${P.items.seed}${P.pts>0?`<br><b style="color:#ffd35a">ポイントが ${P.pts} 残っている → 家で育成</b>`:''}</div>`;}
+ return`<button class="gear" onpointerdown="event.preventDefault();openPanel('settings')" aria-label="設定">⚙</button><div class="hud"><b>${esc(P.name)}</b> Lv${P.lv} <span class="tag" style="color:${JOBS[d.job].dark}">${d.jobName}</span>${d.adv?'<span class="tag" style="color:var(--gold)">上位</span>':''}${npcBadge()?'<span class="tag" style="color:#9fe07a">お願い '+npcBadge()+'</span>':''}<span class="tag" style="color:#9fd8f5" onpointerdown="event.preventDefault();toast(tbInfo())">${TB_NAME[timeBand()]}</span><span class="tag vlv" onpointerdown="event.preventDefault();openPanel('village')">村Lv${villageLv()}${villageNext()?'<small style="color:#8c8474"> あと'+villageNext().left+'</small>':''}</span><br>${P.gold}G　回復薬 ${P.items.potion}　薬草 ${P.herb}　種 ${P.items.seed}${P.pts>0?`<br><b style="color:#ffd35a">ポイントが ${P.pts} 残っている → 家で育成</b>`:''}</div>`;}
 // ---- 救援札（非同期の助け合い）----
 const RES_TTL=3*24*3600*1000;
 function fv(f,k){const x=f&&f[k];return x?(x.stringValue!==undefined?x.stringValue:x.integerValue):'';}
@@ -1282,7 +1505,41 @@ function villageHTML(){const P=S.p;const vn=villageNext();const lv=villageLv();
  <button onclick="closePanel()">閉じる</button></div>`;}
 
 // ===== タイトル・キャラ作成 =====
-function showTitle(){scene='title';panel=null;const has=!!load();setUI(`<div class="panel center" style="text-align:center"><h1>Beast Hunter</h1><p style="margin:0;color:var(--bone2)"><small>ビーストハンター</small></p><p>ステータスの比率でジョブが目覚める、クエスト受注型RPGの試作版</p><button class="pri" onclick="startCreate()">はじめから</button>${has?'<button onclick="continueGame()">つづきから</button>':''}<p style="margin-top:12px"><small>村・農場：画面左下をなぞって自由に歩く。施設に触れると吹き出しが出て、タップすると開きます<br>戦闘：敵の「予告」を見て前衛／後衛へ移動してかわす（移動中は0.5秒だけ無敵。前後同時の技もこれでかわせる）。仲間とは「合図」で意思疎通<br>PC：WASD／矢印で歩く・J攻撃・Kスキル・L移動・I道具</small></p></div>`);}
+let BOOTED=false;
+(function(){const unlock=()=>{try{const c=ac();if(c&&c.state==='suspended')c.resume();}catch(e){}};
+ document.addEventListener('click',unlock,{passive:true});document.addEventListener('touchend',unlock,{passive:true});})();
+function warmCaches(){try{Object.keys(JOBS).forEach(j=>{[0,1,2].forEach(f=>playerSprite(j,f,null));});
+ MONSTER_TIERS.forEach((D,i)=>{monSprite(i,0);monSprite(i,1);});}catch(e){}}
+function showSplash(){scene='splash';panel=null;
+ setUI(`<div class="splash" onclick="bootTap(event)"><div class="logo"><b>BEAST HUNTER</b><small>ビーストハンター</small></div>
+ <div class="tap">画面をタップしてはじめる</div><div class="ld" id="ld"></div></div>`);
+ setTimeout(()=>{warmCaches();const el=$('#ld');if(el)el.textContent='';},30);}
+function bootTap(e){if(e&&e.preventDefault)e.preventDefault();if(BOOTED)return;BOOTED=true;
+ try{ac();if(AU.ctx&&AU.ctx.state==='suspended')AU.ctx.resume();}catch(er){}
+ try{sfx('ui');}catch(er){}
+ showTitle();}
+function showTitle(){scene='title';panel=null;try{ambient(null);if(BOOTED)playBgm('title');}catch(e){}
+const has=!!load();setUI(`<div class="titlescr"><div class="logo big"><b>BEAST HUNTER</b><small>ビーストハンター</small></div>
+ <div class="tbtns">${has?'<button class="pri" onclick="continueGame()">つづきから</button>':''}<button class="${has?'':'pri'}" onclick="startNewGame()">はじめから</button></div>
+ <p class="ver"><small>試作版</small></p></div>`);}
+function startNewGame(force){if(load()&&!force){
+  setUI(`<div class="titlescr"><div class="panel center" style="text-align:center"><h2>はじめからにしますか？</h2><p><small>いまのデータは消えます（元に戻せません）</small></p>
+  <div class="row" style="justify-content:center"><button class="pri" onclick="startNewGame(true)">はじめから</button><button onclick="showTitle()">やめる</button></div></div></div>`);return;}
+ if(!OPENING_SEEN())playOpening();else startCreate();}
+function OPENING_SEEN(){try{return localStorage.getItem('bh_op')==='1';}catch(e){return false;}}
+const OPENING=[
+ {t:'獣が村を脅かす時代。',k:'beast'},
+ {t:'狩人たちは、腕と知恵で生き延びてきた。',k:'hunter'},
+ {t:'今日、あなたの狩りが始まる。',k:'dawn'}];
+let OP=null;
+function playOpening(){try{localStorage.setItem('bh_op','1');}catch(e){}
+ OP={i:0,t:0};scene='opening';panel=null;renderOpening();try{playBgm('title');}catch(e){}}
+function renderOpening(){if(!OP)return;const sc=OPENING[OP.i];
+ setUI(`<div class="opening" onclick="opNext(event)"><div class="optext" id="optext">${sc.t}</div>
+ <button class="opskip" onclick="event.stopPropagation();opSkip(event)">スキップ</button>
+ <div class="opdots">${OPENING.map((x,i)=>'<i class="'+(i===OP.i?'on':'')+'"></i>').join('')}</div></div>`);}
+function opNext(e){if(e&&e.preventDefault)e.preventDefault();if(!OP)return;OP.i++;OP.t=0;if(OP.i>=OPENING.length){opSkip();return;}renderOpening();}
+function opSkip(e){if(e&&e.preventDefault)e.preventDefault();OP=null;startCreate();}
 function toTitle(){save();T=null;showTitle();}
 function continueGame(){const s=load();if(!s)return;S=s;migrate();goVillage();}
 function startCreate(){T=newPlayer('');T._floor=Object.assign({},T.stats);scene='create';renderCreate();}
@@ -1306,6 +1563,8 @@ const MAPS={
    {id:'home',name:'自分の家',rect:{x:100,y:140,w:36,h:30},solid:1,say:()=>S.p.pts>0?'ポイントが'+S.p.pts+'残っている。':(ownedRunes(S.p).length&&(S.p.runes||[]).length<RUNE_SLOTS?'刻印の枠が空いている。':'装備・育成・刻印・記録を見る場所。'),acts:()=>[{l:'装備',f:()=>openPanel('equip')},{l:'育成',f:openStatus},{l:'刻印',f:()=>openPanel('runes')},{l:'ポーチ',f:()=>openPanel('pouch')},{l:'記録',f:()=>openPanel('note')}]},
    {id:'hall',name:'集会所',rect:{x:14,y:264,w:38,h:30},solid:1,say:()=>NET.on?'部屋「'+NET.room+'」に参加中（'+partyCount()+'人）':(S.rescue?'救援札を貼っている。誰かが応えてくれるかも。':'仲間と狩りに出る場所。救援の掲示板もある。'),
     acts:()=>NET.on?[{l:'パーティを見る',f:()=>openPanel('lobby')},{l:'抜ける',f:leaveParty}]:[{l:'部屋を作る',f:hostParty},{l:'合言葉で入る',f:()=>openPanel('join')},{l:'救援の掲示板',f:openRescue},{l:'通信の診断',f:()=>openPanel('diag')}]},
+   ...NPCS.map(n=>({id:'npc_'+n.id,name:n.name,npc:n,rect:{x:n.x,y:n.y,w:14,h:16},solid:1,say:()=>npcSay(n),acts:()=>npcActs(n)})),
+   {id:'pond',name:'池',rect:{x:82,y:186,w:36,h:21},solid:1,say:()=>{const r=fishRec();return '魚が跳ねている。'+(r.n?'（釣った数 '+r.n+'）':'釣りができそうだ。');},acts:()=>[{l:'釣りをする',f:openFish}]},
    {id:'gate',name:'農場への門',rect:{x:58,y:350,w:38,h:16},say:()=>'畑と温泉のある農場へ続いている。',acts:()=>[{l:'農場へ行く',f:goFarm}]},
   ]},
  farm:{w:150,h:232,spawn:{x:75,y:40},blocks:[],
@@ -1328,14 +1587,17 @@ function curMap(){return MAPS[W.map];}
 function spotById(id){return curMap().spots.find(s=>s.id===id);}
 function enterMap(map){const m=MAPS[map];const p=WPOS[map]||m.spawn;W={map,x:p.x,y:p.y,fx:1,anim:0,moving:false,near:null,skip:null};stick.on=false;stick.dx=0;stick.dy=0;bubSig='';}
 function goVillage(p){try{rescueCheck(true);}catch(e){}
+ try{playBgm('village');ambient('bird');}catch(e){}
 if(scene==='world'&&W.map==='village'){}else enterMap('village');scene='world';panel=p||null;T=null;renderWorld();save();}
-function goVillageFromFarm(){WPOS.farm={x:W.x,y:W.y};enterMap('village');panel=null;renderWorld();save();}
-function goFarm(){WPOS.village={x:W.x,y:W.y};enterMap('farm');scene='world';panel=null;T=null;renderWorld();save();}
+function goVillageFromFarm(){try{playBgm('village');ambient('bird');}catch(e){}
+WPOS.farm={x:W.x,y:W.y};enterMap('village');panel=null;renderWorld();save();}
+function goFarm(){try{playBgm('farm');ambient('wind');}catch(e){}
+WPOS.village={x:W.x,y:W.y};enterMap('farm');scene='world';panel=null;T=null;renderWorld();save();}
 function openPanel(p){panel=p;T=null;renderWorld();}
-function closePanel(){panel=null;T=null;bubSig='';renderWorld();}
+function closePanel(){if(FS&&FS.timer){clearTimeout(FS.timer);FS=null;}panel=null;T=null;bubSig='';renderWorld();}
 function openStatus(){T=JSON.parse(JSON.stringify(S.p));T._floor=Object.assign({},S.p.stats);panel='status';renderWorld();}
 function confirmStatus(){if(T){S.p.stats=T.stats;S.p.pts=T.pts;S.p.auto=T.auto;}save();closePanel();}
-const PANELS={pouch:pouchHTML,rescue:rescueHTML,diag:diagHTML,village:villageHTML,brew:brewHTML,runes:runesHTML,lobby:lobbyHTML,join:joinHTML,board:boardHTML,itemshop:itemshopHTML,shop:shopHTML,smith:smithHTML,equip:equipHTML,note:noteHTML,status:statusHTML,result:resultHTML,springAsk:springAskHTML,sprung:sprungHTML};
+const PANELS={settings:settingsHTML,fish:fishHTML,pouch:pouchHTML,rescue:rescueHTML,diag:diagHTML,village:villageHTML,brew:brewHTML,runes:runesHTML,lobby:lobbyHTML,join:joinHTML,board:boardHTML,itemshop:itemshopHTML,shop:shopHTML,smith:smithHTML,equip:equipHTML,note:noteHTML,status:statusHTML,result:resultHTML,springAsk:springAskHTML,sprung:sprungHTML};
 let smithTab='craft';
 function renderWorld(){const body=PANELS[panel]?PANELS[panel]():'';
  const signs=curMap().spots.map(sp=>`<div class="sign" data-id="${sp.id}">${sp.name}</div>`).join('');
@@ -1411,6 +1673,11 @@ function questCard(q,P){const r=qrec(q.id);const isNew=!r.n;const mastered=qdl(q
 function boardHTML(){const P=S.p;const dq=dailyQuest();const dd=dailyDone();
  const daily=dq?`<div class="item" style="border-left-color:#7fc8f5"><span class="mark">${dd?'済':mark(P,dq)}</span><div style="flex:1"><span class="tag" style="color:#7fc8f5">今日の依頼</span>${dd?'<span class="tag">達成済み</span>':'<span class="tag" style="color:var(--gold)">報酬 ×1.5</span>'} <b>${dq.name}</b><br><small>${MONSTER_TIERS[dq.tier].name}${dq.chain?'ほか':''}／目安 ${dq.req}／あなた ${power(P)}</small><br><small>${dd?'また明日、別の依頼に変わります':'毎日ひとつだけ、報酬が上がります'}</small></div><button class="small pri" onclick="startQuest(${typeof dq.id==='number'?dq.id:0})">受注</button></div>`:'';
  const endless=`<div class="item" style="border-left-color:#c05744"><span class="mark">∞</span><div style="flex:1"><b>腕試し（連戦）</b><br><small>倒れるまで次々と獣が現れる。1体倒すごとに少し回復。5波ごとに特性持ち、3体ごとに道具のおまけ</small><br><small>最高記録 ${S.rec&&S.rec.streak?S.rec.streak+'体':'なし'}</small></div><button class="small pri" onclick="startQuest('e')">挑む</button></div>`;
+ let week='';
+ if(weeklyOpen()){const W0=weekly(),Wr=weeklyRec(),D=MONSTER_TIERS[W0.tier];
+  const left=(()=>{const d=new Date();const nx=new Date(d);nx.setDate(d.getDate()+((7-d.getDay())%7||7));nx.setHours(0,0,0,0);const h=Math.ceil((nx-d)/3600000);return h>24?Math.ceil(h/24)+'日':h+'時間';})();
+  week=`<div class="item q" style="border-left-color:#ff9a8a"><div class="top"><span class="mark">週</span><div style="flex:1"><span class="tag" style="color:#ff9a8a">週替わり</span> <b>${D.name}</b>${Wr.claimed?'<span class="tag" style="color:var(--gold)">今週達成</span>':''}<br><small>特性：${W0.mods.map(k=>'<span style="color:#ff9a8a">'+MODS[k].name+'</span>（'+MODS[k].desc+'）').join('　')}</small><br><small>${Wr.claimed?'2回目以降：心珠×1':'今週の初回報酬：獣の心珠×3・亜種の輝片×2・刻印'}</small><br><small>入れ替わりまで あと${left}</small></div></div>
+  <div class="dl"><button class="small pri" onclick="startQuest('w')">受注</button></div></div>`;}
  let mission='';
  if(missionOpen()){const M=missionCur(),D=MONSTER_TIERS[M.tier];
   mission=`<div class="item q" style="border-left-color:var(--gold)"><div class="top"><span class="mark">特</span><div style="flex:1"><span class="tag" style="color:var(--gold)">特命依頼</span> <b>ランク${M.rank}</b>${S.rec.mrank?'　<small>最高 ランク'+S.rec.mrank+'</small>':''}<br><small>相手：${D.name}</small><br><small>特性：${M.mods.map(k=>'<span style="color:#ff9a8a">'+MODS[k].name+'</span>（'+MODS[k].desc+'）').join('　')}</small><br><small>報酬 ${500+160*M.rank}G・${MATS.shin}×${2+Math.floor(M.rank/3)}・${MATS.rin}×1／刻印が出ることも</small><br><small>クリアするとランクが上がり、相手と特性が変わります（終わりはありません）</small></div></div>
@@ -1431,7 +1698,7 @@ function boardHTML(){const P=S.p;const dq=dailyQuest();const dd=dailyDone();
  return`<div class="panel sheet one"><h2>クエスト掲示板</h2>
  ${today3}
  <p><small>◎ 今の装備と育成でクリアできる　○ 少し手強い　△ 育ててから</small></p>
- ${daily}${endless}${mission}
+ ${daily}${week}${endless}${mission}
  ${sec('新しい依頼',fresh,'まだ一度もクリアしていない依頼')}
  ${sec('挑戦中の依頼',prog,'危険度や挑戦が残っている依頼')}
  ${mast.length?`<details style="margin-top:10px"><summary>制覇した依頼（${mast.length}件）</summary>${mast.map(q=>questCard(q,P)).join('')}</details>`:''}
@@ -1487,9 +1754,10 @@ function monNote(){const seen=Object.keys(S.rec.mons||{}).map(Number).sort((a,b)
   sts.forEach(k=>tips.push('<b>'+ST[k].name+'</b>をもらうことがある（'+ST[k].desc+'）。'+(k==='poison'?'解毒薬':k==='para'?'しびれ直し':'万能薬')+'で治る。'));
   const pd=PART_DEFS[D.spr]||[];const rec=(S.rec.parts&&S.rec.parts[i])||{};
   pd.forEach(pt=>tips.push('<b>'+pt.name+'</b>は'+(pt.on==='tele'?'<b>技の準備中</b>':'<b>技のあとで疲れている間</b>')+'に攻めると壊せる'+(rec[pt.k]?'（破壊済み）':'')+'。壊すと'+pt.eff.replace(/^.+?て/,'')));
-  return `<div class="rec" style="grid-template-columns:1fr"><span><b>${D.name}</b>${D.armor?'<span class="tag">かたい</span>':''}<br><small>${atks}</small>${tips.length?'<br><small style="color:#9fd8f5">'+tips.join('<br>')+'</small>':''}</span></div>`;}).join('');}
-function startQuest(qid,dl){if(qid!=='e'&&qid!=='m'&&!QUESTS.some(q=>q.id===qid))return;
- dl=clamp(dl||1,1,3);if(qid!=='e'&&qid!=='m'&&!dlOpen(qid,dl)){toast('先に危険度'+(dl-1)+'をクリアしよう');return;}
+  const vn=(S.rec.var&&S.rec.var[i])||0;
+  return `<div class="rec" style="grid-template-columns:1fr"><span><b>${D.name}</b>${VARIANTS[D.spr]?(vn?'<span class="tag" style="color:var(--gold)">亜種【'+VARIANTS[D.spr].name+'】×'+vn+'</span>':'<span class="tag" style="color:#6f6a5e">亜種 未発見</span>'):''}${D.armor?'<span class="tag">かたい</span>':''}<br><small>${atks}</small>${tips.length?'<br><small style="color:#9fd8f5">'+tips.join('<br>')+'</small>':''}</span></div>`;}).join('');}
+function startQuest(qid,dl){if(qid!=='e'&&qid!=='m'&&qid!=='w'&&!QUESTS.some(q=>q.id===qid))return;
+ dl=clamp(dl||1,1,3);if(qid!=='e'&&qid!=='m'&&qid!=='w'&&!dlOpen(qid,dl)){toast('先に危険度'+(dl-1)+'をクリアしよう');return;}
  if(NET.on&&!NET.host){toast('ホストが受注します');return;}
  if(NET.on&&NET.host){const list=Object.keys(NET.ps).map(k=>({id:k,name:NET.ps[k].name,d:NET.ps[k].d}));
   netSend({t:'start',qi:qid,dl,ps:list});
@@ -1542,7 +1810,9 @@ function runesHTML(){const P=S.p;const own=ownedRunes(P);const eq=P.runes||[];co
 function noteHTML(){const all=Object.keys(JOBS).concat(ADV_IDS);const got=all.filter(k=>S.rec.jobs[k]).length,tot=all.length;
  return`<div class="panel sheet one"><h2>ハンターノート</h2><p><b style="color:var(--gold)">ジョブ図鑑 ${got}／${tot}</b><br><small>ステータスの振り方を変えると、まだ見ぬジョブが目覚めます</small></p><div class="codex">${all.map(k=>{const nm=JOBS[k]?JOBS[k].name:ADV_JOBS[k].name;return`<div class="${S.rec.jobs[k]?'got':''}">${S.rec.jobs[k]?nm:'？？？'}</div>`;}).join('')}</div>
  <p><b>狩猟記録</b><br><small>●＝挑戦達成／危＝到達した危険度</small></p>${QUESTS.filter(q=>questOpen(q)||qrec(q.id).n).map(q=>{const r=qrec(q.id);return`<div class="rec"><span><span class="stars">${'★'.repeat(q.rank)}</span> ${q.name}<br><small>${CHALLENGES.map((c,i)=>qch(q.id)[i]?'<span style="color:var(--gold)">●</span>':'<span style="color:#555">○</span>').join('')} 危${r.dl||1}</small></span><span>${r.n}回</span><span>${fmtTime(r.best)}</span></div>`;}).join('')}
- ${S.guideOff?'<p><button class="small" onclick="showGuide()">手引きを再開する</button></p>':''}
+
+ ${S.fish&&S.fish.n?`<p><b>釣りの記録</b>　<small>釣った数 ${S.fish.n}／種類 ${Object.keys(S.fish.kinds).length}/${FISH.length}</small></p>
+ <div class="codex">${FISH.map(f=>`<div class="${S.fish.kinds[f.id]?'got':''}">${S.fish.kinds[f.id]?f.name:'？？？'}</div>`).join('')}</div>`:''}
  <p><b>村の発展</b>　<b style="color:var(--gold)">村レベル ${villageLv()}</b>　<button class="small" onclick="openPanel('village')">詳しく</button></p>
  <div class="job"><small>${VBEN.slice(1,villageLv()+1).map((t,i)=>'Lv'+(i+1)+'：'+t).join('<br>')}</small>
  ${villageNext()?'<br><small>次の Lv'+villageNext().lv+' まであと '+villageNext().left+'体（'+VBEN[villageNext().lv]+'）</small>':'<br><small style="color:var(--gold)">村は最大まで発展しました</small>'}</div>
@@ -1553,7 +1823,7 @@ function noteHTML(){const all=Object.keys(JOBS).concat(ADV_IDS);const got=all.fi
    return null;}).filter(x=>x);
   const rest=un.length-lines.length;
   return '<p><b>まだ出会っていない獣 '+un.length+'種</b></p>'+(lines.length?lines.join(''):'')+(rest?'<p><small>残り'+rest+'種は、依頼を進めると現れます</small></p>':'');})()}
- <p><small>総討伐数 ${S.p.cleared}　振り直し ${S.p.resets}回　腕試し最高 ${S.rec.streak||0}体　特命最高 ランク${S.rec.mrank||0}　刻印 ${ownedRunes(S.p).length}/${RUNE_IDS.length}</small></p><div class="row"><button class="small" onclick="toggleSfx()">効果音：${S.opt&&S.opt.sfx===false?'オフ':'オン'}</button><button onclick="closePanel()">閉じる</button></div></div>`;}
+ <p><small>総討伐数 ${S.p.cleared}　振り直し ${S.p.resets}回　腕試し最高 ${S.rec.streak||0}体　特命最高 ランク${S.rec.mrank||0}　刻印 ${ownedRunes(S.p).length}/${RUNE_IDS.length}</small></p><button onclick="closePanel()">閉じる</button></div>`;}
 function statusHTML(){const d=derived(T),cur=derived(S.p).job;return`<div class="panel sheet one"><h2>育成</h2>${T.pts>0?`<p>残りポイント <b>${T.pts}</b>${T.auto?'<span class="tag">おまかせ中</span>':''}</p>`:`<p><small>ポイントはありません（レベルアップで3）。${T.auto?'次のレベルアップは「おまかせ」で自動配分。':'次のレベルアップは手動で振ります。'}</small></p>`}${presetRow()}${statRows(T,T.pts>0)}${jobBox(d.job,cur,T)}<p><small>経験値 ${S.p.exp}/${needExp(S.p.lv)}　待ち時間 ×${d.cdMul.toFixed(2)}　予告の長さ ×${d.teleMul.toFixed(2)}</small></p>${jobList()}<div class="row"><button class="pri" onclick="confirmStatus()">決定して閉じる</button>${T.auto?`<button class="small" onclick="T.auto=null;rerender()">おまかせをやめる</button>`:''}<button class="small" onclick="toTitle()">タイトルへ</button></div></div>`;}
 function springAskHTML(){const d=derived(S.p);return`<div class="panel center" style="text-align:center"><h2>本当にリセットしますか？</h2><p>今のジョブ <b style="color:${JOBS[d.job].dark}">${JOBS[d.job].name}</b> は失われ、<br>ステータスは初期値に戻ります。</p><p>戻ってくるポイント <b>${allocated()}</b>　使う薬草 <b>1</b>${RESET_LIMIT?`<br><small>残り回数 ${resetLeft()}</small>`:'<br><small>回数制限はありません</small>'}</p><div class="row" style="justify-content:center"><button class="pri" onclick="doSpring()">はい、リセットする</button><button onclick="closePanel()">やめる</button></div></div>`;}
 function sprungHTML(){return`<div class="panel center" style="text-align:center"><h2>湯から上がった</h2><p>ステータスが白紙に戻りました。<br>ポイント <b>${S.p.pts}</b> を振り直せます。</p><p><small>振らないと弱いままなので、今すぐ配分するのがおすすめ</small></p><div class="row" style="justify-content:center"><button class="pri" onclick="openStatus()">育成画面へ</button><button onclick="closePanel()">閉じる</button></div></div>`;}
@@ -1588,7 +1858,7 @@ function resultHTML(){const R=RES;if(!R)return'';
   ${R.rune?'<div class="job"><b style="color:var(--gold)">刻印を発見！「'+RUNES[R.rune].name+'」</b><br><small>'+RUNES[R.rune].desc+'</small><br><small>入手：'+(R.runeFrom||'')+'</small></div>':''}
   <div class="job"><small>${nextHint()}</small></div>
   <div class="row" style="justify-content:center">${S.p.pts>0?`<button class="pri" onclick="openStatus()">ポイントを振る</button>`:''}${(!NET.on||NET.host)?`<button onclick="startQuest('e')">もう一度</button>`:''}<button onclick="closePanel()">村へ</button></div></div>`;
- return`<div class="panel center" style="text-align:center"><h1>${R.win?'クエスト達成！':'村へ帰還'}</h1>${R.win?'':'<p><small>倒れてもペナルティなし。経験値は少しもらえます。</small></p>'+rescueBoxHTML(R)}<p>経験値 +${R.exp}　${R.gold?`${R.gold}G　`:''}${Object.keys(R.drops).map(k=>MATS[k]+'×'+R.drops[k]).join(' ')}</p>${R.dl&&R.dl>1?'<p><small style="color:#ff9a8a">危険度'+R.dl+' 報酬 ×'+DANGER[R.dl-1].rew+'</small></p>':''}${R.helped?'<div class="job"><b style="color:#9fe07a">'+esc(R.helped)+' の救援に成功！</b><br><small>'+R.helpGold+'Gと素材を受け取った</small></div>':''}${R.vlvUp?'<div class="job"><b style="color:var(--gold)">村が発展した！ 村レベル '+R.vlvUp+'</b><br><small>'+VBEN[R.vlvUp]+'</small></div>':''}${R.todayDone?'<div class="job"><b style="color:var(--gold)">今日の3本 達成！</b><br><small>600Gと獣の心珠×1</small></div>':(R.today?'<p><small style="color:#9fd8f5">今日の3本　'+R.today+'/3</small></p>':'')}${R.parts&&R.parts.length?'<div class="job"><b style="color:var(--gold)">部位破壊：'+R.parts.join('・')+'</b>'+(R.allParts?'<br><b style="color:var(--gold)">全部位破壊！ '+(300*(RES.qid!==undefined?(QUESTS.find(x=>x.id===RES.qid)||{rank:1}).rank:1))+'Gと追加素材</b>':'')+'<br><small>追加の素材を手に入れた</small></div>':''}${R.newMat&&R.newMat.length?'<div class="job"><b style="color:var(--gold)">新しい素材「'+R.newMat.map(k=>MATS[k]).join('・')+'」を手に入れた！</b><br><small>鍛冶屋に新しい装備が並びました</small></div>':''}${R.rare?'<p><small style="color:var(--gold)">稀少素材「獣の心珠」を手に入れた！</small></p>':''}${R.rune?'<div class="job"><b style="color:var(--gold)">刻印を発見！「'+RUNES[R.rune].name+'」</b><br><small>'+RUNES[R.rune].desc+'</small><br><small>入手：'+(R.runeFrom||'')+'／家の「刻印」で付け替えできます</small></div>':''}${R.newCh&&R.newCh.length?'<div class="job"><b style="color:var(--gold)">挑戦達成！</b><br><small>'+R.newCh.join('／')+'　ボーナス '+R.chBonus+'G と素材</small>'+(R.chAll?'<br><small style="color:var(--gold)">この依頼の挑戦を全て達成！</small>':'')+'</div>':''}${R.daily?'<p><small style="color:#7fc8f5">今日の依頼ボーナス ×1.5</small></p>':''}${R.absent?'<p><small style="color:var(--gold)">久しぶりの狩り ×1.3</small></p>':''}${R.ups.length?`<p><b>レベルアップ！ Lv${R.ups[R.ups.length-1]}</b><br><small>${R.auto?'おまかせでポイントを配分しました':'ポイントを振ろう'}</small></p>`:''}${R.jobAfter!==R.jobBefore?`<div class="job"><b style="color:${JOBS[R.jobAfter].dark}">${JOBS[R.jobAfter].name}</b> が目覚めた！</div>`:''}${R.win?`<p><small>タイム ${fmtTime(R.time)}${R.newBest?' <b style="color:var(--gold)">自己最速！</b>':'（最速 '+fmtTime(R.best)+'）'}　討伐 ${R.count}回</small></p>`:''}${R.unlocked?`<div class="job"><b style="color:var(--gold)">${'★'.repeat(R.unlocked.rank)} ${R.unlocked.name}</b> が解禁された！</div>`:''}${R.farm?'<p><small>農場の畑が実った</small></p>':''}<div class="job"><small>${nextHint()}</small></div><div class="row" style="justify-content:center">${S.p.pts>0?`<button class="pri" onclick="openStatus()">ポイントを振る</button>`:''}${(!NET.on||NET.host)?`<button onclick="startQuest(${typeof R.qid==='number'?R.qid:0},${R.dl||1})">もう一度</button>`:''}${(!NET.on||NET.host)&&R.win&&R.dl<3&&dlOpen(R.qid,(R.dl||1)+1)?`<button class="pri" onclick="startQuest(${typeof R.qid==='number'?R.qid:0},${(R.dl||1)+1})">危険度${(R.dl||1)+1}へ</button>`:''}<button onclick="closePanel()">村へ</button></div></div>`;}
+ return`<div class="panel center" style="text-align:center"><h1>${R.win?'クエスト達成！':'村へ帰還'}</h1>${R.win?'':'<p><small>倒れてもペナルティなし。経験値は少しもらえます。</small></p>'+rescueBoxHTML(R)}<p>経験値 +${R.exp}　${R.gold?`${R.gold}G　`:''}${Object.keys(R.drops).map(k=>MATS[k]+'×'+R.drops[k]).join(' ')}</p>${R.dl&&R.dl>1?'<p><small style="color:#ff9a8a">危険度'+R.dl+' 報酬 ×'+DANGER[R.dl-1].rew+'</small></p>':''}${R.helped?'<div class="job"><b style="color:#9fe07a">'+esc(R.helped)+' の救援に成功！</b><br><small>'+R.helpGold+'Gと素材を受け取った</small></div>':''}${R.vlvUp?'<div class="job"><b style="color:var(--gold)">村が発展した！ 村レベル '+R.vlvUp+'</b><br><small>'+VBEN[R.vlvUp]+'</small></div>':''}${R.varGot&&R.varGot.length?'<div class="job"><b style="color:var(--gold)">亜種を討伐！ '+R.varGot.join('・')+'</b><br><small>亜種の輝片×'+R.varGot.length+' を手に入れた</small></div>':''}${R.weekly?'<div class="job"><b style="color:#ff9a8a">週の獣を討伐！</b><br><small>'+(R.weekFirst?'今週の初回報酬：獣の心珠×3・亜種の輝片×2':'今週2回目以降：獣の心珠×1')+'</small></div>':''}${R.tbTo?'<p><small style="color:#9fd8f5">時間が進んだ：'+TB_NAME[R.tbFrom]+' → '+TB_NAME[R.tbTo]+'</small></p>':''}${R.todayDone?'<div class="job"><b style="color:var(--gold)">今日の3本 達成！</b><br><small>600Gと獣の心珠×1</small></div>':(R.today?'<p><small style="color:#9fd8f5">今日の3本　'+R.today+'/3</small></p>':'')}${R.parts&&R.parts.length?'<div class="job"><b style="color:var(--gold)">部位破壊：'+R.parts.join('・')+'</b>'+(R.allParts?'<br><b style="color:var(--gold)">全部位破壊！ '+(300*(RES.qid!==undefined?(QUESTS.find(x=>x.id===RES.qid)||{rank:1}).rank:1))+'Gと追加素材</b>':'')+'<br><small>追加の素材を手に入れた</small></div>':''}${R.newMat&&R.newMat.length?'<div class="job"><b style="color:var(--gold)">新しい素材「'+R.newMat.map(k=>MATS[k]).join('・')+'」を手に入れた！</b><br><small>鍛冶屋に新しい装備が並びました</small></div>':''}${R.rare?'<p><small style="color:var(--gold)">稀少素材「獣の心珠」を手に入れた！</small></p>':''}${R.rune?'<div class="job"><b style="color:var(--gold)">刻印を発見！「'+RUNES[R.rune].name+'」</b><br><small>'+RUNES[R.rune].desc+'</small><br><small>入手：'+(R.runeFrom||'')+'／家の「刻印」で付け替えできます</small></div>':''}${R.newCh&&R.newCh.length?'<div class="job"><b style="color:var(--gold)">挑戦達成！</b><br><small>'+R.newCh.join('／')+'　ボーナス '+R.chBonus+'G と素材</small>'+(R.chAll?'<br><small style="color:var(--gold)">この依頼の挑戦を全て達成！</small>':'')+'</div>':''}${R.daily?'<p><small style="color:#7fc8f5">今日の依頼ボーナス ×1.5</small></p>':''}${R.absent?'<p><small style="color:var(--gold)">久しぶりの狩り ×1.3</small></p>':''}${R.ups.length?`<p><b>レベルアップ！ Lv${R.ups[R.ups.length-1]}</b><br><small>${R.auto?'おまかせでポイントを配分しました':'ポイントを振ろう'}</small></p>`:''}${R.jobAfter!==R.jobBefore?`<div class="job"><b style="color:${JOBS[R.jobAfter].dark}">${JOBS[R.jobAfter].name}</b> が目覚めた！</div>`:''}${R.win?`<p><small>タイム ${fmtTime(R.time)}${R.newBest?' <b style="color:var(--gold)">自己最速！</b>':'（最速 '+fmtTime(R.best)+'）'}　討伐 ${R.count}回</small></p>`:''}${R.unlocked?`<div class="job"><b style="color:var(--gold)">${'★'.repeat(R.unlocked.rank)} ${R.unlocked.name}</b> が解禁された！</div>`:''}${R.farm?'<p><small>農場の畑が実った</small></p>':''}<div class="job"><small>${nextHint()}</small></div><div class="row" style="justify-content:center">${S.p.pts>0?`<button class="pri" onclick="openStatus()">ポイントを振る</button>`:''}${(!NET.on||NET.host)?`<button onclick="startQuest(${typeof R.qid==='number'?R.qid:0},${R.dl||1})">もう一度</button>`:''}${(!NET.on||NET.host)&&R.win&&R.dl<3&&dlOpen(R.qid,(R.dl||1)+1)?`<button class="pri" onclick="startQuest(${typeof R.qid==='number'?R.qid:0},${(R.dl||1)+1})">危険度${(R.dl||1)+1}へ</button>`:''}<button onclick="closePanel()">村へ</button></div></div>`;}
 // ===== 通信層（差し替え可能） =====
 /* メッセージ仕様（ホスト権威型）
    hello  {t:'hello',name,lv,job,power,d}      参加者→ホスト：自己紹介
@@ -1737,14 +2007,14 @@ const posX=r=>Math.round(LW*(r==='front'?0.40:0.17)),EX=()=>Math.round(LW*0.80),
 function monParts(tier,maxhp){const D=MONSTER_TIERS[tier];const defs=PART_DEFS[D.spr]||[];const pm=(S&&S.p)?(derived(S.p).partMul||1):1;
  return defs.map(p=>({k:p.k,name:p.name,on:p.on,hp:Math.max(30,Math.round(maxhp*p.hpR*pm)),dmg:0,broken:false,eff:p.eff,mat:p.mat,n:p.n}));}
 function mkMon(tier,n,mult){const D=MONSTER_TIERS[tier];const hp=Math.round(D.hp*(1+0.6*(Math.max(1,n)-1))*(mult||1));
- return{tier,def:D,hp,maxhp:hp,state:'wait',st:0,wait:1.2,waitBase:D.wait,pi:0,atk:null,atkKey:null,teleDur:1,hurt:0,dash:0,dashTo:0,anim:0,second:false,seqIdx:0,teleDmg:0,rage:false,pattern:null,parts:monParts(tier,hp),brk:{},ail:{},res:{}};}
+ return{tier,def:D,hp,maxhp:hp,state:'wait',st:0,wait:1.2,waitBase:D.wait,pi:0,atk:null,atkKey:null,teleDur:1,hurt:0,dash:0,dashTo:0,anim:0,second:false,seqIdx:0,teleDmg:0,rage:false,pattern:null,parts:monParts(tier,hp),brk:{},ail:{},res:{},variant:(Math.random()<varRate(MONSTER_TIERS[tier].spr)&&VARIANTS[MONSTER_TIERS[tier].spr])?MONSTER_TIERS[tier].spr:null};}
 function makePS(id,name,d){const J=d.adv?Object.assign({},JOBS[d.job],{cd:ADV_JOBS[d.adv].cd}):JOBS[d.job];return{id,name,hp:d.hp,maxhp:d.hp,row:J.ranged?'back':'front',
  cd:{atk:0,skill:0,move:0,item:0},cdMax:{atk:2.0*d.cdMul*(1+(d.r?d.r.atkCd:0)),skill:(d.adv?ADV_JOBS[d.adv].cd:J.cd)*d.cdMul*(1+(d.r?d.r.sklCd:0)),move:2.2*d.cdMul*(1+(d.r?d.r.moveCd:0)),item:3*d.cdMul*(1+(d.r?d.r.itemCd:0))},
  guard:0,regen:0,pulse:0,buff:0,hurt:0,lunge:0,moveT:0,inv:0,streak:0,st:{poison:0,para:0,weak:0},bf:{atk:0,def:0,haste:0},stTick:0,mikiri:false,moved:false,down:false,downT:0,dodgeT:0,d,job:d.job,adv:d.adv||null};}
 function psList(){return Object.keys(B.ps).map(k=>B.ps[k]);}
 function alivePS(){return psList().filter(p=>!p.down);}
 function slotX(p){const same=psList().filter(q=>q.row===p.row);const i=Math.max(0,same.indexOf(p));const n=same.length;return posX(p.row)+8+Math.round((i-(n-1)/2)*14);}
-function beginQuest(qid,party,dl){const q=(qid==='e')?ENDLESS_Q:(qid==='m')?missionQuest():QUESTS.find(x=>x.id===qid);if(!q)return;
+function beginQuest(qid,party,dl){const q=(qid==='e')?ENDLESS_Q:(qid==='m')?missionQuest():(qid==='w')?weeklyQuest():QUESTS.find(x=>x.id===qid);if(!q)return;
  const DL=DANGER[clamp((party&&party.dl)||dl||1,1,3)-1];WPOS.village={x:W.x,y:W.y};const d=derived(S.p),D=MONSTER_TIERS[q.tier],J=JOBS[d.job];
  const me=party?party.me:'me';
  B={q,t:0,clock:0,over:null,overT:0,fin:0,hs:0,shake:0,carry:{},fx:[],nums:[],shots:[],ps:{},me:'me',host:true,net:false,
@@ -1756,16 +2026,26 @@ function beginQuest(qid,party,dl){const q=(qid==='e')?ENDLESS_Q:(qid==='m')?miss
  if(party){party.others.forEach(o=>{B.ps[o.id]=makePS(o.id,o.name,o.d);});}
  B.m=B.endless?mkMon(waveTier(1),B.partyN,1):mkMon(B.chain[0],B.partyN,DL.hp);
  {const c={};pouch().forEach(id=>{if(id)c[id]=Math.min(POUCH_CAP,S.p.items[id]||0);});if(!c.potion)c.potion=Math.min(POUCH_CAP,S.p.items.potion||0);B.carry=c;}
+ if(q.weekly){const W0=weekly();let hp=3.2,dmg=1.7,tele=0.78,wait=1;
+  W0.mods.forEach(k=>{const mo=MODS[k];if(mo.hp)hp*=mo.hp;if(mo.dmg)dmg*=mo.dmg;if(mo.tele)tele*=mo.tele;if(mo.wait)wait*=mo.wait;
+   if(mo.armor){B.m.def=Object.assign({},B.m.def,{armor:mo.armor,weak:mo.weak});}});
+  B.m.maxhp=Math.round(B.m.maxhp*hp);B.m.hp=B.m.maxhp;B.dmgMul=dmg;B.teleMul=tele;
+  B.m.def=Object.assign({},B.m.def);B.m.waitBase=B.m.def.wait*wait;B.m.wait=B.m.waitBase;
+  B.mods=W0.mods.slice();B.weekly=true;}
  if(q.mission){const MM=missionMul();B.m.maxhp=Math.round(B.m.maxhp*MM.hp);B.m.hp=B.m.maxhp;B.dmgMul=MM.dmg;B.teleMul=MM.tele;
   B.m.def=Object.assign({},B.m.def);B.m.waitBase=B.m.def.wait*MM.wait;B.m.wait=B.m.waitBase;
   if(MM.armor){B.m.def.armor=MM.armor;B.m.def.weak=MM.weak;}
   B.mission=true;B.mods=missionCur().mods.slice();}
  if(S.rec&&S.rec.mons){if(B.endless)S.rec.mons[waveTier(1)]=true;else B.chain.forEach(t=>{S.rec.mons[t]=true;});}
- scene='battle';panel=null;pressed=[];renderBattleUI();
+ scene='battle';panel=null;pressed=[];
+ try{const st=curStage();playBgm(((B.q&&B.q.rank>=5)||B.mission)?'boss':'battle');ambient(st===STAGES.night?'night':null);}catch(e){}
+ renderBattleUI();
+ setTimeout(()=>{if(B&&!B.over){toast('舞台：'+curStage().name);tutSay('start','下のボタンで攻撃。まずは「攻撃」を押してみよう');}},900);
+ if(B.m.variant){setTimeout(()=>{if(B&&!B.over){flash('亜種だ！ 【'+VARIANTS[B.m.variant].name+'】','#ffd35a');try{sfx('crit');}catch(e){}}},400);}
  toast(B.endless?'腕試し：倒れるまで連戦':(q.name+(B.dl>1?'（危険度'+B.dl+'）':'')+'：'+B.m.def.name+'があらわれた'+(party?'（'+(1+party.others.length)+'人）':'')));
  if(B.absent&&!B.endless)flash('久しぶりの狩り：報酬アップ','#ffd35a');}
 function renderBattleUI(){setUI(`<div class="hud"><div id="pn"></div><div class="hpbar"><i id="php"></i></div><div id="prow"></div><div id="party"></div>${signUI()}</div><div class="msgs" id="msgs"></div><div class="flash" id="flash"></div><div class="rowlab" id="rlF"></div><div class="rowlab" id="rlB"></div><div class="hud r"><div id="mn"></div><div class="mhp"><i id="mhp"></i></div><div id="mparts"></div></div><button class="small quit" onclick="quitQuest()">村へ戻る</button><div class="tele" id="tele"></div><div class="bctl"><button class="a" id="bAtk" onpointerdown="actAttack(event)">攻撃<em></em></button><button class="s" id="bSkl" onpointerdown="actSkill(event)"><span id="skn"></span><em></em></button><button class="m" id="bMov" onpointerdown="actMove(event)"><span id="mvn"></span><em></em></button><button class="i" id="bItm" onpointerdown="useSlot(0,event)"><span id="itl">道具</span><small id="itn"></small><em></em></button></div>
-<div class="pslots" id="pslots"><button id="ps1" onpointerdown="useSlot(1,event)"></button><button id="ps2" onpointerdown="useSlot(2,event)"></button></div><div class="toast" id="toast"></div>`);}
+<div class="tutbar" id="tutbar"></div><div class="pslots" id="pslots"><button id="ps1" onpointerdown="useSlot(1,event)"></button><button id="ps2" onpointerdown="useSlot(2,event)"></button></div><div class="toast" id="toast"></div>`);}
 function quitQuest(){B=null;goVillage();toast('クエストを中断した');}
 function heal(p,n){if(n<=0||p.hp<=0||p.down)return;const b=p.hp;p.hp=Math.min(p.maxhp,p.hp+n);const g=Math.round(p.hp-b);if(g>0)B.nums.push({x:slotX(p),y:GY()-26,t:0,txt:'+'+g,col:'#9fe07a'});}
 function hitMon(dmg,col){const m=B.m;if(m.hp<=0||!B.host)return;const D=m.def;
@@ -1778,6 +2058,7 @@ function hitMon(dmg,col){const m=B.m;if(m.hp<=0||!B.host)return;const D=m.def;
  if(B.host&&m.parts)m.parts.forEach(pt=>{if(pt.broken||pt.on!==m.state)return;pt.dmg+=dmg;
   if(pt.dmg>=pt.hp){pt.broken=true;m.brk[pt.k]=true;flash(pt.name+'を破壊！ '+pt.eff,'#ffd35a');sfx('crit');B.hs=Math.max(B.hs||0,0.12);B.shake=Math.max(B.shake||0,0.8);
    if(!B.brokeParts)B.brokeParts=[];B.brokeParts.push({k:pt.k,name:pt.name,mat:pt.mat,n:pt.n,tier:m.tier});
+   tutSay('part','部位を壊すと相手が弱くなり、追加の素材が手に入る','#ffd35a');
    if(pt.k==='shell'){m.def=Object.assign({},m.def);delete m.def.armor;delete m.def.weak;}}});
  if(D.breakDmg&&(m.state==='tele'||m.state==='act2')){m.teleDmg=(m.teleDmg||0)+dmg;
   if(m.teleDmg>=D.breakDmg){m.teleDmg=0;m.state='tired';m.st=0;m.dash=0;flash('攻撃を止めた！','#ffd35a');sfx('crit');}}
@@ -1845,6 +2126,11 @@ function actMove(e,who){if(e&&e.preventDefault)e.preventDefault();if(!B||B.over)
  if(p===B.p)sfx('dodge');
  p.row=p.row==='front'?'back':'front';p.moveT=0.2;p.inv=0.5;if(m.state==='tele'||m.state==='act2')p.moved=true;B.fx.push({t:'dust',x:slotX(p),y:GY()+2,tt:0,dur:0.3,col:'#d8c8a0'});}
 function rescueTarget(p){return psList().find(q=>q.down&&q.row===p.row);}
+function tut(k){return !!(S.tut&&S.tut[k]);}
+function tutDone(k){if(!S.tut)S.tut={};if(!S.tut[k]){S.tut[k]=true;save();}}
+function tutSay(k,msg,col){if(!B||S.guideOff||tut(k))return;tutDone(k);
+ B.tutMsg={t:msg,col:col||'#7fc8f5',life:2.8};try{sfx('ui');}catch(e){}}
+function tutTick(dt){if(!B||!B.tutMsg)return;B.tutMsg.life-=dt;if(B.tutMsg.life<=0)B.tutMsg=null;}
 function battleItems(){return Object.keys(ITEMS).filter(id=>ITEMS[id].battle&&(S.p.items[id]||0)>0);}
 const POUCH_N=3;
 const POUCH_CAP=10;
@@ -1894,7 +2180,8 @@ function hurtP(dmg,name,p){if(!p||p.down||p.hp<=0)return;
  let d=dmg*p.d.def;if(p.guard>0){d*=0.2;hitMon(Math.round(p.d.atk*2.5),'#9fb6ff');if(p===B.p)flash('反撃！','#9fb6ff');}
  if(p.bf&&p.bf.def>0)d*=0.8;
 B.shake=Math.max(B.shake||0,0.6);
- d=Math.max(1,Math.round(d));p.hp-=d;p.hurt=0.25;if(p.streak>=3&&p===B.p)flash('連続回避 途切れた','#8c8474');p.streak=0;
+ d=Math.max(1,Math.round(d));p.hp-=d;p.hurt=0.25;if(p===B.p&&p.hp<=p.maxhp*0.4)tutSay('low','体力が減ってきた。右下の「回復薬」で回復できる','#9fe07a');
+ if(p.streak>=3&&p===B.p)flash('連続回避 途切れた','#8c8474');p.streak=0;
  const AK=B.m&&B.m.atk;if(AK&&AK.st&&B.host)giveSt(p,AK.st,AK.stT||5);
  if(B.host&&B.mods&&AK){B.mods.forEach(k=>{const mo=MODS[k];if(!mo||!mo.ail)return;if(mo.both&&!(AK.rows&&AK.rows.length>1))return;giveSt(p,mo.ail,mo.ailT);});}if(p===B.p){sfx('hurt');B.hits=(B.hits||0)+1;}B.nums.push({x:slotX(p),y:GY()-30,t:0,txt:'-'+d,col:'#ff7070'});
  if(p.hp<=0){p.hp=0;p.down=true;p.downT=(p.adv==='seiyu'?8.4:12);p.guard=0;p.regen=0;p.buff=0;p.mikiri=false;B.nums.push({x:slotX(p),y:GY()-40,t:0,txt:'-0',col:'#ff7070'});if(p===B.p){flash('力尽きた…','#ff7070');sfx('lose');}else if(psList().length>1)flash(p.name+' が倒れた','#ff9a8a');}}
@@ -1930,16 +2217,21 @@ function updateEnemy(dt){const m=B.m,p=B.p;if(m.hp<=0)return;m.st+=dt;m.hurt=Mat
    const off=[];for(const k in (m.brk||{}))if(PART_OFF[k])off.push.apply(off,PART_OFF[k]);
    if(off.length){const f=pat.filter(x=>off.indexOf(x)<0);if(f.length)pat=f;}
    const ak=pat[m.pi%pat.length];m.atk=ATTACKS[ak];m.atkKey=ak;m.pi++;
-   m.teleDur=m.atk.tele*p.d.teleMul*(D.tele||1)*(m.rage?((D.phase2&&D.phase2.tele)||0.9):1)*(B.teleMul||1);m.second=false;m.seqIdx=0;m.teleDmg=0;psList().forEach(q=>q.moved=false);m.state='tele';m.st=0;sfx(m.atk.seq?'warn2':'warn');}break;}
- case'tele':{if(m.st>=m.teleDur){const rows=m.atk.seq?[m.atk.seq[0]]:m.atk.rows;resolveAttack(rows);m.dash=0.35;m.dashTo=posX(rows.length===1?rows[0]:'front')+14;m.seqIdx=1;
+   m.teleDur=m.atk.tele*p.d.teleMul*(D.tele||1)*(m.rage?((D.phase2&&D.phase2.tele)||0.9):1)*(B.teleMul||1)*(timeBand()==='day'?1.06:1);m.second=false;m.seqIdx=0;m.teleDmg=0;psList().forEach(q=>q.moved=false);m.state='tele';m.st=0;sfx(m.atk.seq?'warn2':'warn');}break;}
+ case'tele':{if(m.st<0.06){
+   if(m.atk&&m.atk.seq)tutSay('seq','連続で来る技だ。①②の順に狙われる。1発目が当たらない列で待とう','#ffaa32');
+   else if(m.atk&&m.atk.rows&&m.atk.rows.length>1)tutSay('both','前と後の両方をねらう技だ。「前へ／後ろへ」を押すと0.5秒だけ無敵になる','#ff9a8a');
+   else tutSay('tele','赤く光った列が狙われている。反対の列へ「前へ／後ろへ」で逃げよう','#ff9a8a');}
+  if(m.st>=m.teleDur){const rows=m.atk.seq?[m.atk.seq[0]]:m.atk.rows;resolveAttack(rows);m.dash=0.35;m.dashTo=posX(rows.length===1?rows[0]:'front')+14;m.seqIdx=1;
    const sqLen=m.atk.seq?(m.brk&&m.brk.tail?m.atk.seq.length-1:m.atk.seq.length):0;
    m.state=(sqLen>1)?'act2':'tired';m.st=0;}break;}
  case'act2':{const sq=m.atk.seq;const step=0.7;const lim=(m.brk&&m.brk.tail)?sq.length-1:sq.length;
    if(m.st>=step){const r=sq[m.seqIdx];if(r&&m.seqIdx<lim){resolveAttack([r]);m.dash=0.35;m.dashTo=posX(r)+14;}m.seqIdx++;m.st=0;m.second=m.seqIdx>=lim;
     if(m.seqIdx>=lim){m.state='tired';m.st=0;}}break;}
- case'tired':{if(m.st>=(m.def.tired||0.5)){m.state='wait';m.st=0;m.wait=(m.waitBase||m.def.wait)+Math.random()*0.6;}break;}}}
+ case'tired':{if(m.st<0.05)tutSay('tired','技のあとは疲れて動けない。今が攻め時。部位も壊しやすい','#9fe07a');
+  if(m.st>=(m.def.tired||0.5)){m.state='wait';m.st=0;m.wait=(m.waitBase||m.def.wait)+Math.random()*0.6;}break;}}}
 function flash(txt,col){const el=$('#flash');if(!el)return;el.textContent=txt;el.style.color=col||'#fff';el.style.opacity=1;clearTimeout(flash.h);flash.h=setTimeout(()=>{el.style.opacity=0;},800);}
-function updateBattle(dt){const p=B.p,m=B.m;if(B.hs>0){B.hs-=Math.min(B.hs,dt);dt*=0.12;}if(B.shake>0)B.shake=Math.max(0,B.shake-dt*4);if(B.fin>0)dt*=0.3;B.t+=dt;if(!B.over&&!B.fin)B.clock+=dt;
+function updateBattle(dt){const p=B.p,m=B.m;tutTick(dt);if(B.hs>0){B.hs-=Math.min(B.hs,dt);dt*=0.12;}if(B.shake>0)B.shake=Math.max(0,B.shake-dt*4);if(B.fin>0)dt*=0.3;B.t+=dt;if(!B.over&&!B.fin)B.clock+=dt;
  for(let i=B.fx.length-1;i>=0;i--){B.fx[i].tt+=dt;if(B.fx[i].tt>=B.fx[i].dur)B.fx.splice(i,1);}
  for(let i=B.nums.length-1;i>=0;i--){B.nums[i].t+=dt;if(B.nums[i].t>=0.9)B.nums.splice(i,1);}
  for(let i=B.shots.length-1;i>=0;i--){const s=B.shots[i];s.t+=dt;if(s.t>=s.dur){if(m.hp>0)hitMon(s.dmg,s.col);if(s.aoe)B.fx.push({t:'burst',x:s.x1,y:s.y1,tt:0,dur:0.35,col:s.col,r:s.aoe});
@@ -1961,6 +2253,10 @@ function updateBattle(dt){const p=B.p,m=B.m;if(B.hs>0){B.hs-=Math.min(B.hs,dt);d
   B.fx.push({t:'burst',x:EX(),y:GY()-10,tt:0,dur:0.5,col:'#fff',r:34});
   flash('討伐！','#ffd35a');}
  if(B.fin>0){B.fin-=dt;if(B.fin>0)return;B.fin=0;}
+ if(m.hp<=0&&!B.over&&m.variant&&!m.varDone){m.varDone=true;const P=S.p;
+  P.mats.gold=(P.mats.gold||0)+1;seeMat('gold',1);
+  if(!S.rec.var)S.rec.var={};S.rec.var[m.tier]=(S.rec.var[m.tier]||0)+1;
+  if(!B.varGot)B.varGot=[];B.varGot.push(VARIANTS[m.variant].name+m.def.name);save();}
  if(m.hp<=0&&!B.over){
   if(B.endless){B.wave++;const nt=waveTier(B.wave);B.m=mkMon(nt,B.partyN,waveMult(B.wave));B.shots=[];B.ci=B.wave-1;
    if(S.rec&&S.rec.mons)S.rec.mons[nt]=true;
@@ -1994,6 +2290,14 @@ function finishQuest(win){const P=S.p,q=B.q;RESNEW={};const vlvB=villageLv();con
   const ik=['antidote','parapill','potion','vial','stunball','atkpot'];R.items={};for(let i=0;i<Math.floor(w/3);i++){const k=ik[(i+hashStr('it'+Date.now()+i))%ik.length];P.items[k]=(P.items[k]||0)+1;R.items[k]=(R.items[k]||0)+1;}
   if(!S.rec.streak||w>S.rec.streak){S.rec.streak=w;R.newStreak=true;if(w>=5){const rid=grantRune();if(rid){R.rune=rid;R.runeFrom='腕試しの記録更新';}}}R.best=S.rec.streak;
   if(w>0){P.cleared+=w;R.farm=farmQuestBoost();}}
+ else if(B.weekly&&win){const Wr=weeklyRec();Wr.n++;R.weekly=true;
+  R.exp=q.exp;R.gold=q.gold;P.gold+=R.gold;
+  if(!Wr.claimed){Wr.claimed=true;R.weekFirst=true;
+   P.mats.shin=(P.mats.shin||0)+3;R.drops.shin=3;seeMat('shin',3);
+   P.mats.gold=(P.mats.gold||0)+2;R.drops.gold=2;seeMat('gold',2);
+   const rid=grantRune();if(rid){R.rune=rid;R.runeFrom='週の獣';}}
+  else{P.mats.shin=(P.mats.shin||0)+1;R.drops.shin=1;}
+  P.cleared++;R.time=Math.round(B.clock*1000);if(!Wr.best||R.time<Wr.best)Wr.best=R.time;}
  else if(B.mission&&win){const M=missionCur();R.mission=true;R.mrank=M.rank;
   R.exp=q.exp;R.gold=q.gold;P.gold+=R.gold;
   for(const k in q.drops){P.mats[k]=(P.mats[k]||0)+q.drops[k];R.drops[k]=q.drops[k];seeMat(k,q.drops[k]);}
@@ -2031,22 +2335,64 @@ function finishQuest(win){const P=S.p,q=B.q;RESNEW={};const vlvB=villageLv();con
  R.ups=gainExp(P,R.exp);if(R.ups.length){sfx('lvup');if(P.auto){allocAuto(P,P.auto);R.auto=true;}}
  R.newMat=Object.keys(RESNEW||{});RESNEW=null;
  if(villageLv()>vlvB)R.vlvUp=villageLv();
+ R.varGot=B.varGot||null;
+ const tbB=timeBand();advanceTime();R.tbFrom=tbB;R.tbTo=timeBand();
  R.dl=dlNow;R.jobAfter=derived(P).job;B=null;RES=R;goVillage('result');}
 
 // ===== 描画 =====
 let vt=0,bgCache=null;
-function battleBg(gy){const key=LW+'x'+LH+'x'+gy;if(bgCache&&bgCache.key===key)return bgCache.c;
+const STAGES={
+ plain:{name:'草原',sky:['#5fa8d8','#a8dcf0'],far:'#8fbf7a',tree:['#2b5f26','#37752f'],ground:tGrass,ring:tDirt,dot:'#8a6f47'},
+ forest:{name:'深い森',sky:['#1d4436','#3f7a5c'],far:'#2c5c3e',tree:['#16331a','#22551f'],ground:tGrass,ring:tSoil,dot:'#5a4a28',dark:0.26,fog:1,canopy:1,clouds:false,fireflies:1},
+ rock:{name:'岩場',sky:['#8a7a62','#d8c9a8'],far:'#9a8a6a',tree:['#6b5f48','#8a7a5a'],ground:tGravel,ring:tDirt,dot:'#6b5a3a',rocks:1,cloud:'#efe4cc',wind:5,dust:1},
+ night:{name:'夜',sky:['#111530','#26314f'],far:'#1e2840',tree:['#10161c','#18231f'],ground:tGrass,ring:tDirt,dot:'#4a4030',dark:0.46,stars:1,clouds:false,fireflies:1},
+};
+const TB_ORDER=['morning','day','evening','night'];
+function timeBand(){return TB_ORDER[((S&&S.gt)||0)%4];}
+function advanceTime(){if(!S)return;S.gt=((S.gt||0)+1)%4;}
+const TB_NAME={morning:'朝',day:'昼',evening:'夕方',night:'夜'};
+function tbInfo(){return {
+ morning:'朝：池の魚がよく跳ねる（金鱗魚が3倍出やすい）　※狩りを1回するたびに時間が進みます',
+ day:'昼：見通しが良い（予告が少し長く見える）　※狩りを1回するたびに時間が進みます',
+ evening:'夕方：獣が騒ぐ（亜種が1.5倍出やすい）　※狩りを1回するたびに時間が進みます',
+ night:'夜：狼の時間（牙狼系の亜種が3倍・草原は夜の舞台に）　※狩りを1回するたびに時間が進みます'}[timeBand()];}
+const VARIANTS={   // 種族ごとの亜種の色と専用素材
+ boar:{name:'金毛',pal:{b:'#c9a23a',B:'#e8c860',d:'#8a6a1c',m:'#f6e7a8'},mat:'gold'},
+ bird:{name:'白翼',pal:{b:'#d8dce8',B:'#f4f6fc',d:'#9aa2b8',m:'#ffffff'},mat:'gold'},
+ beetle:{name:'紫甲',pal:{b:'#6a4a8a',B:'#8f6ab0',d:'#422a5c',m:'#c0a0e0'},mat:'gold'},
+ dragon:{name:'紅竜',pal:{b:'#a8402e',B:'#d06040',d:'#6a2418',m:'#ffb080'},mat:'gold'},
+ wolf:{name:'白狼',pal:{b:'#d8d0c8',B:'#f4efe8',d:'#9a928a',m:'#ffffff'},mat:'gold'},
+ snake:{name:'黄金蛇',pal:{b:'#c9a23a',B:'#e8c860',d:'#8a6a1c',m:'#6a4a1c'},mat:'gold'},
+ spider:{name:'紅蜘蛛',pal:{b:'#a8302e',B:'#d05048',d:'#6a1818',m:'#ffd35a'},mat:'gold'},
+};
+const VAR_RATE=0.03;
+function varRate(sp){let r=(S&&S.p&&S.p.eq&&S.p.eq.c==='c_gold')?0.06:VAR_RATE;const t=timeBand();
+ if(t==='evening')r*=1.5;if(t==='night'&&sp==='wolf')r*=3;return r;}
+const MON_STAGE={boar:'plain',bird:'plain',beetle:'rock',dragon:'rock',wolf:'night',snake:'forest',spider:'forest'};
+function curStage(){const t=(B&&B.m)?B.m.tier:0;const D=MONSTER_TIERS[t];let k=MON_STAGE[D.spr]||'plain';
+ if(B&&B.q&&B.q.stage)k=B.q.stage;
+ if(B&&B.endless&&B.wave>=10)k='night';
+ if(timeBand()==='night'&&k==='plain')k='night';
+ return STAGES[k]||STAGES.plain;}
+function battleBg(gy){const st=curStage();const key=LW+'x'+LH+'x'+gy+'x'+st.name;if(bgCache&&bgCache.key===key)return bgCache.c;
  const c=document.createElement('canvas');c.width=LW;c.height=LH;const g=c.getContext('2d');
- const sky=g.createLinearGradient(0,0,0,gy-28);sky.addColorStop(0,'#5fa8d8');sky.addColorStop(1,'#a8dcf0');g.fillStyle=sky;g.fillRect(0,0,LW,gy-28);
- g.fillStyle='#8fbf7a';g.fillRect(0,gy-34,LW,8);
- for(let i=-6;i<LW+6;i+=11){const h=7+Math.round(rnd(i,3,31)*5);g.fillStyle='#2b5f26';g.beginPath();g.ellipse(i+5,gy-30,7,h,0,0,Math.PI*2);g.fill();g.fillStyle='#37752f';g.beginPath();g.ellipse(i+3,gy-32,4,h*0.6,0,0,Math.PI*2);g.fill();}
+ const sky=g.createLinearGradient(0,0,0,gy-28);sky.addColorStop(0,st.sky[0]);sky.addColorStop(1,st.sky[1]);g.fillStyle=sky;g.fillRect(0,0,LW,gy-28);
+ if(st.stars){for(let i=0;i<44;i++){const x=Math.round(rnd(i,11,41)*LW),y=Math.round(rnd(i,13,42)*(gy-40));g.fillStyle=rnd(i,17,43)>0.7?'#fff8d8':'#cfd8f0';g.fillRect(x,y,1,1);}
+  g.fillStyle='#f6f1dc';g.beginPath();g.arc(LW*0.78,22,9,0,Math.PI*2);g.fill();g.fillStyle=st.sky[0];g.beginPath();g.arc(LW*0.78+4,19,8,0,Math.PI*2);g.fill();}
+ if(st.rocks){for(let i=0;i<7;i++){const x=rnd(i,21,44)*LW,h=10+rnd(i,23,45)*16;
+  g.fillStyle='#7a6a52';g.beginPath();g.moveTo(x-12,gy-26);g.lineTo(x,gy-26-h);g.lineTo(x+12,gy-26);g.closePath();g.fill();
+  g.fillStyle='#8f7f66';g.beginPath();g.moveTo(x-4,gy-26);g.lineTo(x,gy-26-h);g.lineTo(x+3,gy-26);g.closePath();g.fill();}}
+ g.fillStyle=st.far;g.fillRect(0,gy-34,LW,8);
+ for(let i=-6;i<LW+6;i+=11){const h=7+Math.round(rnd(i,3,31)*5);g.fillStyle=st.tree[0];g.beginPath();g.ellipse(i+5,gy-30,7,h,0,0,Math.PI*2);g.fill();g.fillStyle=st.tree[1];g.beginPath();g.ellipse(i+3,gy-32,4,h*0.6,0,0,Math.PI*2);g.fill();}
  g.fillStyle='#1a1219';g.fillRect(0,gy-25,LW,1);
- for(let y=gy-24;y<LH;y+=TS)for(let x=0;x<LW;x+=TS)tGrass(g,x,y);
+ for(let y=gy-24;y<LH;y+=TS)for(let x=0;x<LW;x+=TS)st.ground(g,x,y);
  const cx=LW*0.5,cy=gy+2,rx=LW*0.46,ry=16;
  g.save();g.beginPath();g.ellipse(cx,cy,rx,ry,0,0,Math.PI*2);g.clip();
- for(let y=gy-ry-8;y<gy+ry+8;y+=TS)for(let x=0;x<LW;x+=TS)tDirt(g,x,y);g.restore();
+ for(let y=gy-ry-8;y<gy+ry+8;y+=TS)for(let x=0;x<LW;x+=TS)st.ring(g,x,y);g.restore();
  g.strokeStyle='rgba(0,0,0,.18)';g.lineWidth=1;g.beginPath();g.ellipse(cx,cy,rx,ry,0,0,Math.PI*2);g.stroke();
- for(let i=0;i<10;i++){const a=rnd(i,7,32)*Math.PI*2,rr=0.7+rnd(i,9,33)*0.5;g.fillStyle='#8a6f47';g.fillRect(Math.round(cx+Math.cos(a)*rx*rr),Math.round(cy+Math.sin(a)*ry*rr),2,1);}
+ for(let i=0;i<10;i++){const a=rnd(i,7,32)*Math.PI*2,rr=0.7+rnd(i,9,33)*0.5;g.fillStyle=st.dot;g.fillRect(Math.round(cx+Math.cos(a)*rx*rr),Math.round(cy+Math.sin(a)*ry*rr),2,1);}
+ if(st.fog){g.fillStyle='rgba(200,230,210,.10)';for(let i=0;i<5;i++){const y=gy-40+i*9;g.fillRect(0,y,LW,3);}}
+ if(st.dark){g.fillStyle='rgba(10,14,26,'+st.dark+')';g.fillRect(0,0,LW,LH);}
  bgCache={key,c};return c;}
 function tufts(x0,y0,w,h){ctx.fillStyle='#3f8230';for(let i=0;i<70;i++){const x=(i*97+13)%w,y=(i*61+29)%h;ctx.fillRect(x0+x,y0+y,2,1);}}
 function stall(x,y,c1,c2){ctx.fillStyle='#5a3a1e';ctx.fillRect(x+2,y+12,3,14);ctx.fillRect(x+27,y+12,3,14);ctx.fillStyle='#8a5a34';ctx.fillRect(x,y+18,32,8);for(let i=0;i<4;i++){ctx.fillStyle=i%2?c1:c2;ctx.fillRect(x+i*8,y+6,8,7);}ctx.fillStyle=c2;ctx.fillRect(x-1,y+4,34,3);}
@@ -2413,10 +2759,12 @@ function buildMap(map){const m=MAPS[map],grid=TERRAIN[map];
    for(let ty=0;ty<4;ty++)for(let tx=0;tx<7;tx++){(has?tSoil:tFallow)(g,px+tx*8-1,py+ty*7-1);}
    g.fillStyle=OUT2;g.fillRect(px-1,py-1,52,1);g.fillRect(px-1,py+26,52,1);g.fillRect(px-1,py-1,1,28);g.fillRect(px+50,py-1,1,28);}
   brewHut(g,88,50);onsen(g,86,104);scarecrow(g,60,34);barrel(g,96,152);
-  [[18,198],[132,198],[26,226],[124,226]].forEach(t=>tree(g,t[0],t[1]));
+  [[12,224],[40,226],[132,198],[124,226]].forEach(t=>tree(g,t[0],t[1]));
  }
  return c;}
 function getMap(map){const key=map+':'+(S&&S.p?villageLv():1)+':'+(map==='farm'&&S?S.farm.plots.length:0);if(mapCache[map]&&mapCache[map].key===key)return mapCache[map].c;const c=buildMap(map);mapCache[map]={key,c};return c;}
+const NPC_BODY=['..hhhh..','.hhhhhh.','.hssssh.','.hsesesh','.hssssh.','..SssS..','..cCCc..','.ccCCcc.','.ccCCcc.','.ccCCcc.','..cccc..','..k..k..','..k..k..','.kk..kk.'];
+function npcSprite(n){return sprite(NPC_BODY,{c:n.col.c,C:n.col.C,h:n.col.h,s:'#f7d7b0',S:'#d9a478',e:'#1e2530',k:'#3a2a18'},'npc'+n.id);}
 function drawWorld(dt){vt+=dt;const m=curMap(),cam=mapCam();
  ctx.fillStyle='#24402a';ctx.fillRect(0,0,LW,LH);
  ctx.save();ctx.translate(-Math.round(cam.cx),-Math.round(cam.cy));
@@ -2434,8 +2782,20 @@ function drawWorld(dt){vt+=dt;const m=curMap(),cam=mapCam();
  ctx.fillStyle='rgba(0,0,0,.28)';ctx.beginPath();ctx.ellipse(W.x,W.y,8,3,0,0,Math.PI*2);ctx.fill();
  if(d.adv){const a=0.30+Math.sin(vt*3)*0.12;ctx.strokeStyle='rgba(240,201,106,'+a+')';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(px+10,py+13,12,15,0,0,Math.PI*2);ctx.stroke();}
  if(W.moving&&W.run){ctx.fillStyle='rgba(180,165,130,.5)';for(let i=0;i<3;i++){const ph=(vt*2.4+i/3)%1;ctx.fillRect(Math.round(px+6+i*4-ph*6),Math.round(py+24+ph*2),2,1);}}
+ if(W.map==='village'){m.spots.filter(sp=>sp.npc).forEach(sp=>{
+  const n=sp.npc;const nx=n.x,ny=n.y;   // 地図と同じ座標系（カメラは既に平行移動済み）
+  const a=npcAsk(n),ready=a&&askOk(a);
+  ctx.fillStyle='rgba(20,24,20,.25)';ctx.beginPath();ctx.ellipse(nx+4,ny+15,5,2,0,0,Math.PI*2);ctx.fill();
+  drawSpr(npcSprite(n),nx,ny,false,1);
+  if(a){const bob=Math.round(Math.sin(vt*3+n.x));
+   ctx.fillStyle=ready?'#ffd35a':'#6f6a5e';ctx.fillRect(nx+2,ny-8+bob,5,7);
+   ctx.fillStyle='#0a0d10';ctx.fillRect(nx+4,ny-7+bob,1,3);ctx.fillRect(nx+4,ny-3+bob,1,1);}});}
  drawSpr(playerSprite(d.job,W.moving?1+Math.floor(W.anim)%2:0,d.aid),px,py,W.fx<0,1);drawWeaponArt(ctx,d.wid,px+15,py+16);
  ctx.restore();
+ {const tb=timeBand();
+  if(tb==='evening'){ctx.fillStyle='rgba(255,140,60,.12)';ctx.fillRect(0,0,LW,LH);}
+  else if(tb==='night'){ctx.fillStyle='rgba(12,18,40,.36)';ctx.fillRect(0,0,LW,LH);}
+  else if(tb==='morning'){ctx.fillStyle='rgba(255,240,200,.06)';ctx.fillRect(0,0,LW,LH);}}
  const gstep=guideStep();const GSPOT={buy:'shop',quest:'board',stat:'home',craft:'smith',farm:'gate',rune:'home'};
  document.querySelectorAll('.sign').forEach(el=>{const sp=spotById(el.dataset.id);if(!sp)return;const cx=(sp.rect.x+sp.rect.w/2-cam.cx)*SCALE,cy=(sp.rect.y-cam.cy-3)*SCALE;el.style.left=Math.round(cx)+'px';el.style.top=Math.round(cy)+'px';
   const bd=sp.badge?sp.badge():'';if(el.dataset.bd!==bd){el.dataset.bd=bd;el.innerHTML=esc(sp.name)+(bd?'<span style="color:#ff9a8a">'+bd+'</span>':'');}
@@ -2453,7 +2813,13 @@ function drawBattle(){const p=B.p,m=B.m,gy=GY();
  const sh=B.shake>0?B.shake:0;const sx=sh>0?Math.round((Math.random()-0.5)*sh*6):0,sy=sh>0?Math.round((Math.random()-0.5)*sh*4):0;
  ctx.save();if(sx||sy)ctx.translate(sx,sy);
  ctx.drawImage(battleBg(gy),0,0);
- ctx.fillStyle='#f4fbff';[[0.15,0.18,14],[0.55,0.10,18],[0.85,0.24,12]].forEach(c=>{const cx=(c[0]*LW+B.t*3)%(LW+40)-20,cy=c[1]*(gy-30);ctx.beginPath();ctx.ellipse(cx,cy,c[2],5,0,0,Math.PI*2);ctx.ellipse(cx+c[2]*0.5,cy-3,c[2]*0.6,5,0,0,Math.PI*2);ctx.fill();});
+ const stg=curStage();
+ if(stg.clouds!==false){ctx.fillStyle=stg.cloud||'#f4fbff';[[0.15,0.18,14],[0.55,0.10,18],[0.85,0.24,12]].forEach(c=>{const cx=(c[0]*LW+B.t*(stg.wind||3))%(LW+40)-20,cy=c[1]*(gy-30);ctx.beginPath();ctx.ellipse(cx,cy,c[2],5,0,0,Math.PI*2);ctx.ellipse(cx+c[2]*0.5,cy-3,c[2]*0.6,5,0,0,Math.PI*2);ctx.fill();});}
+ if(stg.canopy){ctx.fillStyle=stg.tree[0];for(let i=-4;i<LW+8;i+=9){const h=8+Math.round(rnd(i,5,51)*7);ctx.beginPath();ctx.ellipse(i,-2,8,h,0,0,Math.PI*2);ctx.fill();}
+  ctx.fillStyle='rgba(30,74,34,.55)';for(let i=6;i<LW;i+=26){const l=10+rnd(i,7,52)*14;ctx.fillRect(i,6,1,l);ctx.fillRect(i-1,6+l,3,2);}}
+ if(stg.dust){ctx.fillStyle='rgba(216,201,168,.35)';for(let i=0;i<14;i++){const ph=(B.t*0.35+i/14)%1;ctx.fillRect(Math.round(((i*37)%LW+ph*30)%LW),Math.round(gy-40+((i*23)%34)),2,1);}}
+ if(stg.fireflies){for(let i=0;i<10;i++){const ph=(B.t*0.5+i/10)%1;const a=0.35+Math.sin((B.t*2+i)*1.7)*0.35;
+  ctx.fillStyle='rgba(200,255,150,'+Math.max(0,a).toFixed(2)+')';ctx.fillRect(Math.round(((i*41)%LW+ph*24)%LW),Math.round(gy-56+((i*29)%40)),2,2);}}
  // 列マーカー
  const pend=pendingHits();
  const ORD=[['rgba(255,80,60,','rgba(255,130,110,.95)','#ff5a4a'],['rgba(255,170,50,','rgba(255,200,110,.95)','#ffaa32'],['rgba(110,170,255,','rgba(160,200,255,.95)','#6eaaff']];
@@ -2468,7 +2834,7 @@ function drawBattle(){const p=B.p,m=B.m,gy=GY();
   ctx.strokeStyle='rgba(255,200,110,.9)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(a+dir*9,my);ctx.lineTo(b2-dir*9,my);ctx.stroke();
   ctx.fillStyle='rgba(255,200,110,.95)';ctx.beginPath();ctx.moveTo(b2-dir*7,my);ctx.lineTo(b2-dir*12,my-3);ctx.lineTo(b2-dir*12,my+3);ctx.closePath();ctx.fill();}
  // 敵
- if(m.hp>0){const D=m.def;const img=monSprite(m.tier,m.dash>0||D.spr==='bird'?Math.floor(B.t*(m.dash>0?14:4))%2:0,m.rage);const MS=D.scale*1.0;const w=img.width*MS,h=img.height*MS;
+ if(m.hp>0){const D=m.def;const _fr=m.dash>0||D.spr==='bird'?Math.floor(B.t*(m.dash>0?14:4))%2:0;const img=m.variant?monSpriteV(m.tier,_fr,m.variant):monSprite(m.tier,_fr,m.rage);const MS=D.scale*1.0;const w=img.width*MS,h=img.height*MS;
   let ex=EX();if(m.dash>0){const k=m.dash/0.35;ex=EX()+(m.dashTo-EX())*Math.sin(k*Math.PI);}
   const fly=D.spr==='bird'?Math.round(Math.sin(B.t*3)*2)-3:0;
   const x=ex-w/2,y=gy-h+2+fly+((m.state==='tele'&&Math.floor(m.st*10)%2===0)?1:0);
@@ -2476,6 +2842,8 @@ function drawBattle(){const p=B.p,m=B.m,gy=GY();
   drawSpr(img,x,y,false,MS);
   if(m.hurt>0){ctx.globalAlpha=0.75;drawSpr(monFlash(m.tier,'#ffffff'),x,y,false,MS);ctx.globalAlpha=1;}
   else if(m.state==='tele'&&Math.floor(m.st*10)%2===0){ctx.globalAlpha=0.5;drawSpr(monFlash(m.tier,m.atk&&m.atk.seq?'#ff9a2a':'#ff4040'),x,y,false,MS);ctx.globalAlpha=1;}
+  if(m.variant){for(let i=0;i<4;i++){const ph=(B.t*0.7+i/4)%1;const sx=Math.round(x+w*(0.15+0.7*((i*37)%100)/100)),sy=Math.round(y+h*(0.8-ph*0.9));
+   ctx.fillStyle='rgba(255,246,200,'+(0.9-ph*0.8).toFixed(2)+')';ctx.fillRect(sx,sy,1,3);ctx.fillRect(sx-1,sy+1,3,1);}}
   if(m.ail&&m.ail.poison>0){ctx.globalAlpha=0.18+Math.sin(B.t*5)*0.08;drawSpr(monFlash(m.tier,'#60ff40'),x,y,false,MS);ctx.globalAlpha=1;}
   if(m.ail&&m.ail.para>0){ctx.fillStyle='#ffd35a';for(let i=0;i<3;i++){const ph=(B.t*2+i/3)%1;ctx.fillRect(Math.round(x+w*0.3+i*6),Math.round(y-4-ph*6),2,2);}}
   if(m.rage&&!D.pal2){ctx.globalAlpha=0.22+Math.sin(B.t*6)*0.10;drawSpr(monFlash(m.tier,'#ff4a2a'),x,y,false,MS);ctx.globalAlpha=1;}
@@ -2514,6 +2882,7 @@ function drawBattle(){const p=B.p,m=B.m,gy=GY();
   else if(f.t==='dust'){ctx.fillStyle=f.col;for(let i=0;i<4;i++)ctx.fillRect(Math.round(f.x-8+i*5),Math.round(f.y-k*6),2,2);}
   ctx.globalAlpha=1;});
  B.nums.forEach(n=>{ctx.globalAlpha=1-n.t/0.9;drawNum(n.txt,n.x,n.y-n.t*16,n.col);});ctx.globalAlpha=1;
+
  if(B.fin>0){const k=1-B.fin/0.55;
   ctx.fillStyle='rgba(255,255,255,'+(0.5*(1-k)).toFixed(2)+')';ctx.fillRect(0,0,LW,LH);
   ctx.strokeStyle='rgba(255,230,150,'+(0.85*(1-k)).toFixed(2)+')';ctx.lineWidth=1;
@@ -2522,7 +2891,7 @@ function drawBattle(){const p=B.p,m=B.m,gy=GY();
  ctx.restore();
  if(B.over){ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(0,0,LW,LH);}
  updateBattleHUD();}
-function updateBattleHUD(){const p=B.p,m=B.m,J=JOBS[p.job];const pn=$('#pn');if(!pn)return;pn.textContent=S.p.name+' Lv'+S.p.lv+'　'+(B.p.adv?ADV_JOBS[B.p.adv].name:J.name)+'　村Lv'+villageLv();$('#php').style.width=Math.max(0,p.hp/p.maxhp*100)+'%';$('#prow').innerHTML=(B.p.row==='front'?'前衛':'後衛')+Object.keys(ST).filter(k=>hasSt(p,k)).map(k=>' <span class="tag" style="color:'+ST[k].col+'">'+ST[k].name+' '+Math.ceil(p.st[k])+'</span>').join('')+(p.bf&&p.bf.atk>0?' <span class="tag" style="color:#ff9a5a">力'+Math.ceil(p.bf.atk)+'</span>':'')+(p.bf&&p.bf.def>0?' <span class="tag" style="color:#7fc8f5">守'+Math.ceil(p.bf.def)+'</span>':'')+(p.bf&&p.bf.haste>0?' <span class="tag" style="color:#9fe07a">疾'+Math.ceil(p.bf.haste)+'</span>':'')+(p.streak>=2?' <span class="tag" style="color:#9fe07a">回避'+p.streak+'連 +'+Math.round(streakMul(p)*100-100)+'%</span>':'')+(p.guard>0?' <span class="tag">構え</span>':'')+(p.mikiri?' <span class="tag" style="color:#ffd35a">見切り</span>':'')+(p.regen>0?' <span class="tag">再生</span>':'')+(B.endless?'':' <span class="tag">被弾 '+(B.hits||0)+(B.q&&B.q.maxHit!==undefined?'/'+B.q.maxHit:'')+'</span>')+(p.buff>0?' <span class="tag">攻撃UP</span>':'')+'<br><small>'+fmtTime(B.clock*1000)+'</small>';$('#mn').textContent=(B.endless?'WAVE '+B.wave+'　':'')+m.def.name+(B.mods&&B.mods.length?'　'+B.mods.map(k=>MODS[k].name).join('・'):'')+(m.rage?'　怒':'')+Object.keys(MST).filter(k=>m.ail&&m.ail[k]>0).map(k=>'　'+MST[k].name+Math.ceil(m.ail[k])).join('');$('#mhp').style.width=Math.max(0,m.hp/m.maxhp*100)+'%';
+function updateBattleHUD(){const p=B.p,m=B.m,J=JOBS[p.job];const pn=$('#pn');if(!pn)return;pn.textContent=S.p.name+' Lv'+S.p.lv+'　'+(B.p.adv?ADV_JOBS[B.p.adv].name:J.name)+'　村Lv'+villageLv();$('#php').style.width=Math.max(0,p.hp/p.maxhp*100)+'%';$('#prow').innerHTML=(B.p.row==='front'?'前衛':'後衛')+Object.keys(ST).filter(k=>hasSt(p,k)).map(k=>' <span class="tag" style="color:'+ST[k].col+'">'+ST[k].name+' '+Math.ceil(p.st[k])+'</span>').join('')+(p.bf&&p.bf.atk>0?' <span class="tag" style="color:#ff9a5a">力'+Math.ceil(p.bf.atk)+'</span>':'')+(p.bf&&p.bf.def>0?' <span class="tag" style="color:#7fc8f5">守'+Math.ceil(p.bf.def)+'</span>':'')+(p.bf&&p.bf.haste>0?' <span class="tag" style="color:#9fe07a">疾'+Math.ceil(p.bf.haste)+'</span>':'')+(p.streak>=2?' <span class="tag" style="color:#9fe07a">回避'+p.streak+'連 +'+Math.round(streakMul(p)*100-100)+'%</span>':'')+(p.guard>0?' <span class="tag">構え</span>':'')+(p.mikiri?' <span class="tag" style="color:#ffd35a">見切り</span>':'')+(p.regen>0?' <span class="tag">再生</span>':'')+(B.endless?'':' <span class="tag">被弾 '+(B.hits||0)+(B.q&&B.q.maxHit!==undefined?'/'+B.q.maxHit:'')+'</span>')+(p.buff>0?' <span class="tag">攻撃UP</span>':'')+'<br><small>'+fmtTime(B.clock*1000)+'</small>';$('#mn').textContent=(B.endless?'WAVE '+B.wave+'　':'')+(m.variant?'【'+VARIANTS[m.variant].name+'】':'')+m.def.name+(B.mods&&B.mods.length?'　'+B.mods.map(k=>MODS[k].name).join('・'):'')+(m.rage?'　怒':'')+Object.keys(MST).filter(k=>m.ail&&m.ail[k]>0).map(k=>'　'+MST[k].name+Math.ceil(m.ail[k])).join('');$('#mhp').style.width=Math.max(0,m.hp/m.maxhp*100)+'%';
  const mp=$('#mparts');if(mp){const html=(m.parts||[]).map(pt=>pt.broken?`<div class="pt brk">${pt.name} 破壊</div>`:`<div class="pt">${pt.name}${pt.on===m.state?'<span style="color:#ffd35a"> ねらい目</span>':''}</div><div class="ptb"><i style="width:${Math.min(100,pt.dmg/pt.hp*100)}%"></i></div>`).join('');
   if(mp.dataset.h!==html){mp.dataset.h=html;mp.innerHTML=html;}}
  const RN=r=>r==='front'?'前衛':'後衛';
@@ -2538,6 +2907,7 @@ function updateBattleHUD(){const p=B.p,m=B.m,J=JOBS[p.job];const pn=$('#pn');if(
   t.innerHTML=`⚠ 残り${m.atk.seq.length-m.seqIdx}回 → ${rest}<div class="tb"><i style="width:${Math.max(0,100-m.st/0.7*100)}%"></i></div>`;}
  else t.textContent='';
  const cdv=(id,k)=>{const b=$(id);b.querySelector('em').style.height=(p.cd[k]/p.cdMax[k]*100)+'%';};cdv('#bAtk','atk');cdv('#bSkl','skill');cdv('#bMov','move');cdv('#bItm','item');
+ {const tb=$('#tutbar');if(tb){if(B.tutMsg){if(tb.dataset.t!==B.tutMsg.t){tb.dataset.t=B.tutMsg.t;tb.textContent=B.tutMsg.t;tb.style.borderColor=B.tutMsg.col;}tb.style.display='block';tb.style.opacity=Math.min(1,B.tutMsg.life/0.5);}else{tb.style.display='none';tb.dataset.t='';}}}
  const pc=pouch();const rt=rescueTarget(B.p);
  $('#skn').textContent=B.p.adv?ADV_JOBS[B.p.adv].skill:J.skill;
  $('#mvn').innerHTML=(B.p.row==='front'?'後ろへ':'前へ')+'<small>回避0.5秒</small>';
@@ -2571,9 +2941,57 @@ function showErr(msg){errCount++;if(errCount>6)return;
  t.textContent='不具合の記録（ダムさんに伝えてください）:\n'+msg+(errCount>1?'  ／他'+(errCount-1)+'件':'');}
 addEventListener('error',e=>showErr((e.message||'error')+' @'+(e.lineno||'?')));
 addEventListener('unhandledrejection',e=>showErr('promise: '+(e.reason&&e.reason.message||e.reason)));
+function drawTitleBg(dt){const g=ctx;const H=LH,Wd=LW;
+ const sky=g.createLinearGradient(0,0,0,H*0.62);sky.addColorStop(0,'#1d2a4a');sky.addColorStop(0.55,'#c86a4a');sky.addColorStop(1,'#f2c46a');g.fillStyle=sky;g.fillRect(0,0,Wd,H);
+ g.fillStyle='#fff2c8';g.beginPath();g.arc(Wd*0.5,H*0.6,16,0,Math.PI*2);g.fill();
+ for(let i=0;i<30;i++){const x=Math.round(rnd(i,3,71)*Wd),y=Math.round(rnd(i,5,72)*H*0.3);g.fillStyle='rgba(255,255,255,'+(0.3+0.4*Math.abs(Math.sin(vt+i)))+')';g.fillRect(x,y,1,1);}
+ g.fillStyle='#3a2a3a';g.beginPath();g.moveTo(0,H*0.64);for(let x=0;x<=Wd;x+=10){g.lineTo(x,H*0.6-Math.abs(Math.sin(x*0.05))*16-rnd(x,1,73)*6);}g.lineTo(Wd,H);g.lineTo(0,H);g.fill();
+ g.fillStyle='#1e2a22';g.fillRect(0,H*0.68,Wd,H);
+ // 村のシルエット
+ g.fillStyle='#141a16';[[18,20,16],[40,26,20],[92,22,18],[112,28,14]].forEach(([x,w,h])=>{const y=H*0.68-h;g.fillRect(x,y,w,h);g.beginPath();g.moveTo(x-2,y);g.lineTo(x+w/2,y-8);g.lineTo(x+w+2,y);g.fill();});
+ // 横切る獣の影
+ const bx=((vt*14)%(Wd+80))-40;const by=H*0.66;
+ g.fillStyle='#0c100e';g.beginPath();g.ellipse(bx,by,14,6,0,0,Math.PI*2);g.fill();g.fillRect(bx-16,by-3,6,5);
+ [bx-9,bx-3,bx+4,bx+9].forEach((lx,i)=>g.fillRect(lx,by+4+(Math.floor(vt*8+i)%2),2,4));
+ g.fillStyle='#0c100e';for(let i=0;i<3;i++)g.fillRect(bx-6+i*5,by-8,2,3);}
+const SIL={};
+function silhouette(img,col,key){if(SIL[key])return SIL[key];const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const g=c.getContext('2d');
+ g.drawImage(img,0,0);g.globalCompositeOperation='source-in';g.fillStyle=col;g.fillRect(0,0,c.width,c.height);SIL[key]=c;return c;}
+function drawOpeningBg(){const g=ctx;const sc=OP?OPENING[OP.i]:OPENING[0];g.imageSmoothingEnabled=false;
+ if(sc.k==='beast'){
+  const grd=g.createRadialGradient(LW/2,LH*0.42,6,LW/2,LH*0.42,LW*0.7);grd.addColorStop(0,'rgba(200,70,40,'+(0.55+0.15*Math.sin(vt*2.5))+')');grd.addColorStop(1,'#0a0608');
+  g.fillStyle=grd;g.fillRect(0,0,LW,LH);
+  const img=monSprite(7,Math.floor(vt*2)%2);const sil=silhouette(img,'#050304','sil_dragon'+(Math.floor(vt*2)%2));
+  const sc2=3,w=img.width*sc2,h=img.height*sc2,x=Math.round(LW/2-w/2),y=Math.round(LH*0.42-h/2+Math.sin(vt*1.5)*2);
+  g.drawImage(sil,x,y,w,h);
+  g.fillStyle='#ffd83a';g.fillRect(x+Math.round(w*0.16),y+Math.round(h*0.42),4,3);   // 光る目
+  g.fillStyle='rgba(0,0,0,.35)';g.fillRect(0,LH*0.62,LW,LH);
+  return;}
+ if(sc.k==='hunter'){
+  const sky=g.createLinearGradient(0,0,0,LH*0.7);sky.addColorStop(0,'#10162a');sky.addColorStop(1,'#2e3a56');g.fillStyle=sky;g.fillRect(0,0,LW,LH);
+  for(let i=0;i<30;i++){g.fillStyle='rgba(255,255,255,'+(0.3+0.4*Math.abs(Math.sin(vt+i)))+')';g.fillRect(Math.round(rnd(i,3,81)*LW),Math.round(rnd(i,5,82)*LH*0.5),1,1);}
+  g.fillStyle='#f6f1dc';g.beginPath();g.arc(LW/2,LH*0.36,26,0,Math.PI*2);g.fill();
+  g.fillStyle='#141a16';g.fillRect(0,LH*0.58,LW,LH);
+  const img=playerSprite('kenshi',0,'a_rin');const sil=silhouette(img,'#07090b','sil_hunter');
+  const sc2=3,w=img.width*sc2,h=img.height*sc2,x=Math.round(LW/2-w/2),y=Math.round(LH*0.58-h+2);
+  g.drawImage(sil,x,y,w,h);
+  g.fillStyle='#07090b';g.fillRect(x+w-10,y+h*0.25,3,h*0.5);   // 背の武器
+  return;}
+ drawTitleBg(0);}
+function drawOpeningBgOld(){const g=ctx;const sc=OP?OPENING[OP.i]:OPENING[0];
+ if(sc.k==='beast'){g.fillStyle='#120c10';g.fillRect(0,0,LW,LH);
+  g.fillStyle='rgba(200,60,40,'+(0.35+0.15*Math.sin(vt*3))+')';g.beginPath();g.ellipse(LW/2,LH*0.45,54,30,0,0,Math.PI*2);g.fill();
+  g.fillStyle='#050305';g.beginPath();g.ellipse(LW/2,LH*0.45,38,18,0,0,Math.PI*2);g.fill();g.fillRect(LW/2-44,LH*0.45-8,14,10);
+  g.fillStyle='#ffd83a';g.fillRect(LW/2-38,LH*0.45-5,3,2);}
+ else if(sc.k==='hunter'){g.fillStyle='#1a1e2a';g.fillRect(0,0,LW,LH);
+  g.fillStyle='#e0b34e';g.beginPath();g.arc(LW*0.7,LH*0.3,12,0,Math.PI*2);g.fill();
+  g.fillStyle='#0a0c10';const x=LW/2-8,y=LH*0.5;g.fillRect(x,y,16,22);g.beginPath();g.arc(x+8,y-4,8,0,Math.PI*2);g.fill();g.fillRect(x+16,y-14,2,26);}
+ else{drawTitleBg(0);}}
 function loop(now){const dt=Math.min(0.05,(now-last)/1000)||0;last=now;try{
  if(scene==='battle'&&B){updateBattle(dt);if(B)drawBattle();else drawWorld(dt);}
  else if(scene==='world'){updateWorld(dt);drawWorld(dt);}
+ else if(scene==='splash'||scene==='title'){vt+=dt;drawTitleBg(dt);}
+ else if(scene==='opening'){vt+=dt;if(OP){OP.t+=dt;if(OP.t>3.6)opNext();}drawOpeningBg();}
  else{vt+=dt;ctx.fillStyle='#24402a';ctx.fillRect(0,0,LW,LH);if(S){ctx.save();const cam=mapCam();ctx.translate(-Math.round(cam.cx),-Math.round(cam.cy));ctx.drawImage(getMap(W.map),0,0);ctx.restore();}}
  }catch(err){showErr(err&&err.message?err.message:String(err));}
  requestAnimationFrame(loop);}
@@ -2595,7 +3013,7 @@ function loop(now){const dt=Math.min(0.05,(now-last)/1000)||0;last=now;try{
   if(!W_ART[k])bad.push('武器の絵なし '+k);
   else if(W_ART[k].t!==g.type)bad.push('武器の種類不一致 '+k);});
  if(bad.length)showErr('データ不整合: '+bad.join(', '));})();
-showTitle();requestAnimationFrame(t=>{last=t;loop(t);});
+showSplash();requestAnimationFrame(t=>{last=t;loop(t);});
 </script>
 </body>
 </html>
