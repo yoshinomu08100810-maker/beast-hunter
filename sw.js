@@ -1,16 +1,16 @@
 // Beast Hunter サービスワーカー
 // 版を上げたら CACHE の名前も変える（古い保存分は自動で消える）
-const CACHE = 'bh-0.9.2';
+const CACHE = 'bh-0.9.3';
 const CORE = ['./', './index.html', './manifest.webmanifest',
-  './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-192.png', './icons/maskable-512.png',
-  './icons/apple-touch-icon.png', './icons/favicon-32.png'];
+  './icon-192.png', './icon-512.png', './maskable-192.png', './maskable-512.png',
+  './apple-touch-icon.png', './favicon-32.png'];
 
 self.addEventListener('install', e => {
   // 本体は必ず保存。アイコンは取れた分だけ保存（入れ忘れがあっても起動はできるように）
   e.waitUntil((async () => {
     const c = await caches.open(CACHE);
     await c.addAll(['./', './index.html', './manifest.webmanifest']);
-    await Promise.all(CORE.filter(u => u.indexOf('icons/') >= 0).map(u => c.add(u).catch(() => {})));
+    await Promise.all(CORE.filter(u => u.endsWith('.png')).map(u => c.add(u).catch(() => {})));
   })());
 });
 
