@@ -71,6 +71,15 @@ input[type=text]{font:inherit;font-size:16px;padding:9px;border:2px solid var(--
 .edend{position:absolute;inset:0;pointer-events:auto;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55)}
 .edcont{font-size:20px;color:#ffe7a0;animation:fadein 2s ease-out}
 @keyframes fadein{from{opacity:0}to{opacity:1}}
+.adslot{display:flex;flex-direction:column;align-items:center;margin:10px auto 0;opacity:.95}
+.adslot small{font-size:9px;color:var(--bone2);align-self:center;margin-bottom:2px}
+.adfr{border:0;display:block;max-width:100%;background:transparent}
+.adtest{display:flex;align-items:center;justify-content:center;max-width:100%;background:repeating-linear-gradient(45deg,#2a2f36,#2a2f36 6px,#232830 6px,#232830 12px);border:1px dashed #6b6152;color:var(--bone2);font-size:11px}
+.titlescr .adslot{position:absolute;left:0;right:0;bottom:84px}
+.adhelp{border-left-color:#7fc8f5!important}
+.adov{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center}
+.adbox{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--bone);padding:20px;border:2px solid #6b6152;background:#1a1e24}
+.adbox b{font-size:40px;color:#ffd35a}
 .legal{text-align:left}
 .legal p small{line-height:1.6}
 .titlescr .ver{position:absolute;bottom:10px;color:var(--bone2)}
@@ -1271,7 +1280,14 @@ function estTime(q){const P=S.p;const r=qrec(q.id);
  return Math.max(20000,Math.round(hp/dps*1000));}
 function fmtEst(ms){const t=Math.round(ms/1000);return t<60?('約'+Math.max(10,Math.round(t/10)*10)+'秒'):('約'+(Math.round(t/6)/10)+'分');}
 function todayRec(){if(!S.today||S.today.date!==dateKey())S.today={date:dateKey(),done:[],bonus:false};return S.today;}
-function pickToday(){const P=S.p;const open=QUESTS.filter(q=>questOpen(q));const out=[];const used={};
+function pickToday(){const T=todayRec();
+ if(!T.picks||!T.picks.length){
+  // その日の途中で固定する場合は、今日すでにクリアした分を先に入れる（進み具合が消えないように）
+  const kept=(T.done||[]).slice(0,3).map(id=>({id,why:'今日クリア済み'}));
+  const rest=pickTodayFresh().filter(p=>!kept.some(k=>k.id===p.q.id)).map(p=>({id:p.q.id,why:p.why}));
+  T.picks=kept.concat(rest).slice(0,3);try{save();}catch(e){}}
+ return T.picks.map(p=>({q:QUESTS.find(x=>x.id===p.id),why:p.why})).filter(p=>p.q);}
+function pickTodayFresh(){const P=S.p;const open=QUESTS.filter(q=>questOpen(q));const out=[];const used={};
  const add=(q,why)=>{if(q&&!used[q.id]){used[q.id]=1;out.push({q,why});}};
  let best=null;
  SMITH_LIST.forEach(id=>{const g=GEAR[id];if(P.gear.includes(id)||!gearKnown(id))return;
@@ -1833,6 +1849,7 @@ function bootTap(e){if(e&&e.preventDefault)e.preventDefault();if(BOOTED)return;B
 function showTitle(){scene='title';panel=null;if(!legalAgreed()){showConsent();return;}try{ambient(null);if(BOOTED)playBgm('title');}catch(e){}
 const has=!!load();setUI(`<div class="titlescr"><div class="logo big"><b>BEAST HUNTER</b><small>ビーストハンター</small></div>
  <div class="tbtns">${has?'<button class="pri" onclick="continueGame()">つづきから</button>':''}<button class="${has?'':'pri'}" onclick="startNewGame()">はじめから</button></div>
+ ${adBannerHTML('title')}
  <div class="tlinks">${canInstall()?'<button class="small pri" onclick="doInstall()">ホーム画面に追加</button>':''}<button class="small" onclick="XFER={code:'',msg:'',mode:''};showTransfer()">データを引き継ぐ</button><button class="small" onclick="showCredits()">クレジット</button></div>
  <p class="ver"><small>v${APP_VER}（試作版）</small></p></div>`);}
 function startNewGame(force){if(load()&&!force){
@@ -1854,8 +1871,11 @@ function renderOpening(){if(!OP)return;const sc=OPENING[OP.i];
 function opNext(e){if(e&&e.preventDefault)e.preventDefault();if(!OP)return;OP.i++;OP.t=0;if(OP.i>=OPENING.length){opSkip();return;}renderOpening();}
 function opSkip(e){if(e&&e.preventDefault)e.preventDefault();OP=null;startCreate();}
 function toTitle(){save();T=null;showTitle();}
-const APP_VER='0.10.1';
+const APP_VER='0.11.1';
 const CHANGELOG=[
+ {v:'0.11.1',d:'2026-09-23',items:['タイトル画面と結果画面に広告の表示を開始（プライバシーポリシーを更新し、あらためて同意をお願いしています）']},
+ {v:'0.11.0',d:'2026-09-23',items:['広告の差し込み口（タイトル画面・結果画面のバナー）','お助けの広告（温泉の薬草・道具屋の回復薬）の仕組み（報酬型の広告に対応したサービスで有効になります）']},
+ {v:'0.10.2',d:'2026-09-23',items:['「今日の3本」がクリアするたびに入れ替わってしまう不具合を修正（その日の3本は日付が変わるまで固定）']},
  {v:'0.10.1',d:'2026-09-23',items:['エンディングとクレジットの制作者名を変更']},
  {v:'0.10.0',d:'2026-09-23',items:['ハンターランク（HR）：★ごとの昇格クエストでHRが上がり、次の★の依頼が開く','最後の狩り「獣の王」とエンディング（スタッフロール）','エンディング後：どの狩りでもHRポイント、HR10ごとの「HR昇格クエスト」（特命依頼を統合）、称号と勲章、最大HR999']},
  {v:'0.9.6',d:'2026-09-23',items:['難易度の調整：森の大物・牙王の討伐・獰猛化個体の狩猟を、同じ★の依頼と同じくらいの長さに','癒し手の攻撃が「心」で強くなるように。再生の光で敵にも光のダメージ','魔導の通常攻撃と火球を少し強化']},
@@ -1907,14 +1927,15 @@ const PRIVACY_TEXT=[
  ['保存する期間','救援札は、およそ3日で一覧から外れ、報酬を受け取った時点で削除されます。仲間とつなぐための情報は、接続が終わると削除されます。'],
  ['外部のサービス','本ゲームは次のサービスを利用しています。各サービスでの情報の扱いは、それぞれの方針に従います。\n・Firebase（Google LLC）：オンライン機能\n・GitHub Pages（GitHub, Inc.）：ゲームの配信（アクセスの記録が残る場合があります）\n・Googleの接続補助サーバー（STUN）：仲間と直接つなぐための通信経路の確認'],
  ['第三者への提供','法律で求められる場合を除き、取得した情報を第三者に渡すことはありません。'],
- ['広告について','現在、本ゲームは広告を表示していません。広告を始める場合は、このポリシーを更新してお知らせします。'],
+ ['広告について',()=>ADS.admaxId?'本ゲームは、タイトル画面と結果画面に、忍者ツールズ株式会社の広告サービス「忍者AdMax」の広告を表示します。広告の配信のため、同社および提携する広告会社が、Cookieなどを使って閲覧の情報を取得することがあります。取得される情報や止め方は、忍者AdMaxのプライバシーポリシーをご確認ください。広告をタップしたことや見たことで、ゲーム内の報酬がもらえることはありません。':'現在、本ゲームは広告を表示していません。広告を始める場合は、このポリシーを更新してお知らせします。'],
  ['未成年の方','18歳未満の方は、保護者の方と一緒にこのポリシーを確認してください。'],
  ['ポリシーの変更','このポリシーを変更した場合は、ゲームを起動したときにお知らせします。'],
  ['お問い合わせ',LEGAL_CONTACT],
 ];
-function legalAgreed(){try{const c=JSON.parse(localStorage.getItem('bh_consent')||'null');return !!(c&&c.ver===LEGAL_VER);}catch(e){return false;}}
-function legalAgree(){try{localStorage.setItem('bh_consent',JSON.stringify({ver:LEGAL_VER,ts:Date.now()}));}catch(e){}try{sfx('ui');}catch(e){}showTitle();}
-function legalBody(list){return list.map(([h,t])=>`<p style="margin:10px 0 2px"><b style="color:var(--gold)">${esc(h)}</b></p><p style="margin:0;white-space:pre-wrap"><small>${esc(t)}</small></p>`).join('');}
+function legalAgreed(){try{const c=JSON.parse(localStorage.getItem('bh_consent')||'null');return !!(c&&c.ver===legalVer());}catch(e){return false;}}
+function legalAgree(){try{localStorage.setItem('bh_consent',JSON.stringify({ver:legalVer(),ts:Date.now()}));}catch(e){}try{sfx('ui');}catch(e){}showTitle();}
+function legalBody(list){return list.map(([h,t])=>`<p style="margin:10px 0 2px"><b style="color:var(--gold)">${esc(h)}</b></p><p style="margin:0;white-space:pre-wrap"><small>${esc(typeof t==='function'?t():t)}</small></p>`).join('');}
+function legalVer(){return LEGAL_VER+((typeof ADS!=='undefined'&&ADS.admaxId)?'-ad':'');}
 function legalDoc(kind){return kind==='terms'?{title:'利用規約',list:TERMS_TEXT}:{title:'プライバシーポリシー',list:PRIVACY_TEXT};}
 function showLegal(kind,back){const d=legalDoc(kind);
  setUI(`<div class="titlescr"><div class="panel center legal"><h2>${d.title}</h2><p><small style="color:var(--bone2)">制定日：${LEGAL_VER.replace(/-/g,'/')}</small></p>${legalBody(d.list)}
@@ -1975,6 +1996,42 @@ function postEndHTML(){return`<div class="panel center" style="text-align:center
  <p>「ここからが本当の狩りだ。<b>ハンターランク</b>を上げて、どこまで行けるか見せてくれ」</p>
  <div class="job"><b style="color:var(--gold)">ハンターランクの道が開いた！</b><br><small>どの狩りでも「HRポイント」がたまり、HRが上がります。<br>HR10・20・30…の節目では「HR昇格クエスト」に挑みます（最大HR999）</small></div>
  <button class="pri" onclick="closePanel()">狩りを続ける</button></div>`;}
+
+// ===== 広告の差し込み口 =====
+// provider: 'none'（広告なし）／'admax'（忍者AdMax：表示するだけのバナー）
+//           将来 'crazygames' 'poki' 'h5' など「報酬型の動画広告」に対応したサービスへ差し替える
+const ADS={provider:'admax',admaxId:'d8a2f4fb70599b333622827cc0f52bbd',bannerW:320,bannerH:50,
+ test:/[?&]adtest=1/.test(location.search)};           // ?adtest=1 で広告の見え方と流れを試せる
+function adsOnline(){return navigator.onLine!==false&&/^https?:$/.test(location.protocol);}
+function adsBannerOn(){return ADS.test||(ADS.provider==='admax'&&!!ADS.admaxId&&adsOnline());}
+function adsRewardOn(){return ADS.test||['crazygames','poki','h5'].includes(ADS.provider);}
+// バナー：タイトル画面と結果画面だけに置く（戦闘中・村を歩いている時には出さない）
+function adBannerHTML(place){if(!adsBannerOn())return'';
+ if(ADS.test&&!ADS.admaxId)return`<div class="adslot"><small>広告</small><div class="adtest" style="width:${ADS.bannerW}px;height:${ADS.bannerH}px">広告枠（テスト表示）${ADS.bannerW}×${ADS.bannerH}</div></div>`;
+ const doc="<!doctype html><html><head><meta name='viewport' content='width=device-width'></head><body style='margin:0;display:flex;justify-content:center;background:transparent'><script src='https://adm.shinobi.jp/s/"+ADS.admaxId+"'><\/script></body></html>";
+ return`<div class="adslot"><small>広告</small><iframe class="adfr" title="広告" width="${ADS.bannerW}" height="${ADS.bannerH}" scrolling="no" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" srcdoc="${doc.replace(/"/g,'&quot;')}"></iframe></div>`;}
+// 報酬型の動画広告（遊ぶ人が自分で押した時だけ）。見終わったら true
+async function adsShowRewarded(place){
+ if(ADS.test)return await adTestOverlay();
+ // 将来：ここで各サービスの報酬型広告を呼ぶ（音はその間止める）
+ return false;}
+function adTestOverlay(){return new Promise(res=>{let n=3;try{if(AU&&AU.bus)AU.bus.gain.value=0;}catch(e){}
+ const d=document.createElement('div');d.className='adov';d.innerHTML='<div class="adbox"><small>広告（テスト）</small><b id="adn">3</b><small>本番では、ここに広告の動画が流れます</small></div>';document.body.appendChild(d);
+ const t=setInterval(()=>{n--;const e=document.getElementById('adn');if(e)e.textContent=n;if(n<=0){clearInterval(t);d.remove();try{setVolume&&setVolume();}catch(e){}res(true);}},1000);});}
+// 善意の広告：1日の回数に上限をつけて「お助け」にとどめる
+const AD_CAPS={spring:2,shop:3};
+function adDay(){const d=dateKey();if(!S.adDay||S.adDay.date!==d)S.adDay={date:d};return S.adDay;}
+function adLeft(k){return Math.max(0,AD_CAPS[k]-(adDay()[k]||0));}
+async function adReward(k){if(!adsRewardOn()||adLeft(k)<=0)return;
+ const ok=await adsShowRewarded(k);if(!ok){toast('広告を表示できませんでした。時間をおいて試してください');return;}
+ adDay()[k]=(adDay()[k]||0)+1;
+ if(k==='spring'){S.p.herb=(S.p.herb||0)+1;toast('薬草を1つもらった');}
+ if(k==='shop'){S.p.items.potion=(S.p.items.potion||0)+2;toast('回復薬を2個もらった');}
+ try{sfx('ok');}catch(e){}save();rerender();}
+function adShopHelp(){const pr=Math.round(ITEMS.potion.price*priceMul());
+ if(!adsRewardOn()||S.p.gold>=pr*2)return'';
+ const left=adLeft('shop');
+ return`<div class="item adhelp"><div style="flex:1"><b>お金が足りない時のお助け</b><br><small>広告を見ると、回復薬を2個もらえます（今日あと${left}回）</small></div><button class="small" ${left>0?'':'disabled'} onclick="adReward('shop')">広告を見る</button></div>`;}
 function continueGame(){const s=load();if(!s)return;S=s;migrate();goVillage();}
 function startCreate(){T=newPlayer('');T.look=Object.assign({},DEF_LOOK);T._floor=Object.assign({},T.stats);scene='create';renderCreate();}
 const NAME_POOL=['ハヤテ','ミナト','ツバキ','カエデ','アサヒ','シオン','ヒビキ','コハク','リン','ソラ','ユウ','ナギ','レン','アオイ','スバル','ホムラ','イブキ','カイ','トウマ','サクヤ'];
@@ -2037,7 +2094,8 @@ const MAPS={
    {id:'plot2',name:'畑 3',plot:2,below:1,rect:{x:6,y:124,w:50,h:26},solid:1,say:plotSay,acts:plotActs},
    {id:'plot3',name:'畑 4',plot:3,below:1,rect:{x:6,y:160,w:50,h:26},solid:1,say:plotSay,acts:plotActs},
    {id:'brew',name:'調合小屋',rect:{x:88,y:52,w:44,h:32},solid:1,say:()=>'薬草 '+S.p.herb+'　毒消草 '+cropCount('anti')+'　活力草 '+cropCount('vital'),acts:()=>[{l:'調合する',f:()=>openPanel('brew')}]},
-   {id:'spring',name:'温泉',rect:{x:86,y:104,w:52,h:36},solid:1,say:()=>'ゆっくり浸かると育成を白紙に戻せる。'+(RESET_LIMIT?'（あと'+resetLeft()+'回）':''),acts:()=>[{l:'振り直す',f:askSpring,dis:S.p.herb<1||allocated()<=0||resetLeft()<=0}]},
+   {id:'spring',name:'温泉',rect:{x:86,y:104,w:52,h:36},solid:1,say:()=>'ゆっくり浸かると育成を白紙に戻せる。'+(RESET_LIMIT?'（あと'+resetLeft()+'回）':''),acts:()=>{const a=[{l:'振り直す',f:askSpring,dis:S.p.herb<1||allocated()<=0||resetLeft()<=0}];
+    if(S.p.herb<1&&adsRewardOn())a.push({l:'広告を見て薬草をもらう（今日あと'+adLeft('spring')+'回）',f:()=>adReward('spring'),dis:adLeft('spring')<=0});return a;}},
   ]}};
 function plotSay(sp){const pl=S.farm.plots[sp.plot];if(!pl)return sp.plot>=maxPlots()?'村がもっと発展すれば耕せる。（村レベル5）':(sp.plot===S.farm.plots.length?'ここはまだ耕されていない。牙3つで広げられる。':'まだ手が回らない。手前の畑から広げよう。');if(!pl.planted)return'空いている。種をまける。（薬草の種 '+S.p.items.seed+'／毒消草 '+(S.p.items.seed2||0)+'／活力草 '+(S.p.items.seed3||0)+'）';if(pl.stage>=3)return CROPS[pl.crop||'herb'].name+'が実っている！収穫できる。';return CROPS[pl.crop||'herb'].name+'が育っている。クエストを1つクリアすると実る。';}
 function plotActs(sp){const pl=S.farm.plots[sp.plot];if(!pl)return (sp.plot===S.farm.plots.length&&sp.plot<maxPlots())?[{l:'畑を広げる（牙3）',f:expand,dis:S.p.mats.tusk<3}]:[];if(!pl.planted)return Object.keys(CROPS).map(c=>({l:CROPS[c].name+'をまく',f:()=>plant(sp.plot,c),dis:(S.p.items[CROPS[c].seed]||0)<=0}));if(pl.stage>=3)return[{l:'収穫する',f:()=>harvest(sp.plot)}];return[];}
@@ -2175,7 +2233,7 @@ function boardHTML(){const P=S.p;const dq=dailyQuest();const dd=dailyDone();
  <button onclick="closePanel()">閉じる</button></div>`;}
 function itemshopHTML(){const P=S.p;const vl=villageLv();
  const avail=Object.keys(ITEMS).filter(id=>(ITEMS[id].lv||1)<=vl),locked=Object.keys(ITEMS).filter(id=>(ITEMS[id].lv||1)>vl);
- return`<div class="panel sheet one"><h2>道具屋</h2><p>所持 ${P.gold}G　<small>村レベル ${vl}${priceMul()<1?'（'+Math.round((1-priceMul())*100)+'%引き）':''}</small></p>${qtyBar()}
+ return`<div class="panel sheet one"><h2>道具屋</h2><p>所持 ${P.gold}G　<small>村レベル ${vl}${priceMul()<1?'（'+Math.round((1-priceMul())*100)+'%引き）':''}</small></p>${adShopHelp()}${qtyBar()}
  ${avail.map(id=>{const it=ITEMS[id];const pr=Math.round(it.price*priceMul());return`<div class="item"><div><b>${it.name}</b> ${pr}G<br><small>${it.desc}　所持 ${P.items[id]||0}</small></div><button class="small pri" ${P.gold>=pr?'':'disabled'} onclick="buyItem('${id}')">買う<br><small>×${Math.max(1,Math.min(QTY,Math.floor(P.gold/pr)))}　${pr*Math.max(1,Math.min(QTY,Math.floor(P.gold/pr)))}G</small></button></div>`;}).join('')}
  ${locked.length?'<p><small>まだ並んでいない品</small></p>'+locked.map(id=>{const it=ITEMS[id];return`<div class="item lock"><div><b>${it.name}</b><br><small>${it.desc}　→ 村レベル${it.lv}で入荷（あと${Math.max(0,VLV[it.lv-1]-P.cleared)}体）</small></div></div>`;}).join(''):''}
  <button onclick="closePanel()">閉じる</button></div>`;}
@@ -2328,15 +2386,15 @@ function resultHTML(){const R=RES;if(!R)return'';
   ${R.rune?'<div class="job"><b style="color:var(--gold)">刻印を発見！「'+RUNES[R.rune].name+'」</b><br><small>'+RUNES[R.rune].desc+'</small></div>':''}
   <p><small>タイム ${fmtTime(R.time)}　被弾 ${R.hits}回</small></p>
   <div class="job"><small>次の壁はHR${Math.min(HR_MAX,(Math.floor(hr()/10)+1)*10)}。どの狩りでもHRポイントがたまります</small></div>
-  <div class="row" style="justify-content:center">${S.p.pts>0?`<button class="pri" onclick="openStatus()">ポイントを振る</button>`:''}${(!NET.on||NET.host)?`<button class="pri" onclick="startQuest('m')">次のランクへ</button>`:''}<button onclick="closePanel()">村へ</button></div></div>`;
+  <div class="row" style="justify-content:center">${S.p.pts>0?`<button class="pri" onclick="openStatus()">ポイントを振る</button>`:''}${(!NET.on||NET.host)?`<button class="pri" onclick="startQuest('m')">次のランクへ</button>`:''}<button onclick="closePanel()">村へ</button></div>${adBannerHTML('result')}</div>`;
  if(R.endless)return`<div class="panel center" style="text-align:center"><h1>腕試し終了</h1><p style="font-size:22px;color:var(--gold)"><b>${R.waves}体</b> 撃破</p>
   ${R.newStreak?'<p><b style="color:var(--gold)">自己最高記録！</b></p>':`<p><small>最高記録 ${R.best}体</small></p>`}
   <p>経験値 +${R.exp}　${R.gold}G　${Object.keys(R.drops).map(k=>MATS[k]+'×'+R.drops[k]).join(' ')}${R.items&&Object.keys(R.items).length?'<br>道具 '+Object.keys(R.items).map(k=>ITEMS[k].name+'×'+R.items[k]).join(' '):''}</p>
   ${R.ups.length?`<p><b>レベルアップ！ Lv${R.ups[R.ups.length-1]}</b></p>`:''}
   ${R.rune?'<div class="job"><b style="color:var(--gold)">刻印を発見！「'+RUNES[R.rune].name+'」</b><br><small>'+RUNES[R.rune].desc+'</small><br><small>入手：'+(R.runeFrom||'')+'</small></div>':''}
   <div class="job"><small>${nextHint()}</small></div>
-  <div class="row" style="justify-content:center">${S.p.pts>0?`<button class="pri" onclick="openStatus()">ポイントを振る</button>`:''}${(!NET.on||NET.host)?`<button onclick="startQuest('e')">もう一度</button>`:''}<button onclick="closePanel()">村へ</button></div></div>`;
- return`<div class="panel center" style="text-align:center"><h1>${R.win?'クエスト達成！':'村へ帰還'}</h1>${R.win?'':'<p><small>倒れてもペナルティなし。経験値は少しもらえます。</small></p>'+rescueBoxHTML(R)}<p>経験値 +${R.exp}　${R.gold?`${R.gold}G　`:''}${Object.keys(R.drops).map(k=>MATS[k]+'×'+R.drops[k]).join(' ')}</p>${R.dl&&R.dl>1?'<p><small style="color:#ff9a8a">危険度'+R.dl+' 報酬 ×'+DANGER[R.dl-1].rew+'</small></p>':''}${R.helped?'<div class="job"><b style="color:#9fe07a">'+esc(R.helped)+' の救援に成功！</b><br><small>'+R.helpGold+'Gと素材を受け取った</small></div>':''}${R.vlvUp?'<div class="job"><b style="color:var(--gold)">村が発展した！ 村レベル '+R.vlvUp+'</b><br><small>'+VBEN[R.vlvUp]+'</small></div>':''}${R.varGot&&R.varGot.length?'<div class="job"><b style="color:var(--gold)">亜種を討伐！ '+R.varGot.join('・')+'</b><br><small>亜種の輝片×'+R.varGot.length+' を手に入れた</small></div>':''}${R.weekly?'<div class="job"><b style="color:#ff9a8a">週の獣を討伐！</b><br><small>'+(R.weekFirst?'今週の初回報酬：獣の心珠×3・亜種の輝片×2':'今週2回目以降：獣の心珠×1')+'</small></div>':''}${R.tbTo?'<p><small style="color:#9fd8f5">時間が進んだ：'+TB_NAME[R.tbFrom]+' → '+TB_NAME[R.tbTo]+'</small></p>':''}${R.todayDone?'<div class="job"><b style="color:var(--gold)">今日の3本 達成！</b><br><small>600Gと獣の心珠×1</small></div>':(R.today?'<p><small style="color:#9fd8f5">今日の3本　'+R.today+'/3</small></p>':'')}${R.parts&&R.parts.length?'<div class="job"><b style="color:var(--gold)">部位破壊：'+R.parts.join('・')+'</b>'+(R.allParts?'<br><b style="color:var(--gold)">全部位破壊！ '+(300*(RES.qid!==undefined?(QUESTS.find(x=>x.id===RES.qid)||{rank:1}).rank:1))+'Gと追加素材</b>':'')+'<br><small>追加の素材を手に入れた</small></div>':''}${R.newMat&&R.newMat.length?'<div class="job"><b style="color:var(--gold)">新しい素材「'+R.newMat.map(k=>MATS[k]).join('・')+'」を手に入れた！</b><br><small>鍛冶屋に新しい装備が並びました</small></div>':''}${R.rare?'<p><small style="color:var(--gold)">稀少素材「獣の心珠」を手に入れた！</small></p>':''}${R.rune?'<div class="job"><b style="color:var(--gold)">刻印を発見！「'+RUNES[R.rune].name+'」</b><br><small>'+RUNES[R.rune].desc+'</small><br><small>入手：'+(R.runeFrom||'')+'／家の「刻印」で付け替えできます</small></div>':''}${R.newCh&&R.newCh.length?'<div class="job"><b style="color:var(--gold)">挑戦達成！</b><br><small>'+R.newCh.join('／')+'　ボーナス '+R.chBonus+'G と素材</small>'+(R.chAll?'<br><small style="color:var(--gold)">この依頼の挑戦を全て達成！</small>':'')+'</div>':''}${R.daily?'<p><small style="color:#7fc8f5">今日の依頼ボーナス ×1.5</small></p>':''}${R.absent?'<p><small style="color:var(--gold)">久しぶりの狩り ×1.3</small></p>':''}${R.ups.length?`<p><b>レベルアップ！ Lv${R.ups[R.ups.length-1]}</b><br><small>${R.auto?'おまかせでポイントを配分しました':'ポイントを振ろう'}</small></p>`:''}${R.jobAfter!==R.jobBefore?`<div class="job"><b style="color:${JOBS[R.jobAfter].dark}">${JOBS[R.jobAfter].name}</b> が目覚めた！</div>`:''}${R.win?`<p><small>タイム ${fmtTime(R.time)}${R.newBest?' <b style="color:var(--gold)">自己最速！</b>':'（最速 '+fmtTime(R.best)+'）'}　討伐 ${R.count}回</small></p>`:''}${R.hrp?`<p><small>HRポイント <b style="color:var(--gold)">+${R.hrp}</b>${atWall()?'（HR昇格クエストに挑むと反映）':'　次のHRまで '+(S.hrp||0)+' / '+hrpNeed(hr())}</small></p>`:''}${R.hrUp?`<div class="job hrup"><b style="color:${hrBadge(R.hrUp)[1]};font-size:18px">ハンターランクが上がった！ HR${R.hrUp}</b>${R.hrNew&&R.hrNew.length?'<br><small>新しい依頼：'+R.hrNew.join('・')+'</small>':''}${R.hrWall?'<br><small>HR'+R.hrUp+'の壁：掲示板のHR昇格クエストに挑もう</small>':''}</div>`:''}${R.finalWin?`<div class="job hrup"><b style="color:var(--gold);font-size:18px">獣の王を討ち取った！</b><br><small>村へ戻ると、古参の狩人が待っている</small></div>`:''}${R.farm?'<p><small>農場の畑が実った</small></p>':''}<div class="job"><small>${nextHint()}</small></div><div class="row" style="justify-content:center">${S.p.pts>0?`<button class="pri" onclick="openStatus()">ポイントを振る</button>`:''}${(!NET.on||NET.host)?`<button onclick="startQuest(${typeof R.qid==='number'?R.qid:0},${R.dl||1})">もう一度</button>`:''}${(!NET.on||NET.host)&&R.win&&R.dl<3&&dlOpen(R.qid,(R.dl||1)+1)?`<button class="pri" onclick="startQuest(${typeof R.qid==='number'?R.qid:0},${(R.dl||1)+1})">危険度${(R.dl||1)+1}へ</button>`:''}<button onclick="closePanel()">村へ</button></div></div>`;}
+  <div class="row" style="justify-content:center">${S.p.pts>0?`<button class="pri" onclick="openStatus()">ポイントを振る</button>`:''}${(!NET.on||NET.host)?`<button onclick="startQuest('e')">もう一度</button>`:''}<button onclick="closePanel()">村へ</button></div>${adBannerHTML('result')}</div>`;
+ return`<div class="panel center" style="text-align:center"><h1>${R.win?'クエスト達成！':'村へ帰還'}</h1>${R.win?'':'<p><small>倒れてもペナルティなし。経験値は少しもらえます。</small></p>'+rescueBoxHTML(R)}<p>経験値 +${R.exp}　${R.gold?`${R.gold}G　`:''}${Object.keys(R.drops).map(k=>MATS[k]+'×'+R.drops[k]).join(' ')}</p>${R.dl&&R.dl>1?'<p><small style="color:#ff9a8a">危険度'+R.dl+' 報酬 ×'+DANGER[R.dl-1].rew+'</small></p>':''}${R.helped?'<div class="job"><b style="color:#9fe07a">'+esc(R.helped)+' の救援に成功！</b><br><small>'+R.helpGold+'Gと素材を受け取った</small></div>':''}${R.vlvUp?'<div class="job"><b style="color:var(--gold)">村が発展した！ 村レベル '+R.vlvUp+'</b><br><small>'+VBEN[R.vlvUp]+'</small></div>':''}${R.varGot&&R.varGot.length?'<div class="job"><b style="color:var(--gold)">亜種を討伐！ '+R.varGot.join('・')+'</b><br><small>亜種の輝片×'+R.varGot.length+' を手に入れた</small></div>':''}${R.weekly?'<div class="job"><b style="color:#ff9a8a">週の獣を討伐！</b><br><small>'+(R.weekFirst?'今週の初回報酬：獣の心珠×3・亜種の輝片×2':'今週2回目以降：獣の心珠×1')+'</small></div>':''}${R.tbTo?'<p><small style="color:#9fd8f5">時間が進んだ：'+TB_NAME[R.tbFrom]+' → '+TB_NAME[R.tbTo]+'</small></p>':''}${R.todayDone?'<div class="job"><b style="color:var(--gold)">今日の3本 達成！</b><br><small>600Gと獣の心珠×1</small></div>':(R.today?'<p><small style="color:#9fd8f5">今日の3本　'+R.today+'/3</small></p>':'')}${R.parts&&R.parts.length?'<div class="job"><b style="color:var(--gold)">部位破壊：'+R.parts.join('・')+'</b>'+(R.allParts?'<br><b style="color:var(--gold)">全部位破壊！ '+(300*(RES.qid!==undefined?(QUESTS.find(x=>x.id===RES.qid)||{rank:1}).rank:1))+'Gと追加素材</b>':'')+'<br><small>追加の素材を手に入れた</small></div>':''}${R.newMat&&R.newMat.length?'<div class="job"><b style="color:var(--gold)">新しい素材「'+R.newMat.map(k=>MATS[k]).join('・')+'」を手に入れた！</b><br><small>鍛冶屋に新しい装備が並びました</small></div>':''}${R.rare?'<p><small style="color:var(--gold)">稀少素材「獣の心珠」を手に入れた！</small></p>':''}${R.rune?'<div class="job"><b style="color:var(--gold)">刻印を発見！「'+RUNES[R.rune].name+'」</b><br><small>'+RUNES[R.rune].desc+'</small><br><small>入手：'+(R.runeFrom||'')+'／家の「刻印」で付け替えできます</small></div>':''}${R.newCh&&R.newCh.length?'<div class="job"><b style="color:var(--gold)">挑戦達成！</b><br><small>'+R.newCh.join('／')+'　ボーナス '+R.chBonus+'G と素材</small>'+(R.chAll?'<br><small style="color:var(--gold)">この依頼の挑戦を全て達成！</small>':'')+'</div>':''}${R.daily?'<p><small style="color:#7fc8f5">今日の依頼ボーナス ×1.5</small></p>':''}${R.absent?'<p><small style="color:var(--gold)">久しぶりの狩り ×1.3</small></p>':''}${R.ups.length?`<p><b>レベルアップ！ Lv${R.ups[R.ups.length-1]}</b><br><small>${R.auto?'おまかせでポイントを配分しました':'ポイントを振ろう'}</small></p>`:''}${R.jobAfter!==R.jobBefore?`<div class="job"><b style="color:${JOBS[R.jobAfter].dark}">${JOBS[R.jobAfter].name}</b> が目覚めた！</div>`:''}${R.win?`<p><small>タイム ${fmtTime(R.time)}${R.newBest?' <b style="color:var(--gold)">自己最速！</b>':'（最速 '+fmtTime(R.best)+'）'}　討伐 ${R.count}回</small></p>`:''}${R.hrp?`<p><small>HRポイント <b style="color:var(--gold)">+${R.hrp}</b>${atWall()?'（HR昇格クエストに挑むと反映）':'　次のHRまで '+(S.hrp||0)+' / '+hrpNeed(hr())}</small></p>`:''}${R.hrUp?`<div class="job hrup"><b style="color:${hrBadge(R.hrUp)[1]};font-size:18px">ハンターランクが上がった！ HR${R.hrUp}</b>${R.hrNew&&R.hrNew.length?'<br><small>新しい依頼：'+R.hrNew.join('・')+'</small>':''}${R.hrWall?'<br><small>HR'+R.hrUp+'の壁：掲示板のHR昇格クエストに挑もう</small>':''}</div>`:''}${R.finalWin?`<div class="job hrup"><b style="color:var(--gold);font-size:18px">獣の王を討ち取った！</b><br><small>村へ戻ると、古参の狩人が待っている</small></div>`:''}${R.farm?'<p><small>農場の畑が実った</small></p>':''}<div class="job"><small>${nextHint()}</small></div><div class="row" style="justify-content:center">${S.p.pts>0?`<button class="pri" onclick="openStatus()">ポイントを振る</button>`:''}${(!NET.on||NET.host)?`<button onclick="startQuest(${typeof R.qid==='number'?R.qid:0},${R.dl||1})">もう一度</button>`:''}${(!NET.on||NET.host)&&R.win&&R.dl<3&&dlOpen(R.qid,(R.dl||1)+1)?`<button class="pri" onclick="startQuest(${typeof R.qid==='number'?R.qid:0},${(R.dl||1)+1})">危険度${(R.dl||1)+1}へ</button>`:''}<button onclick="closePanel()">村へ</button></div>${adBannerHTML('result')}</div>`;}
 // ===== 通信層（差し替え可能） =====
 /* メッセージ仕様（ホスト権威型）
    hello  {t:'hello',name,lv,job,power,d}      参加者→ホスト：自己紹介
