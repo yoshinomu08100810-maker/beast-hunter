@@ -103,6 +103,9 @@ input[type=text]{font:inherit;font-size:16px;padding:9px;border:2px solid var(--
 .tour{position:absolute;inset:0;pointer-events:auto;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
 .gear{position:absolute;right:8px;top:8px;width:40px;height:40px;margin:0;padding:0;font-size:22px;line-height:36px;text-align:center;pointer-events:auto;background:rgba(10,13,16,.72);border:2px solid #6b6152;color:var(--bone);z-index:5}
 .hud .hrtag{pointer-events:auto;cursor:pointer;font-weight:bold}
+.item.eqrow{cursor:pointer}
+.item.eqon{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset;background:rgba(224,179,78,.10)}
+.tag.eqtag{color:#1a1206;background:var(--gold);border-color:var(--gold)}
 .hrbar{height:8px;background:#0f1418;border:1px solid #444d57;margin:6px 0 2px}
 .hrbar i{display:block;height:100%;background:linear-gradient(90deg,#c08050,#e0b34e)}
 .item.q.promo{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold) inset;background:rgba(224,179,78,.08)}
@@ -1640,7 +1643,10 @@ function fv(f,k){const x=f&&f[k];return x?(x.stringValue!==undefined?x.stringVal
 async function rescuePost(qid,dl){
  if(!onlineReady())throw new Error('オンラインに繋がっていません');
  const id=newId()+newId();
- await fbToken();await fsSet('rescues/'+id,{name:sv(String(S.p.name).slice(0,16)),quest:sv(qid),dl:sv(dl||1),power:sv(power(S.p)),lv:sv(S.p.lv),ts:sv(Date.now()),done:sv(''),owner:sv(myUid())});
+ await fbToken();
+ const base={name:sv(String(S.p.name).slice(0,16)),quest:sv(qid),dl:sv(dl||1),power:sv(power(S.p)),lv:sv(S.p.lv),ts:sv(Date.now()),done:sv(''),owner:sv(myUid())};
+ try{await fsSet('rescues/'+id,Object.assign({hr:sv(hr())},base));}
+ catch(e){await fsSet('rescues/'+id,base);}   // ルールがHRをまだ許可していない場合は、HRなしで貼る
  S.rescue={id,quest:qid,dl:dl||1,ts:Date.now()};save();return id;}
 async function rescueList(){
  if(!onlineReady())throw new Error('オンラインに繋がっていません');
@@ -1651,7 +1657,7 @@ async function rescueList(){
   if(S.rescue&&S.rescue.id===id)continue;
   if(fv(f,'done'))continue;
   const q=QUESTS.find(x=>x.id===+fv(f,'quest'));if(!q)continue;
-  out.push({id,name:fv(f,'name')||'名もなき狩人',quest:q,dl:+fv(f,'dl')||1,power:+fv(f,'power')||0,lv:+fv(f,'lv')||1,ts});}
+  out.push({id,name:fv(f,'name')||'名もなき狩人',quest:q,dl:+fv(f,'dl')||1,power:+fv(f,'power')||0,lv:+fv(f,'lv')||1,hr:+fv(f,'hr')||0,ts});}
  out.sort((a,b)=>b.ts-a.ts);return out.slice(0,12);}
 async function rescueDone(id){
  await fbToken();await fsSet('rescues/'+id,{done:sv(String(S.p.name).slice(0,16)),doneTs:sv(Date.now()),helper:sv(myUid())},['done','doneTs','helper']);}
@@ -1688,7 +1694,7 @@ function rescueHTML(){const P=S.p;
  ${S.rescueLog&&S.rescueLog.length?`<div class="job"><small><b style="color:#9fe07a">これまでに助けてもらった記録</b><br>${S.rescueLog.map(l=>esc(l.who)+'（'+l.q+'）'+l.gold+'G').join('<br>')}</small></div>`:''}
  ${S.rescue?`<div class="job"><small>あなたの救援札を貼っています（${(QUESTS.find(x=>x.id===S.rescue.quest)||{name:'？'}).name}）。誰かが倒すと報酬が届きます。</small></div>`:''}
  ${RESBUSY?'<p><small>読み込み中…</small></p>':''}
- ${RESLIST&&RESLIST.length?RESLIST.map(r=>`<div class="item"><span class="mark">${mark(P,r.quest)}</span><div style="flex:1"><b>${esc(r.name)}</b> <small>Lv${r.lv}・総合力${r.power}</small><br><small>${'★'.repeat(r.quest.rank)} ${r.quest.name}${r.dl>1?'（危険度'+r.dl+'）':''}</small><br><small>${MONSTER_TIERS[r.quest.tier].name}／${fmtEst(estTime(r.quest))}</small></div><button class="small pri" onclick="helpRescue('${r.id}')">助けに行く</button></div>`).join('')
+ ${RESLIST&&RESLIST.length?RESLIST.map(r=>`<div class="item"><span class="mark">${mark(P,r.quest)}</span><div style="flex:1"><b>${esc(r.name)}</b>${r.hr?` <span class="tag" style="color:${hrBadge(r.hr)[1]};border-color:${hrBadge(r.hr)[1]}">HR${r.hr}</span>`:''} <small>Lv${r.lv}・総合力${r.power}</small><br><small>${'★'.repeat(r.quest.rank)} ${r.quest.name}${r.dl>1?'（危険度'+r.dl+'）':''}</small><br><small>${MONSTER_TIERS[r.quest.tier].name}／${fmtEst(estTime(r.quest))}</small></div><button class="small pri" onclick="helpRescue('${r.id}')">助けに行く</button></div>`).join('')
   :(RESBUSY?'':'<p><small>今は救援札がありません。'+(onlineReady()?'':'（オンラインに繋がっていないため見られません。集会所の「通信の診断」で確認できます）')+'</small></p>')}
  <div class="row"><button class="small" onclick="loadRescue()">更新</button><button onclick="closePanel()">閉じる</button></div></div>`;}
 function diagRun(){DIAG={proto:location.protocol,rtc:typeof RTCPeerConnection!=='undefined',fb:!!(FB.apiKey&&FB.projectId),fs:'未実施',stun:'未実施',turn:(S.net&&S.net.turn&&S.net.turn.url)?'設定あり':'未設定',auth:'確認中…',rules:'確認中…'};
@@ -1872,8 +1878,10 @@ function renderOpening(){if(!OP)return;const sc=OPENING[OP.i];
 function opNext(e){if(e&&e.preventDefault)e.preventDefault();if(!OP)return;OP.i++;OP.t=0;if(OP.i>=OPENING.length){opSkip();return;}renderOpening();}
 function opSkip(e){if(e&&e.preventDefault)e.preventDefault();OP=null;startCreate();}
 function toTitle(){save();T=null;showTitle();}
-const APP_VER='0.11.4';
+const APP_VER='0.12.1';
 const CHANGELOG=[
+ {v:'0.12.1',d:'2026-09-23',items:['救援札に、貼った人のハンターランク（HR）を表示']},
+ {v:'0.12.0',d:'2026-09-23',items:['装備画面：並べ替え（強い順・入手が新しい順・種類順）と、性能の表示','装備画面と鍛冶屋の強化で「装備中」が一目で分かるように（鍛冶屋は装備中を先頭に表示）']},
  {v:'0.11.4',d:'2026-09-23',items:['エンドロールの流れる速さを上げ、制作者名が早く出るように（全部で約25秒）']},
  {v:'0.11.3',d:'2026-09-23',items:['エンディングの記録（討った日・見た回数）をハンターノートに表示','エンドロールを、ハンターノート／設定／クレジットから何回でも見返せるように']},
  {v:'0.11.2',d:'2026-09-23',items:['獣の王を倒した記録が、エンディングを見終わる前に閉じると残らない不具合を修正','HR昇格クエストの強さの伸び方を見直し（HR990まで手応えが続くように）']},
@@ -2274,15 +2282,37 @@ function smithHTML(){const P=S.p;const tab=smithTab;
      return '<div class="item lock"><div><b style="color:var(--gold)">'+MATS[k]+'</b> を手に入れると '+SMITH_LIST.filter(id=>!gearKnown(id)&&GEAR[id].craft[k]).length+'件ふえる<br><small>'+(q?(questOpen(q)?'★'.repeat(q.rank)+'「'+q.name+'」で手に入ります':'まだ解禁されていない依頼で手に入ります'):'危険度3やHR昇格クエストで手に入ります')+'</small></div></div>';}).join('')
     :'<p><small style="color:var(--gold)">すべての装備が並びました</small></p>');
  }
- else{const own=P.gear;body=own.length?own.map(id=>{const g=GEAR[id],lv=P.upg[id]||0;
-  if(lv>=UPG_HARD)return`<div class="item"><div><b>${g.name} +${lv}</b><span class="tag">限界</span><br><small>${gearDesc(g,lv)}</small></div></div>`;
+ else{const eqIds=[P.eq.w,P.eq.a,P.eq.c].filter(Boolean);
+  const own=P.gear.slice().sort((a,b)=>(eqIds.includes(b)?1:0)-(eqIds.includes(a)?1:0)||gearScore(b)-gearScore(a));
+  body=(own.length?'<p><small style="color:var(--gold)">今つけている装備が上に並びます</small></p>':'')+ (own.length?own.map(id=>{const g=GEAR[id],lv=P.upg[id]||0;const eqNow=eqIds.includes(id);
+  if(lv>=UPG_HARD)return`<div class="item${eqNow?' eqon':''}"><div><b>${g.name} +${lv}</b>${eqNow?'<span class="tag eqtag">装備中</span>':''}<span class="tag">限界</span><br><small>${gearDesc(g,lv)}</small></div></div>`;
   const c=upgCost(lv),hard=lv>=UPG_MAX;
   const ok=P.gold>=c.gold&&(!c.tusk||P.mats.tusk>=c.tusk)&&(!c.hide||P.mats.hide>=c.hide)&&(!c.shin||(P.mats.shin||0)>=c.shin)&&(!c.rin||P.mats.rin>=c.rin);
   const matTxt=hard?`${MATS.shin}×${c.shin} ${MATS.rin}×${c.rin}`:`${MATS.tusk}×${c.tusk}${c.hide?' '+MATS.hide+'×'+c.hide:''}`;
-  return`<div class="item"><div><b>${g.name}${lv?' +'+lv:''}</b> → <b style="color:var(--gold)">+${lv+1}</b>${hard?'<span class="tag" style="color:var(--gold)">研磨</span>':''}<br><small>${gearDesc(g,lv)} → ${gearDesc(g,lv+1)}</small><br><small>材料 ${matTxt}＋${c.gold}G</small></div><button class="small pri" ${ok?'':'disabled'} onclick="upgradeGear('${id}')">${hard?'研磨':'強化'}</button></div>`;}).join(''):'<p><small>強化できる装備がない。まず販売店か「つくる」で手に入れよう</small></p>';}
+  return`<div class="item${eqNow?' eqon':''}"><div><b>${g.name}${lv?' +'+lv:''}</b>${eqNow?'<span class="tag eqtag">装備中</span>':''} → <b style="color:var(--gold)">+${lv+1}</b>${hard?'<span class="tag" style="color:var(--gold)">研磨</span>':''}<br><small>${gearDesc(g,lv)} → ${gearDesc(g,lv+1)}</small><br><small>材料 ${matTxt}＋${c.gold}G</small></div><button class="small pri" ${ok?'':'disabled'} onclick="upgradeGear('${id}')">${hard?'研磨':'強化'}</button></div>`;}).join(''):'<p><small>強化できる装備がない。まず販売店か「つくる」で手に入れよう</small></p>');}
  return head+body+`<button onclick="closePanel()">閉じる</button></div>`;}
-function equipHTML(){const P=S.p,d=derived(P);const sec=(slot,label)=>{const list=P.gear.filter(id=>GEAR[id].slot===slot);return`<p><b>${label}</b></p><div class="row"><button class="small ${P.eq[slot]?'':'on'}" onclick="equip('${slot}',null)">なし</button>${list.map(id=>`<button class="small ${P.eq[slot]===id?'on':''}" onclick="equip('${slot}','${id}')">${gearName(id)}</button>`).join('')}${list.length?'':'<small>まだ持っていない。販売店か鍛冶屋へ</small>'}</div>`;};
- return`<div class="panel sheet one"><h2>装備</h2><div style="text-align:center"><canvas id="pv" width="104" height="112" style="image-rendering:pixelated;background:#1b2a18;border:2px solid #6b6152"></canvas></div>${sec('w','武器')}${sec('a','防具')}${sec('c','護符')}${GEAR[P.eq.c]?'<p><small style="color:#9fd8f5">'+GEAR[P.eq.c].desc+'</small></p>':''}<div class="job"><small>HP ${d.hp}　攻撃 ${Math.round(d.atk)}　弓 ${Math.round(d.atkD)}　魔法 ${Math.round(d.atkM)}　回復 ${Math.round(d.heal)}　防御 ${Math.round((1-d.def)*100)}%　待ち時間 ×${d.cdMul.toFixed(2)}　総合力 ${power(P)}</small></div><button onclick="closePanel()">閉じる</button></div>`;}
+let eqSort='power';   // power=強い順／new=新しい順／name=種類順
+const EQ_SORTS=[['power','強い順'],['new','入手が新しい順'],['name','種類順']];
+function gearScore(id){const g=GEAR[id],lv=(S.p.upg&&S.p.upg[id])||0;const ex=Math.max(0,lv);
+ const b=(g.atk||0)+(g.atkD||0)+(g.atkM||0)+(g.heal||0)*0.6;
+ return Math.round(b*3+ex*3+(g.hp||0)*0.5+(g.def||0)*120);}
+function gearLine(id){const g=GEAR[id],lv=(S.p.upg&&S.p.upg[id])||0;const t=[];
+ const v=(k,n)=>{if(g[k])t.push(n+(Math.round(g[k]+(['atk','atkD','atkM','heal'].includes(k)?Math.max(0,lv):0))));};
+ v('atk','攻撃');v('atkD','弓');v('atkM','魔法');v('heal','回復');
+ if(g.hp)t.push('HP+'+g.hp);if(g.def)t.push('防御+'+Math.round(g.def*100)+'%');
+ return t.join('　')||(g.desc||'');}
+function equipSec(slot,label){const P=S.p;let list=P.gear.filter(id=>GEAR[id].slot===slot);
+ if(eqSort==='power')list=list.slice().sort((a,b)=>gearScore(b)-gearScore(a));
+ else if(eqSort==='new')list=list.slice().reverse();
+ else list=list.slice().sort((a,b)=>(GEAR[a].type||'').localeCompare(GEAR[b].type||'')||gearScore(b)-gearScore(a));
+ const cur=P.eq[slot];const best=list.length?list.reduce((x,y)=>gearScore(y)>gearScore(x)?y:x):null;
+ const row=id=>{const on=cur===id;const isBest=id===best&&!on;
+  return`<div class="item eqrow${on?' eqon':''}" onclick="equip('${slot}','${id}')"><div style="flex:1"><b>${gearName(id)}</b>${on?'<span class="tag eqtag">装備中</span>':''}${isBest?'<span class="tag" style="color:#9fe07a">おすすめ</span>':''}${GEAR[id].type?'<span class="tag">'+WNAME[GEAR[id].type]+'</span>':''}<br><small>${gearLine(id)}</small></div>${on?'':'<button class="small">つける</button>'}</div>`;};
+ return`<p style="margin-top:8px"><b>${label}</b>${cur?'　<small style="color:var(--gold)">装備中：'+gearName(cur)+'</small>':'　<small>なし</small>'}</p>
+ ${list.length?list.map(row).join(''):'<small>まだ持っていない。販売店か鍛冶屋へ</small>'}
+ ${cur?`<button class="small" onclick="equip('${slot}',null)">外す</button>`:''}`;}
+function equipHTML(){const P=S.p,d=derived(P);const sec=equipSec;
+ return`<div class="panel sheet one"><h2>装備</h2><div style="text-align:center"><canvas id="pv" width="104" height="112" style="image-rendering:pixelated;background:#1b2a18;border:2px solid #6b6152"></canvas></div><div class="row" style="margin-top:6px"><small>並べ替え</small>${EQ_SORTS.map(([k,l])=>`<button class="small ${eqSort===k?'on':''}" onclick="eqSort='${k}';rerender()">${l}</button>`).join('')}</div>${sec('w','武器')}${sec('a','防具')}${sec('c','護符')}${GEAR[P.eq.c]?'<p><small style="color:#9fd8f5">'+GEAR[P.eq.c].desc+'</small></p>':''}<div class="job"><small>HP ${d.hp}　攻撃 ${Math.round(d.atk)}　弓 ${Math.round(d.atkD)}　魔法 ${Math.round(d.atkM)}　回復 ${Math.round(d.heal)}　防御 ${Math.round((1-d.def)*100)}%　待ち時間 ×${d.cdMul.toFixed(2)}　総合力 ${power(P)}</small></div><button onclick="closePanel()">閉じる</button></div>`;}
 function toggleSfx(){S.opt.sfx=!(S.opt.sfx!==false);save();if(S.opt.sfx)sfx('ui');rerender();}
 function monNote(){const seen=Object.keys(S.rec.mons||{}).map(Number).sort((a,b)=>a-b);
  if(!seen.length)return '<p><small>まだ出会っていない</small></p>';

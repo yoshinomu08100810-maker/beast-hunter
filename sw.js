@@ -1,6 +1,6 @@
 // Beast Hunter サービスワーカー
 // 版を上げたら CACHE の名前も変える（古い保存分は自動で消える）
-const CACHE = 'bh-0.11.4';
+const CACHE = 'bh-0.12.1';
 const CORE = ['./', './index.html', './manifest.webmanifest',
   './icon-192.png', './icon-512.png', './maskable-192.png', './maskable-512.png',
   './apple-touch-icon.png', './favicon-32.png'];
