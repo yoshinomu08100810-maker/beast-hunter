@@ -1264,7 +1264,7 @@ function xferBody(fromTitle){const b=backupInfo();
   <textarea id="xin" class="xcode" placeholder="BH1で始まるコードを貼り付け"></textarea>
   <button class="small" onclick="xferLoad(${fromTitle?'true':'false'})">読み込む</button>
   ${XFER.msg?`<p><small style="color:#ff9a8a">${esc(XFER.msg)}</small></p>`:''}
-  ${b&&!fromTitle?`<p style="margin-top:8px"><small>自動バックアップ：${new Date(b.ts).toLocaleString()}（${esc(b.name)} Lv${b.lv}）</small><br><button class="small" onclick="xferRestoreBackup()">この状態に戻す</button></p>`:''}`;}
+  ${b&&!fromTitle?`<p style="margin-top:8px"><small>自動バックアップ：${ymd(b.ts)+' '+new Date(b.ts).getHours()+'時'}（${esc(b.name)} Lv${b.lv}）</small><br><button class="small" onclick="xferRestoreBackup()">この状態に戻す</button></p>`:''}`;}
 function showTransfer(){setUI(`<div class="titlescr"><div class="panel center"><h2>データの引き継ぎ</h2>${xferBody(true)}<button onclick="XFER={code:'',msg:'',mode:''};showTitle()">もどる</button></div></div>`);}
 function noteJob(){if(!S||!S.rec)return;S.rec.jobs[computeJob(S.p.stats)]=true;const a=computeAdv(S.p);if(a)S.rec.jobs[a]=true;}
 function migrate(){const P=S.p;try{hrMigrate();}catch(e){}if(!P.upg)P.upg={};if(!P.runes)P.runes=[];if(!P.runeBag)P.runeBag={};if(P.eq.c===undefined)P.eq.c=null;Object.keys(ITEMS).forEach(k=>{if(P.items[k]===undefined)P.items[k]=0;});if(!P.crops)P.crops={anti:0,vital:0};if(!P.seen){P.seen={};Object.keys(MATS).forEach(k=>{if((P.mats[k]||0)>0)P.seen[k]=true;});(P.gear||[]).forEach(id=>{const g=GEAR[id];if(g&&g.craft)Object.keys(g.craft).forEach(k=>{P.seen[k]=true;});});}if(!P.resets)P.resets=0;if(!P.mats)P.mats={};Object.keys(MATS).forEach(k=>{if(P.mats[k]===undefined)P.mats[k]=0;});if(!S.rec)S.rec={q:{},jobs:{},mons:{}};if(!S.rec.mons)S.rec.mons={};if(!S.opt)S.opt={sfx:true};if(!S.daily)S.daily={date:'',done:false};if(!S.today)S.today={date:'',done:[],bonus:false};if(!S.net)S.net={turn:null};if(S.intro===undefined)S.intro=true;if(S.p&&!S.p.look)S.p.look=Object.assign({},DEF_LOOK);if(S.farmTour===undefined)S.farmTour=!!S.intro&&(S.p&&S.p.cleared>0);if(S.gt===undefined)S.gt=0;if(!S.rescueLog)S.rescueLog=[];Object.keys(S.rec.q||{}).forEach(k=>{const r=S.rec.q[k];if(!r.ch)r.ch=[false,false,false];if(!r.dl)r.dl=1;});if(S.rec.streak===undefined)S.rec.streak=0;if(S.rec.mrank===undefined)S.rec.mrank=0;if(!S.rec.mseed)S.rec.mseed=1;if(!S.rec.parts)S.rec.parts={};if(!S.rec.var)S.rec.var={};if(!S.rec)S.rec={q:{},jobs:{}};if(!S.rec.q)S.rec.q={};if(!S.rec.jobs)S.rec.jobs={};S.farm.plots.forEach(pl=>{if(pl.planted&&pl.stage===0)pl.stage=1;});}
@@ -1347,8 +1347,8 @@ function missionQuest(){const M=missionCur(),D=MONSTER_TIERS[M.tier];
  return {id:'m',mission:true,rank:8,name:'HR昇格クエスト（HR'+hr()+'）',desc:D.name+'（'+M.mods.map(k=>MODS[k].name).join('・')+'）',
   obj:D.name+'の討伐',party:'1〜4人',req:0,maxHit:3,tier:M.tier,
   exp:260+90*M.rank,gold:500+160*M.rank,drops:{shin:1,rin:1}};}
-function missionMul(){const M=missionCur();const r=Math.sqrt(Math.max(0,M.rank-1));const D=MONSTER_TIERS[M.tier];
- let hp=9000*(1+0.35*r)/D.hp,dmg=30*(1+0.25*r)/D.dmg,tele=Math.max(0.62,0.82-0.004*M.rank),wait=1,armor=null,weak=null;
+function missionMul(){const M=missionCur();const k=Math.max(0,M.rank-1);const D=MONSTER_TIERS[M.tier];
+ let hp=9000*(1+0.37*Math.pow(k,0.97))/D.hp,dmg=30*(1+0.25*Math.pow(k,0.9))/D.dmg,tele=Math.max(0.62,0.82-0.004*M.rank),wait=1,armor=null,weak=null;
  M.mods.forEach(k=>{const mo=MODS[k];if(mo.hp)hp*=mo.hp;if(mo.dmg)dmg*=mo.dmg;if(mo.tele)tele*=mo.tele;if(mo.wait)wait*=mo.wait;if(mo.armor){armor=mo.armor;weak=mo.weak;}});
  return {hp,dmg,tele,wait,armor,weak};}
 function missionReroll(){S.rec.mseed=(S.rec.mseed||1)+1;S.mission=missionGen(missionCur().rank);save();sfx('ui');rerender();}
@@ -1456,6 +1456,7 @@ function settingsHTML(){const v=volMul();
  ${row('「つぎにやること」の表示',!S.guideOff,S.guideOff?'showGuide()':'hideGuide()')}
  <div class="item"><div><b>戦闘の手引きをもう一度見る</b><br><small>最初の戦闘で出た説明を、次の戦闘からまた出します</small></div><button class="small" onclick="resetTut()">戻す</button></div>
  <p style="margin-top:10px"><small style="color:var(--gold)">このゲームについて</small></p>
+ ${S.ending?'<div class="item"><div><b>エンディング</b><br><small>獣の王を討った記録（これまで'+((S.endRec&&S.endRec.n)||0)+'回見ました）</small></div><button class="small pri" onclick="playEnding(true)">見る</button></div>':''}
  <div class="row"><button class="small" onclick="openPanel('changelog')">更新履歴</button><button class="small" onclick="openPanel('credits')">クレジット</button><button class="small" onclick="openPanel('terms')">利用規約</button><button class="small" onclick="openPanel('privacy')">プライバシー</button><small style="margin-left:auto;color:var(--bone2)">v${APP_VER}</small></div>
  <button onclick="closePanel()">閉じる</button></div>`;}
 function showGuide(){S.guideOff=false;save();toast('手引きを再開しました');rerender();}
@@ -1871,8 +1872,11 @@ function renderOpening(){if(!OP)return;const sc=OPENING[OP.i];
 function opNext(e){if(e&&e.preventDefault)e.preventDefault();if(!OP)return;OP.i++;OP.t=0;if(OP.i>=OPENING.length){opSkip();return;}renderOpening();}
 function opSkip(e){if(e&&e.preventDefault)e.preventDefault();OP=null;startCreate();}
 function toTitle(){save();T=null;showTitle();}
-const APP_VER='0.11.1';
+const APP_VER='0.11.4';
 const CHANGELOG=[
+ {v:'0.11.4',d:'2026-09-23',items:['エンドロールの流れる速さを上げ、制作者名が早く出るように（全部で約25秒）']},
+ {v:'0.11.3',d:'2026-09-23',items:['エンディングの記録（討った日・見た回数）をハンターノートに表示','エンドロールを、ハンターノート／設定／クレジットから何回でも見返せるように']},
+ {v:'0.11.2',d:'2026-09-23',items:['獣の王を倒した記録が、エンディングを見終わる前に閉じると残らない不具合を修正','HR昇格クエストの強さの伸び方を見直し（HR990まで手応えが続くように）']},
  {v:'0.11.1',d:'2026-09-23',items:['タイトル画面と結果画面に広告の表示を開始（プライバシーポリシーを更新し、あらためて同意をお願いしています）']},
  {v:'0.11.0',d:'2026-09-23',items:['広告の差し込み口（タイトル画面・結果画面のバナー）','お助けの広告（温泉の薬草・道具屋の回復薬）の仕組み（報酬型の広告に対応したサービスで有効になります）']},
  {v:'0.10.2',d:'2026-09-23',items:['「今日の3本」がクリアするたびに入れ替わってしまう不具合を修正（その日の3本は日付が変わるまで固定）']},
@@ -1900,6 +1904,7 @@ function creditsHTML(back){return`<div class="panel ${back==='title'?'center':'s
  <div class="item"><div><small>音楽・効果音</small><br>ゲーム内で合成（外部の音源は使っていません）</div></div>
  <div class="item"><div><small>フォント</small><br><b>DotGothic16</b><br><small>Copyright 2020 The DotGothic16 Project Authors<br>(https://github.com/fontworks-fonts/DotGothic16)<br>SIL Open Font License, Version 1.1 のもとで使用しています</small>
   <details><summary><small>ライセンス全文を見る</small></summary><pre class="ofl">${esc(OFL_TEXT)}</pre></details></div></div>
+ ${(S&&S.ending&&back!=='title')?'<div class="row" style="justify-content:center"><button class="small pri" onclick="playEnding(true)">エンドロールを見る</button></div>':''}
  <div class="row" style="justify-content:center"><button class="small" onclick="${back==='title'?"showLegal('terms','title')":"openPanel('terms')"}">利用規約</button><button class="small" onclick="${back==='title'?"showLegal('privacy','title')":"openPanel('privacy')"}">プライバシーポリシー</button></div>
  <p style="text-align:center"><small>Beast Hunter v${APP_VER}</small></p>
  <button onclick="${back==='title'?'showTitle()':"openPanel('settings')"}">もどる</button></div>`;}
@@ -1956,27 +1961,29 @@ const ED_TALK=[
  n=>'畑の猪を追い払ったあの日から、<br>ずいぶん遠くまで来たもんだ',
  n=>'今日からお前は、この村の誇りだ。<br>……ありがとう',
 ];
+function ymd(ts){const d=new Date(ts);return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';}
 function edCredits(){const P=S.p,seen=Object.keys((S.rec&&S.rec.mons)||{}).length,gear=(P.gear||[]).length;
  return [['big','Beast Hunter'],['',''],['h','ゲーム制作'],['','ヨシキ'],['',''],['h','フォント'],['','DotGothic16'],['s','The DotGothic16 Project Authors'],['',''],
   ['h','村の人々'],['','古参の狩人'],['','薬売りの老婆'],['','鍛冶屋の弟子'],['','村の子ども'],['',''],
   ['h','狩りの記録'],['','総討伐 '+(P.cleared||0)+' 回'],['','出会った獣 '+seen+' 種'],['','集めた装備 '+gear+' 個'],['','Lv'+P.lv+'　'+derived(P).jobName],['',''],
-  ['h','そして'],['','ここまで遊んでくれた'],['big2','あなた'],['',''],['',''],['big','Thank you for playing!']];}
+  ['h','そして'],['','ここまで遊んでくれた'],['big2','あなた'],['',''],['big','Thank you for playing!']];}
 function playEnding(replay){ED={phase:'talk',i:0,t:0,y:0,fast:1,replay:!!replay};scene='ending';panel=null;
  try{playBgm('title');ambient(null);}catch(e){}renderEnding();}
 function renderEnding(){if(!ED)return;
  if(ED.phase==='talk'){setUI(`<div class="intro" onclick="edNext()"><div class="ibox"><div class="ihead"><canvas id="iface" width="19" height="15"></canvas><span class="iname">古参の狩人</span></div>
    <div class="itext">${ED_TALK[ED.i](S.p.name)}</div><div class="inext">▼ タップで次へ<span>${ED.i+1} / ${ED_TALK.length}</span></div></div>
    <button class="iskip" onclick="event.stopPropagation();edSkip()">スキップ</button></div>`);drawTourFace();return;}
- if(ED.phase==='roll'){setUI(`<div class="edroll" onclick="ED.fast=ED.fast>1?1:3"><div class="edclip"><div class="edlines" id="edl">${edCredits().map(([k,t])=>`<div class="edl ${k}">${esc(t)||'&nbsp;'}</div>`).join('')}</div></div>
+ if(ED.phase==='roll'){ED.y0=0;setUI(`<div class="edroll" onclick="ED.fast=ED.fast>1?1:3"><div class="edclip"><div class="edlines" id="edl">${edCredits().map(([k,t])=>`<div class="edl ${k}">${esc(t)||'&nbsp;'}</div>`).join('')}</div></div>
    <button class="iskip" onclick="event.stopPropagation();edSkip()">スキップ</button><div class="edhint">タップで早送り</div></div>`);ED.y=0;return;}
  if(ED.phase==='end'){setUI(`<div class="edend" onclick="edFinish()"><div class="edcont">そして、狩りは続く――</div></div>`);}}
 function edNext(){if(!ED)return;ED.i++;try{sfx('ui');}catch(e){}if(ED.i>=ED_TALK.length){ED.phase='roll';ED.t=0;}renderEnding();}
 function edSkip(){if(!ED)return;if(ED.phase==='talk'){ED.phase='roll';ED.t=0;renderEnding();return;}ED.phase='end';ED.t=0;renderEnding();}
 function edFinish(){if(!ED)return;const replay=ED.replay;ED=null;
- if(!replay){S.ending=true;S.endingPending=false;S.hrp=S.hrp||0;save();}
+ if(!S.endRec)S.endRec={first:Date.now(),n:0};S.endRec.n=(S.endRec.n||0)+1;S.endRec.last=Date.now();
+ if(!replay){S.ending=true;S.endingPending=false;S.hrp=S.hrp||0;}save();
  goVillage();if(!replay)setTimeout(()=>{if(scene==='world'){panel='postend';renderWorld();}},300);}
 function edTick(dt){if(!ED)return;ED.t+=dt;
- if(ED.phase==='roll'){const el=document.getElementById('edl');if(el){ED.y+=dt*16*ED.fast;el.style.transform='translateY('+(-ED.y)+'px)';
+ if(ED.phase==='roll'){const el=document.getElementById('edl');if(el){if(!ED.y0){ED.y0=1;ED.y=Math.round(el.parentNode.offsetHeight*0.22);}ED.y+=dt*46*ED.fast;el.style.transform='translateY('+(-ED.y)+'px)';
    if(ED.y>el.offsetHeight+el.parentNode.offsetHeight){ED.phase='end';ED.t=0;renderEnding();}}}
  if(ED.phase==='end'&&ED.t>4.5)edFinish();}
 function drawEndingBg(dt){vt+=dt;drawTitleBg(dt);if(!ED||ED.phase==='talk')return;
@@ -2032,7 +2039,8 @@ function adShopHelp(){const pr=Math.round(ITEMS.potion.price*priceMul());
  if(!adsRewardOn()||S.p.gold>=pr*2)return'';
  const left=adLeft('shop');
  return`<div class="item adhelp"><div style="flex:1"><b>お金が足りない時のお助け</b><br><small>広告を見ると、回復薬を2個もらえます（今日あと${left}回）</small></div><button class="small" ${left>0?'':'disabled'} onclick="adReward('shop')">広告を見る</button></div>`;}
-function continueGame(){const s=load();if(!s)return;S=s;migrate();goVillage();}
+function continueGame(){const s=load();if(!s)return;S=s;migrate();goVillage();
+ if(S.endingPending)setTimeout(()=>{if(scene==='world'&&!panel)playEnding(false);},600);}
 function startCreate(){T=newPlayer('');T.look=Object.assign({},DEF_LOOK);T._floor=Object.assign({},T.stats);scene='create';renderCreate();}
 const NAME_POOL=['ハヤテ','ミナト','ツバキ','カエデ','アサヒ','シオン','ヒビキ','コハク','リン','ソラ','ユウ','ナギ','レン','アオイ','スバル','ホムラ','イブキ','カイ','トウマ','サクヤ'];
 let NCAND=null;
@@ -2344,7 +2352,10 @@ function runesHTML(){const P=S.p;const own=ownedRunes(P);const eq=P.runes||[];co
  ${RUNE_IDS.length-own.length>0?'<p><small>まだ見つけていない刻印：'+(RUNE_IDS.length-own.length)+'種</small></p><div class="codex">'+RUNE_IDS.filter(id=>!own.includes(id)).map(()=>'<div>？？？</div>').join('')+'</div>':'<p><small style="color:var(--gold)">すべての刻印を集めました</small></p>'}
  <button onclick="closePanel()">閉じる</button></div>`;}
 function noteHTML(){const all=Object.keys(JOBS).concat(ADV_IDS);const got=all.filter(k=>S.rec.jobs[k]).length,tot=all.length;
- return`<div class="panel sheet one"><h2>ハンターノート</h2>${S.ending?'<button class="small" onclick="playEnding(true)">エンディングをもう一度見る</button>':''}<p><b style="color:var(--gold)">ジョブ図鑑 ${got}／${tot}</b><br><small>ステータスの振り方を変えると、まだ見ぬジョブが目覚めます</small></p><div class="codex">${all.map(k=>{const nm=JOBS[k]?JOBS[k].name:ADV_JOBS[k].name;return`<div class="${S.rec.jobs[k]?'got':''}">${S.rec.jobs[k]?nm:'？？？'}</div>`;}).join('')}</div>
+ const endBox=S.ending?`<div class="job" style="border-color:var(--gold)"><b style="color:var(--gold)">エンディング到達</b>
+  <br><small>獣の王を討った日：${S.endRec&&S.endRec.first?ymd(S.endRec.first):'―'}　／　これまで${(S.endRec&&S.endRec.n)||0}回見ました</small>
+  <br><button class="small pri" onclick="playEnding(true)">エンドロールをもう一度見る</button></div>`:'';
+ return`<div class="panel sheet one"><h2>ハンターノート</h2>${endBox}<p><b style="color:var(--gold)">ジョブ図鑑 ${got}／${tot}</b><br><small>ステータスの振り方を変えると、まだ見ぬジョブが目覚めます</small></p><div class="codex">${all.map(k=>{const nm=JOBS[k]?JOBS[k].name:ADV_JOBS[k].name;return`<div class="${S.rec.jobs[k]?'got':''}">${S.rec.jobs[k]?nm:'？？？'}</div>`;}).join('')}</div>
  <p><b>狩猟記録</b><br><small>●＝挑戦達成／危＝到達した危険度</small></p>${QUESTS.filter(q=>questOpen(q)||qrec(q.id).n).map(q=>{const r=qrec(q.id);return`<div class="rec"><span><span class="stars">${'★'.repeat(q.rank)}</span> ${q.name}<br><small>${CHALLENGES.map((c,i)=>qch(q.id)[i]?'<span style="color:var(--gold)">●</span>':'<span style="color:#555">○</span>').join('')} 危${r.dl||1}</small></span><span>${r.n}回</span><span>${fmtTime(r.best)}</span></div>`;}).join('')}
 
  ${S.fish&&S.fish.n?`<p><b>釣りの記録</b>　<small>釣った数 ${S.fish.n}／種類 ${Object.keys(S.fish.kinds).length}/${FISH.length}</small></p>
@@ -3014,7 +3025,8 @@ function finishQuest(win){const P=S.p,q=B.q;RESNEW={};const vlvB=villageLv();con
   if(R.newCh.length&&R.chAll){const rid=grantRune();if(rid){R.rune=rid;R.runeFrom='挑戦3つ全達成';}}
   if(PROMO[S.hr||1]===q.id){S.hr=(S.hr||1)+1;R.hrUp=S.hr;R.hrNew=QUESTS.filter(x=>x.rank===S.hr).map(x=>x.name);
    if(S.hr>=8&&!S.ending)R.hrNew=['獣の王'];}
-  if(q.id===FINAL_Q&&!S.ending){R.finalWin=true;S.endingPending=true;}}
+  if(q.id===FINAL_Q&&!S.ending){R.finalWin=true;S.ending=true;S.endingPending=true;S.hrp=S.hrp||0;
+   if(!S.endRec)S.endRec={first:Date.now(),n:0};}}
  else R.exp=Math.round(q.exp*0.25);
  R.ups=gainExp(P,R.exp);if(R.ups.length){sfx('lvup');if(P.auto){allocAuto(P,P.auto);R.auto=true;}}
  R.newMat=Object.keys(RESNEW||{});RESNEW=null;
