@@ -1574,7 +1574,7 @@ function fv(f,k){const x=f&&f[k];return x?(x.stringValue!==undefined?x.stringVal
 async function rescuePost(qid,dl){
  if(!onlineReady())throw new Error('オンラインに繋がっていません');
  const id=newId()+newId();
- await fsSet('rescues/'+id,{name:sv(S.p.name),quest:sv(qid),dl:sv(dl||1),power:sv(power(S.p)),lv:sv(S.p.lv),ts:sv(Date.now()),done:sv('')});
+ await fbToken();await fsSet('rescues/'+id,{name:sv(String(S.p.name).slice(0,16)),quest:sv(qid),dl:sv(dl||1),power:sv(power(S.p)),lv:sv(S.p.lv),ts:sv(Date.now()),done:sv(''),owner:sv(myUid())});
  S.rescue={id,quest:qid,dl:dl||1,ts:Date.now()};save();return id;}
 async function rescueList(){
  if(!onlineReady())throw new Error('オンラインに繋がっていません');
@@ -1588,7 +1588,7 @@ async function rescueList(){
   out.push({id,name:fv(f,'name')||'名もなき狩人',quest:q,dl:+fv(f,'dl')||1,power:+fv(f,'power')||0,lv:+fv(f,'lv')||1,ts});}
  out.sort((a,b)=>b.ts-a.ts);return out.slice(0,12);}
 async function rescueDone(id){
- await fsSet('rescues/'+id,{done:sv(S.p.name),doneTs:sv(Date.now())},['done','doneTs']);}
+ await fbToken();await fsSet('rescues/'+id,{done:sv(String(S.p.name).slice(0,16)),doneTs:sv(Date.now()),helper:sv(myUid())},['done','doneTs','helper']);}
 async function rescueCheck(silent){
  if(!S.rescue||!onlineReady())return;
  try{const js=await fsGet('rescues/'+S.rescue.id);const f=js.fields||{};const who=fv(f,'done');
@@ -1625,11 +1625,19 @@ function rescueHTML(){const P=S.p;
  ${RESLIST&&RESLIST.length?RESLIST.map(r=>`<div class="item"><span class="mark">${mark(P,r.quest)}</span><div style="flex:1"><b>${esc(r.name)}</b> <small>Lv${r.lv}・総合力${r.power}</small><br><small>${'★'.repeat(r.quest.rank)} ${r.quest.name}${r.dl>1?'（危険度'+r.dl+'）':''}</small><br><small>${MONSTER_TIERS[r.quest.tier].name}／${fmtEst(estTime(r.quest))}</small></div><button class="small pri" onclick="helpRescue('${r.id}')">助けに行く</button></div>`).join('')
   :(RESBUSY?'':'<p><small>今は救援札がありません。'+(onlineReady()?'':'（オンラインに繋がっていないため見られません。集会所の「通信の診断」で確認できます）')+'</small></p>')}
  <div class="row"><button class="small" onclick="loadRescue()">更新</button><button onclick="closePanel()">閉じる</button></div></div>`;}
-function diagRun(){DIAG={proto:location.protocol,rtc:typeof RTCPeerConnection!=='undefined',fb:!!(FB.apiKey&&FB.projectId),fs:'未実施',stun:'未実施',turn:(S.net&&S.net.turn&&S.net.turn.url)?'設定あり':'未設定'};
+function diagRun(){DIAG={proto:location.protocol,rtc:typeof RTCPeerConnection!=='undefined',fb:!!(FB.apiKey&&FB.projectId),fs:'未実施',stun:'未実施',turn:(S.net&&S.net.turn&&S.net.turn.url)?'設定あり':'未設定',auth:'確認中…',rules:'確認中…'};
  rerender();
+ // 匿名ログイン
+ (async()=>{try{await fbToken();DIAG.auth='OK';}catch(e){const m=String(AUTH.err||e.message);
+   DIAG.auth='失敗：'+(/ADMIN_ONLY_OPERATION|OPERATION_NOT_ALLOWED/.test(m)?'Firebaseで「匿名」ログインが有効になっていません':m);}rerender();})();
+ // ルール：本人確認なしの書き込みが断られれば、守られている
+ (async()=>{try{const r=await fetch(`${FSBASE()}/diag/rulecheck?key=${FB.apiKey}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:{ts:sv(Date.now())}})});
+   if(r.status===403){DIAG.rules='有効（守られています）';}
+   else if(r.ok){DIAG.rules='未設定（誰でも書き込めます）';try{await fetch(`${FSBASE()}/diag/rulecheck?key=${FB.apiKey}`,{method:'DELETE'});}catch(e){}}
+   else DIAG.rules='不明（'+r.status+'）';}catch(e){DIAG.rules='確認できません：'+e.message;}rerender();})();
  // Firestore
- (async()=>{try{const t0=Date.now();const did='DIAG'+newId();await fsSet('rooms/'+did,{ts:sv(Date.now())});const js=await fsGet('rooms/'+did);
-  await fsDel('rooms/'+did);DIAG.fs=(js.fields&&js.fields.ts)?('OK（'+(Date.now()-t0)+'ミリ秒）'):'応答が変';}catch(e){DIAG.fs='失敗：'+e.message;}rerender();})();
+ (async()=>{try{const t0=Date.now();await fbToken();const did=myUid();await fsSet('diag/'+did,{ts:sv(Date.now())});const js=await fsGet('diag/'+did);
+  await fsDel('diag/'+did);DIAG.fs=(js.fields&&js.fields.ts)?('OK（'+(Date.now()-t0)+'ミリ秒）'):'応答が変';}catch(e){DIAG.fs='失敗：'+e.message;}rerender();})();
  // STUN/TURNの到達性
  (async()=>{try{const pc=new RTCPeerConnection(iceConfig());const types={};
   pc.onicecandidate=e=>{if(e.candidate){const ty=((e.candidate.candidate||'').match(/ typ (\w+)/)||[])[1]||'?';types[ty]=(types[ty]||0)+1;
@@ -1651,6 +1659,8 @@ function diagHTML(){const t=(S.net&&S.net.turn)||{};const D=DIAG;
   ② この端末のWebRTC：<b>${D.rtc?'使える':'使えない'}</b><br>
   ③ 待ち合わせサーバーの設定：<b>${D.fb?'あり':'なし'}</b><br>
   ④ 待ち合わせ（Firestore）：<b>${D.fs}</b><br>
+  ⑦ 匿名ログイン：<b style="color:${String(D.auth).indexOf('OK')===0?'#9fe07a':'#ff9a8a'}">${D.auth}</b><br>
+  ⑧ 荒らし対策（ルール）：<b style="color:${String(D.rules).indexOf('有効')===0?'#9fe07a':'#ff9a8a'}">${D.rules}</b><br>
   ⑤ 直通の下準備（STUN）：<b>${D.stun}</b><br>
   ⑥ 中継サーバー（TURN）：<b>${D.turn}</b></small></div>`:''}
  <h2 style="margin-top:12px">中継サーバー（TURN）</h2>
@@ -1661,10 +1671,12 @@ function diagHTML(){const t=(S.net&&S.net.turn)||{};const D=DIAG;
  <br><button class="small pri" onclick="saveTurn()">保存</button></div>
  ${D?`<div class="job"><small><b style="color:var(--gold)">次にすること</b><br>${
   D.proto!=='https:'?'この画面はhttpsで開いていません。GitHub Pagesなどのhttpsのアドレスから開くと、オンラインが使えます。':
+  (String(D.auth).indexOf('失敗')===0?'匿名ログインができていません。Firebaseの管理画面「Authentication」→「ログイン方法」で「匿名」を有効にしてください。':
+  (String(D.rules).indexOf('未設定')===0?'荒らし対策のルールがまだ設定されていません。Firebaseの管理画面「Firestore」→「ルール」に、用意したルールを貼り付けて公開してください。':
   (String(D.fs).indexOf('失敗')===0?'待ち合わせサーバーに届いていません。通信環境（Wi-Fi／回線）を変えるか、Firebaseの設定を確認してください。':
   (String(D.stun).indexOf('relay')>=0?'中継サーバーまで使えています。携帯回線同士でも繋がるはずです。':
   (String(D.stun).indexOf('STUN成功')>=0?'直通の準備ができています。友人と合言葉で繋いでみてください。':
-   'この回線では直通が繋がらない可能性があります。Wi-Fiを試すか、中継サーバー（TURN）を設定してください。')))}</small></div>`:''}
+   'この回線では直通が繋がらない可能性があります。Wi-Fiを試すか、中継サーバー（TURN）を設定してください。')))))}</small></div>`:''}
  ${NET.log&&NET.log.length?`<h2 style="margin-top:12px">接続の記録</h2><div class="job"><small>${NET.log.map(l=>'+'+(l.ms/1000).toFixed(1)+'秒　'+l.t+(l.d?'（'+esc(l.d)+'）':'')).join('<br>')}</small></div>`:''}
  ${NET.err?`<p><small style="color:#ff9a8a">最後のエラー：${esc(NET.err)}</small></p>`:''}
  <button onclick="closePanel()">閉じる</button></div>`;}
@@ -1793,8 +1805,9 @@ function renderOpening(){if(!OP)return;const sc=OPENING[OP.i];
 function opNext(e){if(e&&e.preventDefault)e.preventDefault();if(!OP)return;OP.i++;OP.t=0;if(OP.i>=OPENING.length){opSkip();return;}renderOpening();}
 function opSkip(e){if(e&&e.preventDefault)e.preventDefault();OP=null;startCreate();}
 function toTitle(){save();T=null;showTitle();}
-const APP_VER='0.9.3';
+const APP_VER='0.9.4';
 const CHANGELOG=[
+ {v:'0.9.4',d:'2026-09-22',items:['オンライン機能の荒らし対策（自動の匿名ログインと、持ち主だけが変更できる仕組み）','通信の診断に「匿名ログイン」「荒らし対策」の確認を追加']},
  {v:'0.9.3',d:'2026-09-22',items:['アイコンを index.html と同じ場所に置く形に変更（フォルダ不要）']},
  {v:'0.9.2',d:'2026-09-22',items:['「ホーム画面に追加」ボタンを常に表示','アプリ化の状態を自分で確認できる機能（アップロードのミスが分かる）']},
  {v:'0.9.1',d:'2026-09-22',items:['ホーム画面に追加（アプリのように起動・通信なしでも起動）','新しい版が出た時のお知らせ']},
@@ -2200,12 +2213,30 @@ function nlog(t,detail){if(!NET.log)NET.log=[];const ms=NET.t0?Date.now()-NET.t0
 function onlineReady(){return !!(FB.apiKey&&FB.projectId)&&/^https?:$/.test(location.protocol)&&typeof RTCPeerConnection!=='undefined';}
 const FSBASE=()=>`https://firestore.googleapis.com/v1/projects/${FB.projectId}/databases/(default)/documents`;
 const sv=v=>({stringValue:String(v)});
-async function fsGet(path){const r=await fetch(`${FSBASE()}/${path}?key=${FB.apiKey}`);if(r.status===404)return{};if(!r.ok)throw new Error('GET '+r.status);return r.json();}
+const AUTH={tok:null,exp:0,uid:null,err:''};
+function authLoad(){try{return JSON.parse(localStorage.getItem('bh_auth')||'null');}catch(e){return null;}}
+function authSave(o){try{localStorage.setItem('bh_auth',JSON.stringify(o));}catch(e){}}
+async function fbToken(){
+ if(AUTH.tok&&Date.now()<AUTH.exp-60000)return AUTH.tok;
+ const st=authLoad();
+ try{
+  if(st&&st.refresh){
+   const r=await fetch('https://securetoken.googleapis.com/v1/token?key='+FB.apiKey,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'grant_type=refresh_token&refresh_token='+encodeURIComponent(st.refresh)});
+   if(r.ok){const j=await r.json();AUTH.tok=j.id_token;AUTH.uid=j.user_id;AUTH.exp=Date.now()+Number(j.expires_in||3600)*1000;authSave({refresh:j.refresh_token,uid:j.user_id});AUTH.err='';return AUTH.tok;}
+  }
+  const r=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+FB.apiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({returnSecureToken:true})});
+  const j=await r.json();
+  if(!r.ok){const m=(j&&j.error&&j.error.message)||r.status;AUTH.err=String(m);throw new Error('匿名ログイン失敗：'+m);}
+  AUTH.tok=j.idToken;AUTH.uid=j.localId;AUTH.exp=Date.now()+Number(j.expiresIn||3600)*1000;authSave({refresh:j.refreshToken,uid:j.localId});AUTH.err='';return AUTH.tok;
+ }catch(e){if(!AUTH.err)AUTH.err=e.message;throw e;}}
+async function fbHeaders(extra){const t=await fbToken();return Object.assign({Authorization:'Bearer '+t},extra||{});}
+function myUid(){return AUTH.uid||((authLoad()||{}).uid)||'';}
+async function fsGet(path){const r=await fetch(`${FSBASE()}/${path}?key=${FB.apiKey}`,{headers:await fbHeaders()});if(r.status===404)return{};if(!r.ok)throw new Error('GET '+r.status);return r.json();}
 async function fsSet(path,fields,mask){const q=(mask?mask.map(f=>'updateMask.fieldPaths='+f).join('&')+'&':'')+'key='+FB.apiKey;
- const r=await fetch(`${FSBASE()}/${path}?${q}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields})});
+ const r=await fetch(`${FSBASE()}/${path}?${q}`,{method:'PATCH',headers:await fbHeaders({'Content-Type':'application/json'}),body:JSON.stringify({fields})});
  if(!r.ok)throw new Error('SET '+r.status+' '+(await r.text()).slice(0,100));return r.json();}
-async function fsList(path){const r=await fetch(`${FSBASE()}/${path}?pageSize=10&key=${FB.apiKey}`);if(r.status===404)return{documents:[]};if(!r.ok)throw new Error('LIST '+r.status);return r.json();}
-async function fsDel(path){try{await fetch(`${FSBASE()}/${path}?key=${FB.apiKey}`,{method:'DELETE'});}catch(e){}}
+async function fsList(path){const r=await fetch(`${FSBASE()}/${path}?pageSize=10&key=${FB.apiKey}`,{headers:await fbHeaders()});if(r.status===404)return{documents:[]};if(!r.ok)throw new Error('LIST '+r.status);return r.json();}
+async function fsDel(path){try{await fetch(`${FSBASE()}/${path}?key=${FB.apiKey}`,{method:'DELETE',headers:await fbHeaders()});}catch(e){}}
 function iceDone(pc){return new Promise(res=>{if(pc.iceGatheringState==='complete')return res();
  const t=setTimeout(res,3500);pc.addEventListener('icegatheringstatechange',()=>{if(pc.iceGatheringState==='complete'){clearTimeout(t);res();}});});}
 function netStat(s,e){NET.status=s;if(e!==undefined)NET.err=e;if(scene==='world')rerender();}
@@ -2218,7 +2249,7 @@ function bindCh(id,ch){nlog('データ通路を用意',id);ch.onopen=()=>{NET.ch
   if(scene==='world')rerender();};}
 function onlineSend(m){const s=JSON.stringify(m);Object.keys(NET.chs).forEach(k=>{const ch=NET.chs[k];if(ch&&ch.readyState==='open'){try{ch.send(s);}catch(e){}}});}
 async function onlineHost(code){netStat('部屋を用意中…','');
- try{await fsSet('rooms/'+code,{host:sv(NET.id),ts:sv(Date.now())});}catch(e){netStat('部屋の作成に失敗','Firestore: '+e.message);return;}
+ try{await fbToken();await fsSet('rooms/'+code,{host:sv(NET.id),ts:sv(Date.now()),owner:sv(myUid())});}catch(e){netStat('部屋の作成に失敗','Firestore: '+e.message);return;}
  netStat('待機中（合言葉を伝えてください）','');
  NET.poll=setInterval(()=>hostPoll(code),1500);}
 async function hostPoll(code){if(!NET.on)return;let js;
@@ -2238,7 +2269,7 @@ async function onlineGuest(code){netStat('ホストを呼び出し中…','');
   bindCh('host',pc.createDataChannel('game'));
   pc.onconnectionstatechange=()=>{if(pc.connectionState==='failed')netStat('直通接続に失敗','経路が確立できませんでした（回線によっては繋がらないことがあります）');};
   const o=await pc.createOffer();await pc.setLocalDescription(o);await iceDone(pc);
-  await fsSet('rooms/'+code+'/peers/'+NET.id,{offer:sv(pc.localDescription.sdp)},['offer']);
+  await fbToken();await fsSet('rooms/'+code+'/peers/'+NET.id,{offer:sv(pc.localDescription.sdp),owner:sv(myUid())},['offer','owner']);
   netStat('ホストの応答を待っています…','');
   let tries=0;
   NET.poll=setInterval(async()=>{if(!NET.on)return;tries++;
@@ -2248,8 +2279,8 @@ async function onlineGuest(code){netStat('ホストを呼び出し中…','');
    }catch(e){NET.err='WAIT: '+e.message;}},1500);
  }catch(e){netStat('接続に失敗','WebRTC: '+e.message);}}
 async function netTest(){toast('通信テスト中…');try{
- await fsSet('rooms/TEST',{ts:sv(Date.now())});const js=await fsGet('rooms/TEST');
- const ok=js.fields&&js.fields.ts;await fsDel('rooms/TEST');
+ await fbToken();await fsSet('diag/'+myUid(),{ts:sv(Date.now())});const js=await fsGet('diag/'+myUid());
+ const ok=js.fields&&js.fields.ts;await fsDel('diag/'+myUid());
  netStat(NET.status,'');toast(ok?'Firestoreとの通信は正常です':'応答が変です');
  }catch(e){NET.err='TEST: '+e.message;toast('通信テスト失敗');if(scene==='world')rerender();}}
 function newId(){return Math.random().toString(36).slice(2,8);}
