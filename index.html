@@ -1717,7 +1717,7 @@ const PWA={deferred:null,waiting:null,standalone:false};
 function isStandalone(){try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;}catch(e){return false;}}
 function isIOS(){return /iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);}
 (function(){PWA.standalone=isStandalone();
- addEventListener('beforeinstallprompt',e=>{e.preventDefault();PWA.deferred=e;if(typeof rerender==='function'&&S)rerender();else if(scene==='title')showTitle();});
+ addEventListener('beforeinstallprompt',e=>{e.preventDefault();PWA.deferred=e;const g=document.getElementById('instguide');if(g){g.remove();showInstallGuide();}});
  addEventListener('appinstalled',()=>{PWA.deferred=null;try{toast('ホーム画面に追加しました');}catch(e){}});
  if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){
   addEventListener('load',()=>{navigator.serviceWorker.register('sw.js',{scope:'./'}).then(reg=>{
@@ -1728,10 +1728,29 @@ function isIOS(){return /iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator
    }).catch(()=>{});
    let reloaded=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloaded)return;reloaded=true;location.reload();});});}
 })();
-function canInstall(){return !PWA.standalone&&(!!PWA.deferred||isIOS());}
+function canInstall(){return !PWA.standalone&&/^https?:$/.test(location.protocol);}
 async function doInstall(){if(PWA.deferred){PWA.deferred.prompt();try{await PWA.deferred.userChoice;}catch(e){}PWA.deferred=null;rerenderSafe();return;}
- if(isIOS())showIOSInstall();}
-function rerenderSafe(){try{if(S&&scene==='world')rerender();else if(scene==='title')showTitle();}catch(e){}}
+ showInstallGuide();}
+function rerenderSafe(){try{if(scene==='title')showTitle();else if(S&&scene==='world')rerender();}catch(e){}}
+function showInstallGuide(){const old=document.getElementById('instguide');if(old)old.remove();
+ const ios=isIOS();const d=document.createElement('div');d.id='instguide';d.className='iosguide';
+ d.innerHTML=`<div class="panel center" onclick="event.stopPropagation()"><h2>ホーム画面に追加</h2>
+  ${PWA.deferred?'<p>下のボタンから追加できます。</p><button class="pri" onclick="document.getElementById(\'instguide\').remove();doInstall()">追加する</button>':
+   ios?'<p>Safariの下にある<b>共有ボタン</b>（四角から矢印が出ているマーク）を押し、<b>「ホーム画面に追加」</b>を選んでください。</p>':
+   '<p>Chromeの右上の<b>︙（メニュー）</b>を開き、<b>「アプリをインストール」</b>または<b>「ホーム画面に追加」</b>を選んでください。</p><p><small>ページを開いて<b>30秒ほど</b>経つと、このボタンから直接追加できるようになります。</small></p>'}
+  <p style="margin-top:8px"><small style="color:var(--gold)">アプリ化の状態</small></p><div id="pwacheck"><small>確認中…</small></div>
+  <button onclick="document.getElementById('instguide').remove()">とじる</button></div>`;
+ d.onclick=()=>d.remove();document.getElementById('ui').appendChild(d);pwaCheck();}
+async function pwaCheck(){const box=document.getElementById('pwacheck');if(!box)return;const rows=[];
+ const ok=(t,good,hint)=>rows.push(`<div><small style="color:${good?'#9fe07a':'#ff9a8a'}">${good?'✓':'✗'} ${t}</small>${good||!hint?'':'<br><small style="color:#8c8474">　→ '+hint+'</small>'}</div>`);
+ ok('https で開いている',location.protocol==='https:','公開URL（https://〜）で開いてください');
+ let man=null;try{const r=await fetch('manifest.webmanifest',{cache:'no-store'});if(r.ok)man=await r.json();}catch(e){}
+ ok('アプリの設定ファイル（manifest.webmanifest）',!!man,'index.html と同じ場所に manifest.webmanifest をアップロードしてください');
+ for(const f of ['icons/icon-192.png','icons/icon-512.png']){let g=false;try{const r=await fetch(f,{cache:'no-store'});g=r.ok;}catch(e){}ok('アイコン '+f,g,'「icons」フォルダごとアップロードされているか確認してください（フォルダの中に画像が入っている必要があります）');}
+ let sw=false;try{const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();sw=!!(reg&&(reg.active||reg.waiting||reg.installing));}catch(e){}
+ ok('通信なしで起動する仕組み（sw.js）',sw,'index.html と同じ場所に sw.js をアップロードし、ページを再読み込みしてください');
+ ok('すぐ追加できる状態',!!PWA.deferred,'全部✓なら、ページを開いたまま30秒ほど待つか、Chromeのメニューから追加してください');
+ box.innerHTML=rows.join('');}
 function showIOSInstall(){const html=`<div class="iosguide" onclick="this.remove()"><div class="panel center" style="text-align:center"><h2>ホーム画面に追加</h2>
  <p>Safariの下にある<b>共有ボタン</b>（四角から矢印が出ているマーク）を押し、<br><b>「ホーム画面に追加」</b>を選んでください。</p>
  <p><small>追加すると、アイコンから全画面で起動できます</small></p><button>とじる</button></div></div>`;document.getElementById('ui').insertAdjacentHTML('beforeend',html);}
@@ -1774,8 +1793,9 @@ function renderOpening(){if(!OP)return;const sc=OPENING[OP.i];
 function opNext(e){if(e&&e.preventDefault)e.preventDefault();if(!OP)return;OP.i++;OP.t=0;if(OP.i>=OPENING.length){opSkip();return;}renderOpening();}
 function opSkip(e){if(e&&e.preventDefault)e.preventDefault();OP=null;startCreate();}
 function toTitle(){save();T=null;showTitle();}
-const APP_VER='0.9.1';
+const APP_VER='0.9.2';
 const CHANGELOG=[
+ {v:'0.9.2',d:'2026-09-22',items:['「ホーム画面に追加」ボタンを常に表示','アプリ化の状態を自分で確認できる機能（アップロードのミスが分かる）']},
  {v:'0.9.1',d:'2026-09-22',items:['ホーム画面に追加（アプリのように起動・通信なしでも起動）','新しい版が出た時のお知らせ']},
  {v:'0.9.0',d:'2026-09-22',items:['データの引き継ぎコード（書き出し・読み込み）と、1日1回の自動バックアップ','バージョン表示と更新履歴','クレジット（フォントのライセンス表記）']},
  {v:'0.8.5',d:'2026-09-22',items:['ジョブとスキルの確認画面（村の上部のジョブ名をタップ）','スキルボタンに効果の一言','守護の構えを2.5秒に（反撃を合わせやすく）']},
