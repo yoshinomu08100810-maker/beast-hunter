@@ -1878,8 +1878,9 @@ function renderOpening(){if(!OP)return;const sc=OPENING[OP.i];
 function opNext(e){if(e&&e.preventDefault)e.preventDefault();if(!OP)return;OP.i++;OP.t=0;if(OP.i>=OPENING.length){opSkip();return;}renderOpening();}
 function opSkip(e){if(e&&e.preventDefault)e.preventDefault();OP=null;startCreate();}
 function toTitle(){save();T=null;showTitle();}
-const APP_VER='0.12.1';
+const APP_VER='0.12.2';
 const CHANGELOG=[
+ {v:'0.12.2',d:'2026-09-23',items:['広告の読み込み方を変更（広告専用ページ ad.html を追加）。広告が表示されなかった問題への対処']},
  {v:'0.12.1',d:'2026-09-23',items:['救援札に、貼った人のハンターランク（HR）を表示']},
  {v:'0.12.0',d:'2026-09-23',items:['装備画面：並べ替え（強い順・入手が新しい順・種類順）と、性能の表示','装備画面と鍛冶屋の強化で「装備中」が一目で分かるように（鍛冶屋は装備中を先頭に表示）']},
  {v:'0.11.4',d:'2026-09-23',items:['エンドロールの流れる速さを上げ、制作者名が早く出るように（全部で約25秒）']},
@@ -2022,9 +2023,8 @@ function adsBannerOn(){return ADS.test||(ADS.provider==='admax'&&!!ADS.admaxId&&
 function adsRewardOn(){return ADS.test||['crazygames','poki','h5'].includes(ADS.provider);}
 // バナー：タイトル画面と結果画面だけに置く（戦闘中・村を歩いている時には出さない）
 function adBannerHTML(place){if(!adsBannerOn())return'';
- if(ADS.test&&!ADS.admaxId)return`<div class="adslot"><small>広告</small><div class="adtest" style="width:${ADS.bannerW}px;height:${ADS.bannerH}px">広告枠（テスト表示）${ADS.bannerW}×${ADS.bannerH}</div></div>`;
- const doc="<!doctype html><html><head><meta name='viewport' content='width=device-width'></head><body style='margin:0;display:flex;justify-content:center;background:transparent'><script src='https://adm.shinobi.jp/s/"+ADS.admaxId+"'><\/script></body></html>";
- return`<div class="adslot"><small>広告</small><iframe class="adfr" title="広告" width="${ADS.bannerW}" height="${ADS.bannerH}" scrolling="no" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" srcdoc="${doc.replace(/"/g,'&quot;')}"></iframe></div>`;}
+ if(ADS.test)return`<div class="adslot"><small>広告</small><div class="adtest" style="width:${ADS.bannerW}px;height:${ADS.bannerH}px">広告枠（テスト表示）${ADS.bannerW}×${ADS.bannerH}</div></div>`;
+ return`<div class="adslot"><small>広告</small><iframe class="adfr" title="広告" src="ad.html?p=${encodeURIComponent(place||'')}" width="${ADS.bannerW}" height="${ADS.bannerH}" scrolling="no" frameborder="0" loading="lazy"></iframe></div>`;}
 // 報酬型の動画広告（遊ぶ人が自分で押した時だけ）。見終わったら true
 async function adsShowRewarded(place){
  if(ADS.test)return await adTestOverlay();
