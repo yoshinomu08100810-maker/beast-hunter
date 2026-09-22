@@ -59,6 +59,18 @@ input[type=text]{font:inherit;font-size:16px;padding:9px;border:2px solid var(--
 .tlinks button{margin:0;padding:5px 10px;font-size:12px}
 .xcode{width:100%;min-height:70px;margin:6px 0;padding:6px;font-size:11px;font-family:monospace;background:#0f1418;color:var(--bone);border:2px solid #6b6152;word-break:break-all;resize:vertical}
 .ofl{white-space:pre-wrap;font-size:10px;line-height:1.4;max-height:40vh;overflow:auto;background:#0f1418;padding:6px;border:1px solid #444d57;font-family:monospace}
+.edroll{position:absolute;inset:0;pointer-events:auto}
+.edclip{position:absolute;left:0;right:0;top:0;bottom:30%;overflow:hidden;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 12%,#000 85%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 12%,#000 85%,transparent 100%)}
+.edlines{position:absolute;left:0;right:0;top:100%;text-align:center;color:var(--bone);text-shadow:0 1px 0 #000,0 0 4px #000}
+.edl{font-size:15px;line-height:1.9}
+.edl.h{color:var(--gold);font-size:13px;margin-top:4px}
+.edl.s{font-size:11px;color:var(--bone2)}
+.edl.big{font-size:26px;color:#ffe7a0;letter-spacing:1px}
+.edl.big2{font-size:22px;color:#fff}
+.edhint{position:absolute;left:10px;top:calc(18px + env(safe-area-inset-top,0px));font-size:11px;color:var(--bone2)}
+.edend{position:absolute;inset:0;pointer-events:auto;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55)}
+.edcont{font-size:20px;color:#ffe7a0;animation:fadein 2s ease-out}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
 .legal{text-align:left}
 .legal p small{line-height:1.6}
 .titlescr .ver{position:absolute;bottom:10px;color:var(--bone2)}
@@ -81,6 +93,11 @@ input[type=text]{font:inherit;font-size:16px;padding:9px;border:2px solid var(--
 .iskip{position:absolute;right:10px;top:10px;margin:0;padding:6px 12px;font-size:12px}
 .tour{position:absolute;inset:0;pointer-events:auto;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
 .gear{position:absolute;right:8px;top:8px;width:40px;height:40px;margin:0;padding:0;font-size:22px;line-height:36px;text-align:center;pointer-events:auto;background:rgba(10,13,16,.72);border:2px solid #6b6152;color:var(--bone);z-index:5}
+.hud .hrtag{pointer-events:auto;cursor:pointer;font-weight:bold}
+.hrbar{height:8px;background:#0f1418;border:1px solid #444d57;margin:6px 0 2px}
+.hrbar i{display:block;height:100%;background:linear-gradient(90deg,#c08050,#e0b34e)}
+.item.q.promo{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold) inset;background:rgba(224,179,78,.08)}
+.job.hrup{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset;animation:ppop .5s ease-out}
 .hud .jobtag{pointer-events:auto;cursor:pointer;border-color:currentColor}
 .hud .tag[onpointerdown]{pointer-events:auto;cursor:pointer}
 .hud .vlv{pointer-events:auto;cursor:pointer;color:var(--gold);border-color:#e0b34e;background:rgba(10,13,16,.75);margin-left:6px}
@@ -250,7 +267,7 @@ const JOBS={
  shugo:{name:'守護',color:'#6b7fb3',dark:'#3a4870',rule:'体が一番高く、力の1.2倍以上',skill:'構え',skillDesc:'2.5秒間、受けるダメージ大幅減＋反撃。構え中と反撃後は<b>敵の攻撃を引きつける</b>（挑発）。反撃が決まると<b>すぐ構え直せ</b>、3秒間<b>攻撃+50%</b>。反撃は体が高いほど強い',cd:3.2,ranged:false},
  kenja:{name:'賢者',color:'#a87ad6',dark:'#5f3585',rule:'魔と心が拮抗し、2つで全体の半分以上',skill:'万能',skillDesc:'仲間全員を回復し、魔法ダメージも出す。後衛で本領',cd:8,ranged:true},
  madou:{name:'魔導',color:'#d9629f',dark:'#8a2f63',rule:'魔が一番高く、心の1.4倍以上',skill:'火球',skillDesc:'爆発する火の玉。当てると敵が怯み、予告が長くなる。後衛で本領',cd:6,ranged:true},
- iyashi:{name:'癒し手',color:'#e0c058',dark:'#95761d',rule:'心が一番高く、魔の1.4倍以上',skill:'再生の光',skillDesc:'自分は継続回復、仲間も回復。倒れた仲間の復帰も早める',cd:8,ranged:false},
+ iyashi:{name:'癒し手',color:'#e0c058',dark:'#95761d',rule:'心が一番高く、魔の1.4倍以上',skill:'再生の光',skillDesc:'光で敵を打ち、自分は継続回復、仲間も回復。倒れた仲間の復帰も早める',cd:8,ranged:false},
  yugeki:{name:'遊撃',color:'#e0834a',dark:'#8f4a20',rule:'力と技が拮抗し、2つで全体の52%以上',skill:'疾風二刀',skillDesc:'素早い2連撃。前衛でも後衛でも威力が落ちない',cd:5,ranged:false,pair:['str','dex']},
  seikishi:{name:'聖騎士',color:'#7fb0d8',dark:'#3a6e94',rule:'体と心が拮抗し、2つで全体の52%以上',skill:'護りの祈り',skillDesc:'1.6秒の構えと、仲間全員の回復。構え中の反撃が決まると3秒間攻撃+50%',cd:4.5,ranged:false,pair:['vit','mnd']},
  makenshi:{name:'魔剣士',color:'#b8506b',dark:'#75243c',rule:'力と魔が拮抗し、2つで全体の52%以上',skill:'魔刃',skillDesc:'斬撃と魔法の同時攻撃。列に関係なく威力が出る',cd:6,ranged:false,pair:['str','mag']},
@@ -331,6 +348,8 @@ const PART_DEFS={
        {k:'tailf',name:'尾羽',on:'tired',hpR:0.10,eff:'尾羽が抜けて動きが鈍った',mat:'hane',n:2}],
  beetle:[{k:'bhorn',name:'角',on:'tele',hpR:0.07,eff:'角が折れて体当たりが弱まった',mat:'kara',n:1},
        {k:'shell',name:'甲殻',on:'tired',hpR:0.12,eff:'甲殻が割れて硬さが消えた',mat:'kara',n:2}],
+ king:[{k:'khorn',name:'角',on:'tele',hpR:0.05,eff:'角が折れて噛み砕きが弱まった',mat:'king',n:2},
+       {k:'mane',name:'たてがみ',on:'tired',hpR:0.09,eff:'たてがみが焼け落ち、咆哮が弱まった',mat:'gold',n:1}],
  dragon:[{k:'horn',name:'角',on:'tele',hpR:0.06,eff:'角が折れて噛み砕きが弱まった',mat:'rin',n:1},
          {k:'tail',name:'尾',on:'tired',hpR:0.10,eff:'尾が切れて連続攻撃が1回減った',mat:'rin',n:1}],
  wolf:[{k:'leg',name:'前脚',on:'tele',hpR:0.06,eff:'前脚を痛めて飛びかかりが来なくなった',mat:'kemo',n:2},
@@ -377,17 +396,22 @@ const MONSTER_TIERS=[
   pal:{b:'#2a3a4a',B:'#3a5a6e',d:'#1a242e',m:'#40e0c0',u:'#f6f1dc',e:'#40ffe0',n:'#9ae0d0',k:'#1a242e',K:'#0e1418'},
   pattern:['jump','webwall','web','fang','jump','mist'],
   phase2:{tele:0.85,wait:1.0,pattern:['jump','jump','webwall','mist','fang','web']}},
+ {name:'獣の王',spr:'king',hp:10500,dmg:30,wait:1.7,scale:1.6,exOff:4,tired:1.1,breakDmg:520,final:true,
+  pal:{b:'#2e2233',B:'#4a3752',d:'#1a1220',m:'#c8602a',M:'#f0a040',s:'#8a6a9a',h:'#eee4c8',H:'#a89c80',e:'#ff3a2a',E:'#ffc0a0',t:'#f7f0dc',c:'#d8d0b8'},
+  pal2:{b:'#2e2233',B:'#4a3752',d:'#1a1220',m:'#b8202a',M:'#ff6a3a',s:'#a05a8a',h:'#fff4d8',H:'#b8a888',e:'#ffe84a',E:'#fff6c0',t:'#f7f0dc',c:'#d8d0b8'},
+  pattern:['charge','roar','bites','crush','leap','quake','charge','howl'],
+  phase2:{tele:0.8,wait:1.3,pattern:['rampage','crush','quake','howl','bites','double','leap','rampage']}}
 ];
 const QUESTS=[
  {id:0,rank:1,name:'畑を荒らす者',desc:'畑を荒らすイノシシを1頭しとめる',obj:'イノシシ1頭の討伐',req:20,exp:20,gold:40,tier:0,maxHit:0,drops:{tusk:1}},
- {id:1,rank:2,name:'森の大物',desc:'ひとまわり大きく、後衛にも土を飛ばす',obj:'大イノシシ1頭の討伐',req:48,exp:55,gold:100,tier:1,maxHit:0,drops:{tusk:2,hide:1}},
- {id:2,rank:3,name:'牙王の討伐',desc:'群れの王。前→後の連続突進に注意',obj:'牙王イノシシ1頭の討伐',req:80,exp:140,gold:260,tier:2,maxHit:1,drops:{tusk:3,hide:2,king:1}},
+ {id:1,rank:2,hpMul:0.72,name:'森の大物',desc:'ひとまわり大きく、後衛にも土を飛ばす',obj:'大イノシシ1頭の討伐',req:48,exp:55,gold:100,tier:1,maxHit:0,drops:{tusk:2,hide:1}},
+ {id:2,rank:3,hpMul:0.66,name:'牙王の討伐',desc:'群れの王。前→後の連続突進に注意',obj:'牙王イノシシ1頭の討伐',req:80,exp:140,gold:260,tier:2,maxHit:1,drops:{tusk:3,hide:2,king:1}},
  // ★4以降は下に続く
  {id:4,rank:2,name:'空からの襲撃',desc:'後衛を狙う森鳥。旋回突撃は後→前の順に来る',obj:'森鳥ハネガラス1羽の討伐',req:52,exp:75,gold:130,tier:4,maxHit:1,drops:{hane:2},unlock:0},
  {id:8,rank:4,name:'連続狩猟：森の二種',desc:'イノシシを狩った直後に森鳥が現れる。続けて2頭',obj:'大イノシシと森鳥ハネガラスの連続討伐',req:110,exp:260,gold:420,tier:1,chain:[1,4],maxHit:1,drops:{tusk:2,hane:2,hide:1},unlock:4,party:'1〜4人'},
  {id:9,rank:6,name:'連続狩猟：牙と甲殻',desc:'牙王のあとに岩甲虫。長期戦になる',obj:'牙王イノシシと岩甲虫ヨロイムシの連続討伐',req:200,exp:700,gold:1200,tier:2,chain:[2,5],maxHit:2,drops:{king:1,kara:3,tusk:3},unlock:5,party:'2〜4人推奨'},
  {id:5,rank:3,name:'岩場の守り手',desc:'甲殻が硬く、普段は半分しか通らない。疲れた隙が弱点',obj:'岩甲虫ヨロイムシ1匹の討伐',req:95,exp:180,gold:300,tier:5,maxHit:0,drops:{kara:3},unlock:4},
- {id:3,rank:5,name:'獰猛化個体の狩猟',desc:'牙王の獰猛化個体。連続突進を多用し、休まない',obj:'牙王イノシシ（獰猛）1頭の討伐',req:170,exp:420,gold:800,tier:3,maxHit:3,drops:{tusk:5,hide:4,king:3},unlock:2},
+ {id:3,rank:5,hpMul:0.85,dmgMul:0.85,name:'獰猛化個体の狩猟',desc:'牙王の獰猛化個体。連続突進を多用し、休まない',obj:'牙王イノシシ（獰猛）1頭の討伐',req:170,exp:420,gold:800,tier:3,maxHit:3,drops:{tusk:5,hide:4,king:3},unlock:2},
  {id:10,rank:2,name:'夜に響く声',desc:'村の周りを狼がうろつく。飛びかかりは後衛狙い',obj:'牙狼ガルム1頭の討伐',req:56,maxHit:1,exp:80,gold:140,tier:8,drops:{kemo:2},unlock:0,party:'1〜4人'},
  {id:11,rank:3,name:'糸の罠',desc:'糸で後衛を、毒牙で前衛を狙う。跳躍は前→後',obj:'毒蜘蛛アラクネ1匹の討伐',req:98,maxHit:1,exp:190,gold:310,tier:12,drops:{ito:2},unlock:10,party:'1〜4人'},
  {id:12,rank:4,name:'森の主',desc:'巻きつきが重い。三段うねりは後→前→後',obj:'巨蛇オロチ1匹の討伐',req:140,maxHit:2,exp:300,gold:480,tier:10,drops:{doku:3},unlock:11,party:'1〜4人'},
@@ -396,6 +420,7 @@ const QUESTS=[
  {id:15,rank:7,name:'巣の女王',desc:'甲殻が硬く、跳躍と糸幕で逃げ場を奪う。予告中に攻めれば止められる',obj:'大蜘蛛アラクネ（女王）1匹の討伐',req:260,maxHit:2,exp:1100,gold:2000,tier:13,drops:{ito:6,kara:4},unlock:14,party:'2〜4人推奨'},
  {id:7,rank:6,name:'岩竜ヴォルガ討伐',desc:'村を脅かす古の岩竜。体力が半分を切ると荒れ狂う',obj:'岩竜ヴォルガ1頭の討伐',req:230,exp:900,gold:1600,tier:7,party:'2〜4人推奨',maxHit:2,drops:{rin:4,kara:2},unlock:3},
  {id:6,rank:5,name:'凶鳥の討伐',desc:'旋回突撃を連発する森鳥の変異個体。予告が非常に短い',obj:'森鳥ハネガラス（凶）1羽の討伐',req:180,exp:450,gold:850,tier:6,maxHit:3,drops:{hane:8},unlock:5},
+ {id:16,rank:8,final:true,name:'獣の王',desc:'すべての獣を束ねる王。村を襲った災いの元凶',obj:'獣の王の討伐',req:300,exp:2400,gold:6000,tier:14,maxHit:3,drops:{king:3,gold:2,shin:3},party:'1〜4人'}
 ];
 const ITEMS={
  potion:{name:'回復薬',price:50,lv:1,desc:'HPを半分回復',battle:1,use:p=>heal(p,Math.round(p.maxhp*0.5*(1+(p.d.r.pot||0))))},
@@ -1069,7 +1094,8 @@ const SPIDER=[[
 "........KKK...........KKK.",
 ".........................."]];
 const JOB_GEAR_ALIAS={yugeki:'kenshi',seikishi:'shugo',makenshi:'kenja',juujutsu:'karyudo',shura:'bouken',yakushi:'iyashi'};
-const SPR_MON={boar:BOAR,bird:BIRD,beetle:BEETLE,dragon:DRAGON,wolf:WOLF,snake:SNAKE,spider:SPIDER};
+const KING=[[".....hhh................................", "....hH..M..M....hh......................", "...hH....M..mM.hH.......................", "...hH.M..mmmmmhH........................", "...hH...mmmmMhHmms..s..s..s..s..s...mMm.", "....hH..mmMMhHMmmss.ss.ss.ss.ss.ss...MmM", ".....hHmmMMMhHMMmmbbbbbdbbbbbb........bb", "......hHmMMhHMMMmmdddddddddddddd.....b.b", "....bbbhHMMhHMMMmmdddddddddddddddd..b...", "..bbbbBbbbbMMMMMMmmddddddddddddddddb....", ".bbBeeBBBBbbMMMMmmddddsddddddddddBB.....", ".bBBBEBBBBBbMMMMmmddBBddddddBBddbbb.....", "bbBBBBBBBBBbbMMMmmBBBBBdBBBBBsBBBbbb....", ".dbBBBBBBBBbMMMmmBBBBBBBBBBBBBBBBBb.....", ".bdddBBBBBbbMmmmmBBBBBBBBsBBBBBBBBB.....", "..bttbBtbbbmmmmmBBBBBBBBBBBBBBBBBB......", "..t.bbtbb...m.bbBBBBBBBBBBBBBBBBB.......", "...............bbBBBBBBBBBBBBBBB........", "...........bbB.bbbbbBBBBBBBBbbB.bbb.....", "...........bbB.bbb.....b....bbB.bbb.....", "...........bbB.bbb..........bbB.bbb.....", "...........bbB.bbb..........bbB.bbb.....", "...........bbB.bbb..........bbB.bbb.....", "...........bbB.bbb..........bbB.bbb.....", "..........cc.ccc.c.........cc.ccc.c.....", "..........c.c.c.c.c........c.c.c.c.c...."], [".....hhh................................", "....hH..M..M....hh......................", "...hH....M..mM.hH.......................", "...hH.M..mmmmmhH........................", "...hH...mmmmMhHmms..s..s..s..s..s...mMm.", "....hH..mmMMhHMmmss.ss.ss.ss.ss.ss...MmM", ".....hHmmMMMhHMMmmbbbbbdbbbbbb........bb", "......hHmMMhHMMMmmdddddddddddddd.....b.b", "....bbbhHMMhHMMMmmdddddddddddddddd..b...", "..bbbbBbbbbMMMMMMmmddddddddddddddddb....", ".bbBeeBBBBbbMMMMmmddddsddddddddddBB.....", ".bBBBEBBBBBbMMMMmmddBBddddddBBddbbb.....", "bbBBBBBBBBBbbMMMmmBBBBBdBBBBBsBBBbbb....", ".dbBBBBBBBBbMMMmmBBBBBBBBBBBBBBBBBb.....", ".bdddBBBBBbbMmmmmBBBBBBBBsBBBBBBBBB.....", "..bttbBtbbbmmmmmBBBBBBBBBBBBBBBBBB......", "..t.bbtbb...m.bbBBBBBBBBBBBBBBBBB.......", "...............bbBBBBBBBBBBBBBBB........", "............bbb.bbBbBBBBBBBbbb.bbB......", "............bbb.bbB....b...bbb.bbB......", "............bbb.bbB........bbb.bbB......", "............bbb.bbB........bbb.bbB......", "............bbb.bbB........bbb.bbB......", "............bbb.bbB........bbb.bbB......", "...........cc.ccc.c.......cc.ccc.c......", "...........c.c.c.c.c......c.c.c.c.c....."]];
+const SPR_MON={boar:BOAR,bird:BIRD,beetle:BEETLE,dragon:DRAGON,wolf:WOLF,snake:SNAKE,spider:SPIDER,king:KING};
 function monRows(tier,f){const d=MONSTER_TIERS[tier];return (SPR_MON[d.spr]||BOAR)[f];}
 function monSpriteV(tier,f,sp){const D=MONSTER_TIERS[tier];const V=VARIANTS[sp];
  return sprite(SPR_MON[D.spr][f],Object.assign({},D.pal,V.pal),'MV'+tier+f);}
@@ -1189,7 +1215,7 @@ addEventListener('pointerdown',e=>{try{const b=e.target&&e.target.closest&&e.tar
 // ===== セーブ・プレイヤー =====
 let S=null,T=null,RES=null,scene='title',panel=null;
 function newPlayer(name){const st={};STAT_KEYS.forEach(k=>st[k]=BASE);const mats={};Object.keys(MATS).forEach(k=>mats[k]=0);return{name,lv:1,exp:0,pts:LV1_PTS,stats:st,auto:null,gold:120,herb:0,items:{potion:1,seed:3,antidote:0,parapill:0,atkpot:0,defpot:0,hipotion:0,panacea:0,hastepot:0,elixir:0,vial:0,stunball:0,flash:0,seed2:0,seed3:0},crops:{anti:0,vital:0},mats,gear:[],eq:{w:null,a:null,c:null},upg:{},runes:[],runeBag:{},seen:{},cleared:0,resets:0};}
-function newSave(p){return{ver:6,p,farm:{plots:[{planted:false,stage:0}]},rec:{q:{},jobs:{},mons:{},streak:0},opt:{sfx:true},daily:{date:'',done:false},lastPlay:0};}
+function newSave(p){return{ver:6,hr:1,p,farm:{plots:[{planted:false,stage:0}]},rec:{q:{},jobs:{},mons:{},streak:0},opt:{sfx:true},daily:{date:'',done:false},lastPlay:0};}
 function save(){if(!S)return;noteJob();S.appVer=APP_VER;try{const j=JSON.stringify(S);localStorage.setItem(SAVE_KEY,j);autoBackup(j);}catch(e){}}
 // 自動バックアップ：1日1回、ひとつ前の状態を別の場所に残す
 function autoBackup(j){try{const k=SAVE_KEY+'_bak';const cur=JSON.parse(localStorage.getItem(k)||'null');const today=new Date().toDateString();
@@ -1232,7 +1258,7 @@ function xferBody(fromTitle){const b=backupInfo();
   ${b&&!fromTitle?`<p style="margin-top:8px"><small>自動バックアップ：${new Date(b.ts).toLocaleString()}（${esc(b.name)} Lv${b.lv}）</small><br><button class="small" onclick="xferRestoreBackup()">この状態に戻す</button></p>`:''}`;}
 function showTransfer(){setUI(`<div class="titlescr"><div class="panel center"><h2>データの引き継ぎ</h2>${xferBody(true)}<button onclick="XFER={code:'',msg:'',mode:''};showTitle()">もどる</button></div></div>`);}
 function noteJob(){if(!S||!S.rec)return;S.rec.jobs[computeJob(S.p.stats)]=true;const a=computeAdv(S.p);if(a)S.rec.jobs[a]=true;}
-function migrate(){const P=S.p;if(!P.upg)P.upg={};if(!P.runes)P.runes=[];if(!P.runeBag)P.runeBag={};if(P.eq.c===undefined)P.eq.c=null;Object.keys(ITEMS).forEach(k=>{if(P.items[k]===undefined)P.items[k]=0;});if(!P.crops)P.crops={anti:0,vital:0};if(!P.seen){P.seen={};Object.keys(MATS).forEach(k=>{if((P.mats[k]||0)>0)P.seen[k]=true;});(P.gear||[]).forEach(id=>{const g=GEAR[id];if(g&&g.craft)Object.keys(g.craft).forEach(k=>{P.seen[k]=true;});});}if(!P.resets)P.resets=0;if(!P.mats)P.mats={};Object.keys(MATS).forEach(k=>{if(P.mats[k]===undefined)P.mats[k]=0;});if(!S.rec)S.rec={q:{},jobs:{},mons:{}};if(!S.rec.mons)S.rec.mons={};if(!S.opt)S.opt={sfx:true};if(!S.daily)S.daily={date:'',done:false};if(!S.today)S.today={date:'',done:[],bonus:false};if(!S.net)S.net={turn:null};if(S.intro===undefined)S.intro=true;if(S.p&&!S.p.look)S.p.look=Object.assign({},DEF_LOOK);if(S.farmTour===undefined)S.farmTour=!!S.intro&&(S.p&&S.p.cleared>0);if(S.gt===undefined)S.gt=0;if(!S.rescueLog)S.rescueLog=[];Object.keys(S.rec.q||{}).forEach(k=>{const r=S.rec.q[k];if(!r.ch)r.ch=[false,false,false];if(!r.dl)r.dl=1;});if(S.rec.streak===undefined)S.rec.streak=0;if(S.rec.mrank===undefined)S.rec.mrank=0;if(!S.rec.mseed)S.rec.mseed=1;if(!S.rec.parts)S.rec.parts={};if(!S.rec.var)S.rec.var={};if(!S.rec)S.rec={q:{},jobs:{}};if(!S.rec.q)S.rec.q={};if(!S.rec.jobs)S.rec.jobs={};S.farm.plots.forEach(pl=>{if(pl.planted&&pl.stage===0)pl.stage=1;});}
+function migrate(){const P=S.p;try{hrMigrate();}catch(e){}if(!P.upg)P.upg={};if(!P.runes)P.runes=[];if(!P.runeBag)P.runeBag={};if(P.eq.c===undefined)P.eq.c=null;Object.keys(ITEMS).forEach(k=>{if(P.items[k]===undefined)P.items[k]=0;});if(!P.crops)P.crops={anti:0,vital:0};if(!P.seen){P.seen={};Object.keys(MATS).forEach(k=>{if((P.mats[k]||0)>0)P.seen[k]=true;});(P.gear||[]).forEach(id=>{const g=GEAR[id];if(g&&g.craft)Object.keys(g.craft).forEach(k=>{P.seen[k]=true;});});}if(!P.resets)P.resets=0;if(!P.mats)P.mats={};Object.keys(MATS).forEach(k=>{if(P.mats[k]===undefined)P.mats[k]=0;});if(!S.rec)S.rec={q:{},jobs:{},mons:{}};if(!S.rec.mons)S.rec.mons={};if(!S.opt)S.opt={sfx:true};if(!S.daily)S.daily={date:'',done:false};if(!S.today)S.today={date:'',done:[],bonus:false};if(!S.net)S.net={turn:null};if(S.intro===undefined)S.intro=true;if(S.p&&!S.p.look)S.p.look=Object.assign({},DEF_LOOK);if(S.farmTour===undefined)S.farmTour=!!S.intro&&(S.p&&S.p.cleared>0);if(S.gt===undefined)S.gt=0;if(!S.rescueLog)S.rescueLog=[];Object.keys(S.rec.q||{}).forEach(k=>{const r=S.rec.q[k];if(!r.ch)r.ch=[false,false,false];if(!r.dl)r.dl=1;});if(S.rec.streak===undefined)S.rec.streak=0;if(S.rec.mrank===undefined)S.rec.mrank=0;if(!S.rec.mseed)S.rec.mseed=1;if(!S.rec.parts)S.rec.parts={};if(!S.rec.var)S.rec.var={};if(!S.rec)S.rec={q:{},jobs:{}};if(!S.rec.q)S.rec.q={};if(!S.rec.jobs)S.rec.jobs={};S.farm.plots.forEach(pl=>{if(pl.planted&&pl.stage===0)pl.stage=1;});}
 function qrec(id){if(!S.rec.q[id])S.rec.q[id]={n:0,best:0};return S.rec.q[id];}
 function fmtTime(ms){if(!ms)return'--';const t=Math.round(ms/100)/10;const m=Math.floor(t/60),sec=(t-m*60).toFixed(1);return m?m+'分'+sec+'秒':sec+'秒';}
 function dateKey(d){d=d||new Date();return ''+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');}
@@ -1293,19 +1319,20 @@ function weeklyRec(){if(!S.week||S.week.key!==weekKey())S.week={key:weekKey(),n:
 function weeklyOpen(){return QUESTS.some(q=>q.rank>=4&&qrec(q.id).n>0);}
 function weeklyQuest(){const W0=weekly();const D=MONSTER_TIERS[W0.tier];
  return {id:'w',weekly:true,rank:6,name:W0.name,desc:D.name+'（'+W0.mods.map(k=>MODS[k].name).join('・')+'）',obj:D.name+'の討伐',party:'1〜4人',req:0,maxHit:3,tier:W0.tier,exp:900,gold:1500,drops:{shin:2,gold:1}};}
-function missionOpen(){return QUESTS.some(q=>q.rank>=6&&qrec(q.id).n>0);}
-function missionGen(rank){const seed=hashStr('m'+rank+'_'+((S.rec&&S.rec.mseed)||1));
- const pool=[2,3,4,5,6,7,9,10,11,13].filter(t=>MONSTER_TIERS[t]);
+function missionOpen(){return atWall();}
+function missionGen(rank){rank=Math.max(1,rank|0);const seed=hashStr('m'+rank+'_'+((S.rec&&S.rec.mseed)||1));
+ const pool=[2,3,4,5,6,7,9,10,11,13].concat(rank>=10?[14]:[]).filter(t=>MONSTER_TIERS[t]);
  const tier=pool[seed%pool.length];
- const n=rank<3?1:2;const mods=[];let h=seed;
+ const n=rank<3?1:rank<20?2:3;const mods=[];let h=seed;
  while(mods.length<n){h=hashStr('x'+h);const k=MOD_IDS[h%MOD_IDS.length];if(!mods.includes(k))mods.push(k);}
  return {rank,tier,mods};}
-function missionCur(){if(!S.mission)S.mission=missionGen(1);return S.mission;}
+function missionCur(){const k=Math.max(1,wallIdx());if(!S.mission||S.mission.rank!==k)S.mission=missionGen(k);return S.mission;}
 function missionQuest(){const M=missionCur(),D=MONSTER_TIERS[M.tier];
- return {id:'m',mission:true,rank:6,name:'特命依頼 ランク'+M.rank,desc:D.name+'（'+M.mods.map(k=>MODS[k].name).join('・')+'）',
+ return {id:'m',mission:true,rank:8,name:'HR昇格クエスト（HR'+hr()+'）',desc:D.name+'（'+M.mods.map(k=>MODS[k].name).join('・')+'）',
   obj:D.name+'の討伐',party:'1〜4人',req:0,maxHit:3,tier:M.tier,
   exp:260+90*M.rank,gold:500+160*M.rank,drops:{shin:1,rin:1}};}
-function missionMul(){const M=missionCur();let hp=2.4*(1+0.25*(M.rank-1)),dmg=1.5*(1+0.10*(M.rank-1)),tele=Math.max(0.6,0.80-0.01*M.rank),wait=1,armor=null,weak=null;
+function missionMul(){const M=missionCur();const r=Math.sqrt(Math.max(0,M.rank-1));const D=MONSTER_TIERS[M.tier];
+ let hp=9000*(1+0.35*r)/D.hp,dmg=30*(1+0.25*r)/D.dmg,tele=Math.max(0.62,0.82-0.004*M.rank),wait=1,armor=null,weak=null;
  M.mods.forEach(k=>{const mo=MODS[k];if(mo.hp)hp*=mo.hp;if(mo.dmg)dmg*=mo.dmg;if(mo.tele)tele*=mo.tele;if(mo.wait)wait*=mo.wait;if(mo.armor){armor=mo.armor;weak=mo.weak;}});
  return {hp,dmg,tele,wait,armor,weak};}
 function missionReroll(){S.rec.mseed=(S.rec.mseed||1)+1;S.mission=missionGen(missionCur().rank);save();sfx('ui');rerender();}
@@ -1313,7 +1340,27 @@ const ENDLESS_Q={id:'e',rank:0,name:'腕試し（連戦）',desc:'倒れるま�
 const WAVE_TIERS=[0,8,4,12,1,10,5,2,9,3,11,6,13,7];
 function waveTier(w){return WAVE_TIERS[(w-1)%WAVE_TIERS.length];}
 function waveMult(w){return 1+0.12*(w-1);}
-function questOpen(q){return q.unlock===undefined||(S.rec.q[q.unlock]&&S.rec.q[q.unlock].n>0);}
+// HRごとの昇格クエスト（そのHRの★の代表）。クリアすると次の★が開く
+const PROMO={1:0,2:1,3:2,4:12,5:3,6:7,7:15};
+const FINAL_Q=16;
+function hr(){return (S&&S.hr)||1;}
+const HR_MAX=999;
+const HR_TITLES={10:'上位ハンター',20:'熟練の狩人',30:'歴戦の狩人',50:'獣を知る者',100:'百獣の狩人',200:'獣殺し',300:'狩りの達人',500:'伝説の狩人',700:'獣王の再来',999:'狩りの王'};
+function hrpNeed(h){return 30+Math.floor(Math.max(0,h-8)*0.6);}
+function wallIdx(){return Math.floor(hr()/10);}
+function atWall(){const h=hr();return !!(S&&S.ending)&&h>=10&&h%10===0&&h<HR_MAX&&(S.wallDone||0)<h/10;}
+function hrTitle(){let t='';Object.keys(HR_TITLES).map(Number).sort((a,b)=>a-b).forEach(k=>{if(k===HR_MAX?hr()>=HR_MAX:(S.wallDone||0)>=k/10)t=HR_TITLES[k];});return t;}
+function addHrp(n,R){if(!S||!S.ending||hr()>=HR_MAX)return 0;S.hrp=(S.hrp||0)+n;let up=0;
+ while(!atWall()&&hr()<HR_MAX&&S.hrp>=hrpNeed(hr())){S.hrp-=hrpNeed(hr());S.hr++;up++;}
+ if(up&&R){R.hrUp=S.hr;R.hrNew=[];if(atWall())R.hrWall=true;if(hr()>=HR_MAX)R.hrMax=true;}return up;}
+function hrpFor(q,dl,variant){let n=10+(q.rank||0)*6;n*=[1,1,1.35,1.7][dl||1];if(variant)n+=15;return Math.round(n);}
+function promoId(){const h=hr();if(PROMO[h]!==undefined)return PROMO[h];if(h>=8&&!(S&&S.ending))return FINAL_Q;return null;}
+function promoQ(){const id=promoId();return id===null?null:QUESTS.find(q=>q.id===id);}
+function hrMigrate(){if(!S)return;if(!S.hr){let h=1;while(PROMO[h]!==undefined&&S.rec&&S.rec.q[PROMO[h]]&&S.rec.q[PROMO[h]].n>0)h++;S.hr=h;}
+ if(S.rec&&S.rec.q[FINAL_Q]&&S.rec.q[FINAL_Q].n>0)S.ending=true;}
+const HR_BADGE=[[999,'#fff6c0','伝説'],[500,'#ff9ae0','虹'],[200,'#bfe8ff','白金'],[50,'#e0b34e','金'],[8,'#c8d0d8','銀'],[1,'#c08050','銅']];
+function hrBadge(h){h=h||hr();return HR_BADGE.find(b=>h>=b[0]);}
+function questOpen(q){return q.rank<=hr();}
 function load(){try{const s=localStorage.getItem(SAVE_KEY);return s?JSON.parse(s):null;}catch(e){return null;}}
 
 // ===== ジョブ判定・能力値 =====
@@ -1569,7 +1616,7 @@ function presetRow(){const cur=T?derived(T).job:null;const changed=LAST_JOB!==nu
 function jobList(){return`<details><summary>ジョブ一覧と発現条件</summary>${Object.keys(JOBS).map(k=>{const a=ADV_IDS.find(x=>ADV_JOBS[x].base===k);const A=a?ADV_JOBS[a]:null;
  return`<p><b style="color:${JOBS[k].dark}">${JOBS[k].name}</b>：${JOBS[k].rule}<br><small>${JOBS[k].skill}：${JOBS[k].skillDesc}</small>${A?`<br><small style="color:var(--gold)">↑上位 ${A.name}：${A.ratioTxt}・${A.statTxt}・Lv${ADV_LV}以上・危険度2クリア</small><br><small>${A.skill}：${A.skillDesc}</small>`:''}</p>`;}).join('')}</details>`;}
 function hudHTML(){const P=S.p,d=derived(P);const vn=villageNext();
- return`${panel?'':'<button class="gear" onpointerdown="event.preventDefault();openPanel(\'settings\')" aria-label="設定">⚙</button>'}<div class="hud"><b>${esc(P.name)}</b> Lv${P.lv} <span class="tag jobtag" style="color:${JOBS[d.job].color}" onpointerdown="event.preventDefault();openPanel('jobinfo')">${d.jobName} ▸</span>${d.adv?'<span class="tag" style="color:var(--gold)">上位</span>':''}${npcBadge()?'<span class="tag" style="color:#9fe07a">お願い '+npcBadge()+'</span>':''}<span class="tag" style="color:#9fd8f5" onpointerdown="event.preventDefault();toast(tbInfo())">${TB_NAME[timeBand()]}</span><span class="tag vlv" onpointerdown="event.preventDefault();openPanel('village')">村Lv${villageLv()}${villageNext()?'<small style="color:#8c8474"> あと'+villageNext().left+'</small>':''}</span><br>${P.gold}G　回復薬 ${P.items.potion}　薬草 ${P.herb}　種 ${P.items.seed}${P.pts>0?`<br><b style="color:#ffd35a">ポイントが ${P.pts} 残っている → 家で育成</b>`:''}</div>`;}
+ return`${panel?'':'<button class="gear" onpointerdown="event.preventDefault();openPanel(\'settings\')" aria-label="設定">⚙</button>'}<div class="hud"><b>${esc(P.name)}</b> Lv${P.lv} <span class="tag hrtag" style="color:${hrBadge()[1]};border-color:${hrBadge()[1]}" onpointerdown="event.preventDefault();openPanel('hrinfo')">HR${hr()}</span> <span class="tag jobtag" style="color:${JOBS[d.job].color}" onpointerdown="event.preventDefault();openPanel('jobinfo')">${d.jobName} ▸</span>${d.adv?'<span class="tag" style="color:var(--gold)">上位</span>':''}${npcBadge()?'<span class="tag" style="color:#9fe07a">お願い '+npcBadge()+'</span>':''}<span class="tag" style="color:#9fd8f5" onpointerdown="event.preventDefault();toast(tbInfo())">${TB_NAME[timeBand()]}</span><span class="tag vlv" onpointerdown="event.preventDefault();openPanel('village')">村Lv${villageLv()}${villageNext()?'<small style="color:#8c8474"> あと'+villageNext().left+'</small>':''}</span><br>${P.gold}G　回復薬 ${P.items.potion}　薬草 ${P.herb}　種 ${P.items.seed}${P.pts>0?`<br><b style="color:#ffd35a">ポイントが ${P.pts} 残っている → 家で育成</b>`:''}</div>`;}
 // ---- 救援札（非同期の助け合い）----
 const RES_TTL=3*24*3600*1000;
 function fv(f,k){const x=f&&f[k];return x?(x.stringValue!==undefined?x.stringValue:x.integerValue):'';}
@@ -1807,8 +1854,11 @@ function renderOpening(){if(!OP)return;const sc=OPENING[OP.i];
 function opNext(e){if(e&&e.preventDefault)e.preventDefault();if(!OP)return;OP.i++;OP.t=0;if(OP.i>=OPENING.length){opSkip();return;}renderOpening();}
 function opSkip(e){if(e&&e.preventDefault)e.preventDefault();OP=null;startCreate();}
 function toTitle(){save();T=null;showTitle();}
-const APP_VER='0.9.5';
+const APP_VER='0.10.1';
 const CHANGELOG=[
+ {v:'0.10.1',d:'2026-09-23',items:['エンディングとクレジットの制作者名を変更']},
+ {v:'0.10.0',d:'2026-09-23',items:['ハンターランク（HR）：★ごとの昇格クエストでHRが上がり、次の★の依頼が開く','最後の狩り「獣の王」とエンディング（スタッフロール）','エンディング後：どの狩りでもHRポイント、HR10ごとの「HR昇格クエスト」（特命依頼を統合）、称号と勲章、最大HR999']},
+ {v:'0.9.6',d:'2026-09-23',items:['難易度の調整：森の大物・牙王の討伐・獰猛化個体の狩猟を、同じ★の依頼と同じくらいの長さに','癒し手の攻撃が「心」で強くなるように。再生の光で敵にも光のダメージ','魔導の通常攻撃と火球を少し強化']},
  {v:'0.9.5',d:'2026-09-23',items:['利用規約とプライバシーポリシー（初回起動時に同意）','設定・クレジットからいつでも読めるように']},
  {v:'0.9.4',d:'2026-09-22',items:['オンライン機能の荒らし対策（自動の匿名ログインと、持ち主だけが変更できる仕組み）','通信の診断に「匿名ログイン」「荒らし対策」の確認を追加']},
  {v:'0.9.3',d:'2026-09-22',items:['アイコンを index.html と同じ場所に置く形に変更（フォルダ不要）']},
@@ -1826,7 +1876,7 @@ function changelogHTML(){return`<div class="panel sheet one"><h2>更新履歴</h
  <button onclick="openPanel('settings')">もどる</button></div>`;}
 const OFL_TEXT="SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007\n\nPREAMBLE\nThe goals of the Open Font License (OFL) are to stimulate worldwide development of collaborative font projects, to support the font creation efforts of academic and linguistic communities, and to provide a free and open framework in which fonts may be shared and improved in partnership with others.\n\nThe OFL allows the licensed fonts to be used, studied, modified and redistributed freely as long as they are not sold by themselves. The fonts, including any derivative works, can be bundled, embedded, redistributed and/or sold with any software provided that any reserved names are not used by derivative works. The fonts and derivatives, however, cannot be released under any other type of license. The requirement for fonts to remain under this license does not apply to any document created using the fonts or their derivatives.\n\nDEFINITIONS\n\"Font Software\" refers to the set of files released by the Copyright Holder(s) under this license and clearly marked as such. This may include source files, build scripts and documentation.\n\n\"Reserved Font Name\" refers to any names specified as such after the copyright statement(s).\n\n\"Original Version\" refers to the collection of Font Software components as distributed by the Copyright Holder(s).\n\n\"Modified Version\" refers to any derivative made by adding to, deleting, or substituting -- in part or in whole -- any of the components of the Original Version, by changing formats or by porting the Font Software to a new environment.\n\n\"Author\" refers to any designer, engineer, programmer, technical writer or other person who contributed to the Font Software.\n\nPERMISSION & CONDITIONS\nPermission is hereby granted, free of charge, to any person obtaining a copy of the Font Software, to use, study, copy, merge, embed, modify, redistribute, and sell modified and unmodified copies of the Font Software, subject to the following conditions:\n\n1) Neither the Font Software nor any of its individual components, in Original or Modified Versions, may be sold by itself.\n\n2) Original or Modified Versions of the Font Software may be bundled, redistributed and/or sold with any software, provided that each copy contains the above copyright notice and this license. These can be included either as stand-alone text files, human-readable headers or in the appropriate machine-readable metadata fields within text or binary files as long as those fields can be easily viewed by the user.\n\n3) No Modified Version of the Font Software may use the Reserved Font Name(s) unless explicit written permission is granted by the corresponding Copyright Holder. This restriction only applies to the primary font name as presented to the users.\n\n4) The name(s) of the Copyright Holder(s) and the Author(s) of the Font Software shall not be used to promote, endorse or advertise any Modified Version, except to acknowledge the contribution(s) of the Copyright Holder(s) and the Author(s) or with their explicit written permission.\n\n5) The Font Software, modified or unmodified, in part or in whole, must be distributed entirely under this license, and must not be distributed under any other license. The requirement for fonts to remain under this license does not apply to any document created using the Font Software.\n\nTERMINATION\nThis license becomes null and void if any of the above conditions are not met.\n\nDISCLAIMER\nTHE FONT SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM OTHER DEALINGS IN THE FONT SOFTWARE.";
 function creditsHTML(back){return`<div class="panel ${back==='title'?'center':'sheet one'}"><h2>クレジット</h2>
- <div class="item"><div><small>ゲーム制作</small><br><b>ダム</b></div></div>
+ <div class="item"><div><small>ゲーム制作</small><br><b>ヨシキ</b></div></div>
  <div class="item"><div><small>音楽・効果音</small><br>ゲーム内で合成（外部の音源は使っていません）</div></div>
  <div class="item"><div><small>フォント</small><br><b>DotGothic16</b><br><small>Copyright 2020 The DotGothic16 Project Authors<br>(https://github.com/fontworks-fonts/DotGothic16)<br>SIL Open Font License, Version 1.1 のもとで使用しています</small>
   <details><summary><small>ライセンス全文を見る</small></summary><pre class="ofl">${esc(OFL_TEXT)}</pre></details></div></div>
@@ -1877,6 +1927,54 @@ function showConsent(){const changed=(()=>{try{return !!localStorage.getItem('bh
  <p><small>18歳未満の方は、保護者の方の同意を得てください。</small></p>
  <button class="pri" onclick="legalAgree()">同意して始める</button></div></div>`);}
 function legalPanelHTML(kind){const d=legalDoc(kind);return`<div class="panel sheet one legal"><h2>${d.title}</h2><p><small style="color:var(--bone2)">制定日：${LEGAL_VER.replace(/-/g,'/')}</small></p>${legalBody(d.list)}<button onclick="openPanel('settings')">もどる</button></div>`;}
+
+// ===== C. エンディング =====
+let ED=null;
+const ED_TALK=[
+ n=>'……やったな、<b>'+esc(n)+'</b>。<br>獣の王が倒れ、森に静けさが戻った',
+ n=>'畑の猪を追い払ったあの日から、<br>ずいぶん遠くまで来たもんだ',
+ n=>'今日からお前は、この村の誇りだ。<br>……ありがとう',
+];
+function edCredits(){const P=S.p,seen=Object.keys((S.rec&&S.rec.mons)||{}).length,gear=(P.gear||[]).length;
+ return [['big','Beast Hunter'],['',''],['h','ゲーム制作'],['','ヨシキ'],['',''],['h','フォント'],['','DotGothic16'],['s','The DotGothic16 Project Authors'],['',''],
+  ['h','村の人々'],['','古参の狩人'],['','薬売りの老婆'],['','鍛冶屋の弟子'],['','村の子ども'],['',''],
+  ['h','狩りの記録'],['','総討伐 '+(P.cleared||0)+' 回'],['','出会った獣 '+seen+' 種'],['','集めた装備 '+gear+' 個'],['','Lv'+P.lv+'　'+derived(P).jobName],['',''],
+  ['h','そして'],['','ここまで遊んでくれた'],['big2','あなた'],['',''],['',''],['big','Thank you for playing!']];}
+function playEnding(replay){ED={phase:'talk',i:0,t:0,y:0,fast:1,replay:!!replay};scene='ending';panel=null;
+ try{playBgm('title');ambient(null);}catch(e){}renderEnding();}
+function renderEnding(){if(!ED)return;
+ if(ED.phase==='talk'){setUI(`<div class="intro" onclick="edNext()"><div class="ibox"><div class="ihead"><canvas id="iface" width="19" height="15"></canvas><span class="iname">古参の狩人</span></div>
+   <div class="itext">${ED_TALK[ED.i](S.p.name)}</div><div class="inext">▼ タップで次へ<span>${ED.i+1} / ${ED_TALK.length}</span></div></div>
+   <button class="iskip" onclick="event.stopPropagation();edSkip()">スキップ</button></div>`);drawTourFace();return;}
+ if(ED.phase==='roll'){setUI(`<div class="edroll" onclick="ED.fast=ED.fast>1?1:3"><div class="edclip"><div class="edlines" id="edl">${edCredits().map(([k,t])=>`<div class="edl ${k}">${esc(t)||'&nbsp;'}</div>`).join('')}</div></div>
+   <button class="iskip" onclick="event.stopPropagation();edSkip()">スキップ</button><div class="edhint">タップで早送り</div></div>`);ED.y=0;return;}
+ if(ED.phase==='end'){setUI(`<div class="edend" onclick="edFinish()"><div class="edcont">そして、狩りは続く――</div></div>`);}}
+function edNext(){if(!ED)return;ED.i++;try{sfx('ui');}catch(e){}if(ED.i>=ED_TALK.length){ED.phase='roll';ED.t=0;}renderEnding();}
+function edSkip(){if(!ED)return;if(ED.phase==='talk'){ED.phase='roll';ED.t=0;renderEnding();return;}ED.phase='end';ED.t=0;renderEnding();}
+function edFinish(){if(!ED)return;const replay=ED.replay;ED=null;
+ if(!replay){S.ending=true;S.endingPending=false;S.hrp=S.hrp||0;save();}
+ goVillage();if(!replay)setTimeout(()=>{if(scene==='world'){panel='postend';renderWorld();}},300);}
+function edTick(dt){if(!ED)return;ED.t+=dt;
+ if(ED.phase==='roll'){const el=document.getElementById('edl');if(el){ED.y+=dt*16*ED.fast;el.style.transform='translateY('+(-ED.y)+'px)';
+   if(ED.y>el.offsetHeight+el.parentNode.offsetHeight){ED.phase='end';ED.t=0;renderEnding();}}}
+ if(ED.phase==='end'&&ED.t>4.5)edFinish();}
+function drawEndingBg(dt){vt+=dt;drawTitleBg(dt);if(!ED||ED.phase==='talk')return;
+ // 行進：主人公と村人、倒してきた獣たち
+ const g=ctx,gy=Math.round(LH*0.8);g.fillStyle='rgba(20,30,20,.55)';g.fillRect(0,gy+2,LW,LH-gy);
+ const d=derived(S.p);const f=1+Math.floor(vt*6)%2;
+ const walkers=[{im:playerSprite(d.job,f,d.aid,S.p.look),y:gy-24}];
+ NPCS.forEach(n=>walkers.push({im:npcSprite(n),y:gy-22}));
+ const tiers=Object.keys((S.rec&&S.rec.mons)||{}).map(Number).filter(t=>MONSTER_TIERS[t]).slice(0,10);
+ if(!tiers.includes(14)&&MONSTER_TIERS[14])tiers.push(14);
+ tiers.forEach(t=>{const im=monSprite(t,Math.floor(vt*4)%2);const sc=t===14?1:0.7;walkers.push({im,y:gy-im.height*sc,sc});});
+ const gap=34,total=walkers.length*gap+LW;
+ walkers.forEach((w,i)=>{const x=Math.round(((vt*14)+i*gap)%total)-40;const sc=w.sc||1;
+  g.save();g.translate(x+w.im.width*sc,0);g.scale(-1,1);g.drawImage(w.im,0,w.y,w.im.width*sc,w.im.height*sc);g.restore();});}
+function postEndHTML(){return`<div class="panel center" style="text-align:center"><h2>古参の狩人</h2>
+ <p>「……だが気をつけろ。王が倒れたことで、<b>上位の獣たち</b>が目を覚ました」</p>
+ <p>「ここからが本当の狩りだ。<b>ハンターランク</b>を上げて、どこまで行けるか見せてくれ」</p>
+ <div class="job"><b style="color:var(--gold)">ハンターランクの道が開いた！</b><br><small>どの狩りでも「HRポイント」がたまり、HRが上がります。<br>HR10・20・30…の節目では「HR昇格クエスト」に挑みます（最大HR999）</small></div>
+ <button class="pri" onclick="closePanel()">狩りを続ける</button></div>`;}
 function continueGame(){const s=load();if(!s)return;S=s;migrate();goVillage();}
 function startCreate(){T=newPlayer('');T.look=Object.assign({},DEF_LOOK);T._floor=Object.assign({},T.stats);scene='create';renderCreate();}
 const NAME_POOL=['ハヤテ','ミナト','ツバキ','カエデ','アサヒ','シオン','ヒビキ','コハク','リン','ソラ','ユウ','ナギ','レン','アオイ','スバル','ホムラ','イブキ','カイ','トウマ','サクヤ'];
@@ -1919,7 +2017,7 @@ const MAPS={
      const dq=dailyQuest(),d=dq&&!dailyDone();
      const chal=QUESTS.filter(q=>questOpen(q)&&qrec(q.id).n&&!qch(q.id).every(x=>x)).length;
      const T=todayRec();const parts=['今日の3本 '+T.done.length+'/3'];if(fresh)parts.push('新しい依頼 '+fresh+'件');if(d)parts.push('今日の依頼がまだ');if(chal)parts.push('挑戦が残る依頼 '+chal+'件');
-     if(missionOpen())parts.push('特命 ランク'+missionCur().rank);
+     if(missionOpen())parts.push('HR昇格クエスト');
      return parts.length?parts.join('／'):'依頼を見ていく。';},acts:()=>[{l:'依頼を見る',f:()=>openPanel('board')}]},
    {id:'itemshop',name:'道具屋',rect:{x:24,y:82,w:32,h:24},solid:1,say:()=>'「回復薬に薬草の種、どうだい？」',acts:()=>[{l:'買う',f:()=>openPanel('itemshop')},{l:'ポーチ',f:()=>openPanel('pouch')}]},
    {id:'shop',name:'販売店',rect:{x:100,y:82,w:32,h:24},solid:1,say:()=>'「新品の武器と鎧、見ていくかい」',acts:()=>[{l:'買う',f:()=>openPanel('shop')}]},
@@ -1959,10 +2057,11 @@ function goFarm(){try{playBgm('farm');ambient('wind');}catch(e){}
  setTimeout(()=>{if(S&&!S.farmTour&&!S.guideOff&&W.map==='farm'&&!panel){S.farmTour=true;save();tourStart(TOUR_FARM);}},350);
 WPOS.village={x:W.x,y:W.y};enterMap('farm');scene='world';panel=null;T=null;renderWorld();save();}
 function openPanel(p){panel=p;T=null;renderWorld();}
-function closePanel(){if(FS&&FS.timer){clearTimeout(FS.timer);FS=null;}panel=null;T=null;bubSig='';renderWorld();}
+function closePanel(){if(FS&&FS.timer){clearTimeout(FS.timer);FS=null;}const was=panel;panel=null;T=null;bubSig='';
+ if(S&&S.endingPending&&was==='result'){playEnding(false);return;}renderWorld();}
 function openStatus(){T=JSON.parse(JSON.stringify(S.p));T._floor=Object.assign({},S.p.stats);panel='status';renderWorld();}
 function confirmStatus(){if(T){const spent=T.pts<S.p.pts;S.p.stats=T.stats;S.p.pts=T.pts;S.p.auto=T.auto;if(spent)S.statDone=true;}save();closePanel();}
-const PANELS={terms:()=>legalPanelHTML('terms'),privacy:()=>legalPanelHTML('privacy'),xfer:()=>`<div class="panel sheet one"><h2>データの引き継ぎ</h2>${xferBody(false)}<button onclick="XFER={code:'',msg:'',mode:''};openPanel('settings')">もどる</button></div>`,changelog:changelogHTML,credits:()=>creditsHTML('settings'),jobinfo:jobInfoHTML,tour:tourHTML,intro:introHTML,settings:settingsHTML,fish:fishHTML,pouch:pouchHTML,rescue:rescueHTML,diag:diagHTML,village:villageHTML,brew:brewHTML,runes:runesHTML,lobby:lobbyHTML,join:joinHTML,board:boardHTML,itemshop:itemshopHTML,shop:shopHTML,smith:smithHTML,equip:equipHTML,note:noteHTML,status:statusHTML,result:resultHTML,springAsk:springAskHTML,sprung:sprungHTML};
+const PANELS={postend:postEndHTML,hrinfo:hrInfoHTML,terms:()=>legalPanelHTML('terms'),privacy:()=>legalPanelHTML('privacy'),xfer:()=>`<div class="panel sheet one"><h2>データの引き継ぎ</h2>${xferBody(false)}<button onclick="XFER={code:'',msg:'',mode:''};openPanel('settings')">もどる</button></div>`,changelog:changelogHTML,credits:()=>creditsHTML('settings'),jobinfo:jobInfoHTML,tour:tourHTML,intro:introHTML,settings:settingsHTML,fish:fishHTML,pouch:pouchHTML,rescue:rescueHTML,diag:diagHTML,village:villageHTML,brew:brewHTML,runes:runesHTML,lobby:lobbyHTML,join:joinHTML,board:boardHTML,itemshop:itemshopHTML,shop:shopHTML,smith:smithHTML,equip:equipHTML,note:noteHTML,status:statusHTML,result:resultHTML,springAsk:springAskHTML,sprung:sprungHTML};
 let smithTab='craft';
 function renderWorld(){const body=PANELS[panel]?PANELS[panel]():'';
  const signs=curMap().spots.map(sp=>`<div class="sign" data-id="${sp.id}">${sp.name}</div>`).join('');
@@ -2033,7 +2132,8 @@ function updateWorld(dt){const m=curMap();
 
 // ===== パネル =====
 function questCard(q,P){const r=qrec(q.id);const isNew=!r.n;const mastered=qdl(q.id)>=3&&qch(q.id).every(x=>x);
- return`<div class="item q"><div class="top"><span class="mark">${mark(P,q)}</span><div style="flex:1">${isNew?'<span class="tag" style="color:#7fc8f5">NEW</span> ':''}${mastered?'<span class="tag" style="color:var(--gold)">制覇</span> ':''}<span class="stars">${'★'.repeat(q.rank)}</span> <b>${q.name}</b><br><small>${q.desc}</small><br><small>${q.chain?'<span class="tag">連続'+q.chain.length+'頭</span> ':''}目的：${q.obj}${q.party?'／'+q.party:''}</small><br><small>報酬 ${q.gold}G・${Object.keys(q.drops).map(k=>MATS[k]+'×'+q.drops[k]).join('・')}　目安 ${q.req}／あなた ${power(P)}</small>${(()=>{const gs=[...new Set(Object.keys(q.drops).flatMap(k=>gearFromMat(k)))].slice(0,3);return gs.length?'<br><small style="color:#9fd8f5">この素材で作れる：'+gs.map(id=>GEAR[id].name).join('・')+'</small>':'';})()}${r.n?'<br><small>討伐 '+r.n+'回・最速 '+fmtTime(r.best)+'</small>':'<br><small>'+fmtEst(estTime(q))+'</small>'}</div></div>
+ const isPromo=q.id===promoId();
+ return`<div class="item q${isPromo?' promo':''}"><div class="top"><span class="mark">${mark(P,q)}</span><div style="flex:1">${isPromo?'<span class="tag" style="color:#1a1206;background:var(--gold);border-color:var(--gold)">'+(q.id===FINAL_Q?'最後の狩り':'昇格クエスト')+'</span> ':''}${isNew?'<span class="tag" style="color:#7fc8f5">NEW</span> ':''}${mastered?'<span class="tag" style="color:var(--gold)">制覇</span> ':''}<span class="stars">${'★'.repeat(q.rank)}</span> <b>${q.name}</b><br><small>${q.desc}</small><br><small>${q.chain?'<span class="tag">連続'+q.chain.length+'頭</span> ':''}目的：${q.obj}${q.party?'／'+q.party:''}</small><br><small>報酬 ${q.gold}G・${Object.keys(q.drops).map(k=>MATS[k]+'×'+q.drops[k]).join('・')}　目安 ${q.req}／あなた ${power(P)}</small>${(()=>{const gs=[...new Set(Object.keys(q.drops).flatMap(k=>gearFromMat(k)))].slice(0,3);return gs.length?'<br><small style="color:#9fd8f5">この素材で作れる：'+gs.map(id=>GEAR[id].name).join('・')+'</small>':'';})()}${r.n?'<br><small>討伐 '+r.n+'回・最速 '+fmtTime(r.best)+'</small>':'<br><small>'+fmtEst(estTime(q))+'</small>'}</div></div>
  <div class="chl">${CHALLENGES.map((c,i)=>{const done=qch(q.id)[i];const nm=c.k==='time'?chTime(q)+'秒以内':c.k==='nohit'?((q.maxHit||0)===0?'無傷':'被弾'+q.maxHit+'回まで'):'薬なし';return '<span style="color:'+(done?'var(--gold)':'#8c8474')+'">'+(done?'●':'○')+nm+'</span>';}).join('　')}${qch(q.id).every(x=>x)?'<span class="tag" style="color:var(--gold)">3つ達成</span>':'<span style="color:#6f6a5e">　←3つ全部できると刻印が1つもらえる</span>'}</div>
  <div class="dl"><small>危険度</small>${[1,2,3].map(dl=>{const open=dlOpen(q.id,dl);return '<button class="small '+(dl===1?'pri':(qdl(q.id)>=dl?'on':''))+'" '+(open?'':'disabled')+' onclick="startQuest('+q.id+','+dl+')">'+(dl===1?'受注':dl)+'</button>';}).join('')}</div></div>`;}
 function boardHTML(){const P=S.p;const dq=dailyQuest();const dd=dailyDone();
@@ -2045,9 +2145,10 @@ function boardHTML(){const P=S.p;const dq=dailyQuest();const dd=dailyDone();
   week=`<div class="item q" style="border-left-color:#ff9a8a"><div class="top"><span class="mark">週</span><div style="flex:1"><span class="tag" style="color:#ff9a8a">週替わり</span> <b>${D.name}</b>${Wr.claimed?'<span class="tag" style="color:var(--gold)">今週達成</span>':''}<br><small>特性：${W0.mods.map(k=>'<span style="color:#ff9a8a">'+MODS[k].name+'</span>（'+MODS[k].desc+'）').join('　')}</small><br><small>${Wr.claimed?'2回目以降：心珠×1':'今週の初回報酬：獣の心珠×3・亜種の輝片×2・刻印'}</small><br><small>入れ替わりまで あと${left}</small></div></div>
   <div class="dl"><button class="small pri" onclick="startQuest('w')">受注</button></div></div>`;}
  let mission='';
- if(missionOpen()){const M=missionCur(),D=MONSTER_TIERS[M.tier];
-  mission=`<div class="item q" style="border-left-color:var(--gold)"><div class="top"><span class="mark">特</span><div style="flex:1"><span class="tag" style="color:var(--gold)">特命依頼</span> <b>ランク${M.rank}</b>${S.rec.mrank?'　<small>最高 ランク'+S.rec.mrank+'</small>':''}<br><small>相手：${D.name}</small><br><small>特性：${M.mods.map(k=>'<span style="color:#ff9a8a">'+MODS[k].name+'</span>（'+MODS[k].desc+'）').join('　')}</small><br><small>報酬 ${500+160*M.rank}G・${MATS.shin}×${2+Math.floor(M.rank/3)}・${MATS.rin}×1／刻印が出ることも</small><br><small>クリアするとランクが上がり、相手と特性が変わります（終わりはありません）</small></div></div>
+ if(missionOpen()){const M=missionCur(),D=MONSTER_TIERS[M.tier];const nt=HR_TITLES[hr()];
+  mission=`<div class="item q promo"><div class="top"><span class="mark">壁</span><div style="flex:1"><span class="tag" style="color:#1a1206;background:var(--gold);border-color:var(--gold)">HR昇格クエスト</span> <b>HR${hr()}の壁</b><br><small>相手：${D.name}</small><br><small>特性：${M.mods.map(k=>'<span style="color:#ff9a8a">'+MODS[k].name+'</span>（'+MODS[k].desc+'）').join('　')}</small><br><small>報酬 ${500+160*M.rank}G・${MATS.shin}×${2+Math.floor(M.rank/3)}・${MATS.rin}×1／刻印が出ることも${nt?'／称号「'+nt+'」':''}</small><br><small>クリアするとHR${hr()+1}へ進めます（たまったHRポイントもまとめて反映）</small></div></div>
   <div class="dl"><button class="small pri" onclick="startQuest('m')">受注</button><button class="small" onclick="missionReroll()">内容を変える</button></div></div>`;}
+ else if(S.ending&&hr()<HR_MAX){const nw=Math.min(HR_MAX,Math.ceil((hr()+1)/10)*10);mission=`<div class="item"><span class="mark">▲</span><div style="flex:1"><b>次のHR昇格クエスト：HR${nw}</b><br><small>どの狩りでもHRポイントがたまります（★が高く、危険度が高いほど多い）</small></div></div>`;}
  const open=QUESTS.filter(q=>questOpen(q));
  const byRank=(a,b)=>a.rank-b.rank||a.id-b.id;
  const fresh=open.filter(q=>!qrec(q.id).n).sort(byRank);
@@ -2061,14 +2162,16 @@ function boardHTML(){const P=S.p;const dq=dailyQuest();const dd=dailyDone();
  ${picks.map(p=>{const fin=T.done.indexOf(p.q.id)>=0;
   return `<div class="item${fin?' lock':''}"><span class="mark">${fin?'済':mark(P,p.q)}</span><div style="flex:1"><b>${'★'.repeat(p.q.rank)} ${p.q.name}</b><br><small style="color:#9fd8f5">${p.why}</small><br><small>${MONSTER_TIERS[p.q.tier].name}${p.q.chain?'ほか':''}／${fmtEst(estTime(p.q))}</small></div>${fin?'':`<button class="small pri" onclick="startQuest(${p.q.id},1)">受注</button>`}</div>`;}).join('')}
  <div class="t3f"><small>${fin3>=3?'今日の分は終わり。もっと遊ぶなら下の依頼へ':'3本終われば今日は十分。1本およそ1〜2分です'}</small></div></div>`;
+ const pq=promoQ();const hrLine=`<div class="job" style="border-color:${hrBadge()[1]}"><b style="color:${hrBadge()[1]}">HR${hr()}</b>　${pq?'<small>次の目標：</small><b>昇格クエスト「'+pq.name+'」</b>':(atWall()?'<b style="color:var(--gold)">HR昇格クエストに挑もう</b>':'<small>次のHRまで HRポイント </small><b>'+(S.hrp||0)+' / '+hrpNeed(hr())+'</b>')}${hrTitle()?'<br><small>称号：'+hrTitle()+'</small>':''}</div>`;
  return`<div class="panel sheet one"><h2>クエスト掲示板</h2>
+ ${hrLine}
  ${today3}
  <p><small>◎ 今の装備と育成でクリアできる　○ 少し手強い　△ 育ててから</small></p>
  ${daily}${week}${endless}${mission}
  ${sec('新しい依頼',fresh,'まだ一度もクリアしていない依頼')}
  ${sec('挑戦中の依頼',prog,'危険度や挑戦が残っている依頼')}
  ${mast.length?`<details style="margin-top:10px"><summary>制覇した依頼（${mast.length}件）</summary>${mast.map(q=>questCard(q,P)).join('')}</details>`:''}
- ${lock.length?`<p style="margin-top:10px"><small>未解禁 ${lock.length}件</small></p>`+lock.map(q=>`<div class="item lock"><span class="mark">🔒</span><div style="flex:1"><b>？？？</b><br><small>${'★'.repeat(QUESTS.find(x=>x.id===q.unlock).rank)}「${QUESTS.find(x=>x.id===q.unlock).name}」を達成すると解禁</small></div></div>`).join(''):''}
+ ${lock.length?`<p style="margin-top:10px"><small>未解禁 ${lock.length}件</small></p>`+[...new Set(lock.map(q=>q.rank))].sort((a,b)=>a-b).map(rk=>{const n=lock.filter(q=>q.rank===rk).length;return `<div class="item lock"><span class="mark">🔒</span><div style="flex:1"><b>${'★'.repeat(rk)}の依頼 ${n}件</b><br><small>${rk===8?'最後の狩り。':''}HR${rk}になると解放（昇格クエストをクリア）</small></div></div>`;}).join(''):''}
  <button onclick="closePanel()">閉じる</button></div>`;}
 function itemshopHTML(){const P=S.p;const vl=villageLv();
  const avail=Object.keys(ITEMS).filter(id=>(ITEMS[id].lv||1)<=vl),locked=Object.keys(ITEMS).filter(id=>(ITEMS[id].lv||1)>vl);
@@ -2102,7 +2205,7 @@ function smithHTML(){const P=S.p;const tab=smithTab;
    +(soon.length?'<p><small>材料を集めれば作れる</small></p>'+soon.map(card).join(''):'')
    +(owned.length?`<details><summary>もう持っている装備（${owned.length}件）</summary>${owned.map(card).join('')}</details>`:'')
    +(unknown.length?'<p><small>まだ見ぬ装備が '+unknown.length+'件</small></p>'+unknownMats.map(k=>{const q=matSource(k);
-     return '<div class="item lock"><div><b style="color:var(--gold)">'+MATS[k]+'</b> を手に入れると '+SMITH_LIST.filter(id=>!gearKnown(id)&&GEAR[id].craft[k]).length+'件ふえる<br><small>'+(q?(questOpen(q)?'★'.repeat(q.rank)+'「'+q.name+'」で手に入ります':'まだ解禁されていない依頼で手に入ります'):'危険度3や特命依頼で手に入ります')+'</small></div></div>';}).join('')
+     return '<div class="item lock"><div><b style="color:var(--gold)">'+MATS[k]+'</b> を手に入れると '+SMITH_LIST.filter(id=>!gearKnown(id)&&GEAR[id].craft[k]).length+'件ふえる<br><small>'+(q?(questOpen(q)?'★'.repeat(q.rank)+'「'+q.name+'」で手に入ります':'まだ解禁されていない依頼で手に入ります'):'危険度3やHR昇格クエストで手に入ります')+'</small></div></div>';}).join('')
     :'<p><small style="color:var(--gold)">すべての装備が並びました</small></p>');
  }
  else{const own=P.gear;body=own.length?own.map(id=>{const g=GEAR[id],lv=P.upg[id]||0;
@@ -2183,7 +2286,7 @@ function runesHTML(){const P=S.p;const own=ownedRunes(P);const eq=P.runes||[];co
  ${RUNE_IDS.length-own.length>0?'<p><small>まだ見つけていない刻印：'+(RUNE_IDS.length-own.length)+'種</small></p><div class="codex">'+RUNE_IDS.filter(id=>!own.includes(id)).map(()=>'<div>？？？</div>').join('')+'</div>':'<p><small style="color:var(--gold)">すべての刻印を集めました</small></p>'}
  <button onclick="closePanel()">閉じる</button></div>`;}
 function noteHTML(){const all=Object.keys(JOBS).concat(ADV_IDS);const got=all.filter(k=>S.rec.jobs[k]).length,tot=all.length;
- return`<div class="panel sheet one"><h2>ハンターノート</h2><p><b style="color:var(--gold)">ジョブ図鑑 ${got}／${tot}</b><br><small>ステータスの振り方を変えると、まだ見ぬジョブが目覚めます</small></p><div class="codex">${all.map(k=>{const nm=JOBS[k]?JOBS[k].name:ADV_JOBS[k].name;return`<div class="${S.rec.jobs[k]?'got':''}">${S.rec.jobs[k]?nm:'？？？'}</div>`;}).join('')}</div>
+ return`<div class="panel sheet one"><h2>ハンターノート</h2>${S.ending?'<button class="small" onclick="playEnding(true)">エンディングをもう一度見る</button>':''}<p><b style="color:var(--gold)">ジョブ図鑑 ${got}／${tot}</b><br><small>ステータスの振り方を変えると、まだ見ぬジョブが目覚めます</small></p><div class="codex">${all.map(k=>{const nm=JOBS[k]?JOBS[k].name:ADV_JOBS[k].name;return`<div class="${S.rec.jobs[k]?'got':''}">${S.rec.jobs[k]?nm:'？？？'}</div>`;}).join('')}</div>
  <p><b>狩猟記録</b><br><small>●＝挑戦達成／危＝到達した危険度</small></p>${QUESTS.filter(q=>questOpen(q)||qrec(q.id).n).map(q=>{const r=qrec(q.id);return`<div class="rec"><span><span class="stars">${'★'.repeat(q.rank)}</span> ${q.name}<br><small>${CHALLENGES.map((c,i)=>qch(q.id)[i]?'<span style="color:var(--gold)">●</span>':'<span style="color:#555">○</span>').join('')} 危${r.dl||1}</small></span><span>${r.n}回</span><span>${fmtTime(r.best)}</span></div>`;}).join('')}
 
  ${S.fish&&S.fish.n?`<p><b>釣りの記録</b>　<small>釣った数 ${S.fish.n}／種類 ${Object.keys(S.fish.kinds).length}/${FISH.length}</small></p>
@@ -2198,7 +2301,7 @@ function noteHTML(){const all=Object.keys(JOBS).concat(ADV_IDS);const got=all.fi
    return null;}).filter(x=>x);
   const rest=un.length-lines.length;
   return '<p><b>まだ出会っていない獣 '+un.length+'種</b></p>'+(lines.length?lines.join(''):'')+(rest?'<p><small>残り'+rest+'種は、依頼を進めると現れます</small></p>':'');})()}
- <p><small>総討伐数 ${S.p.cleared}　振り直し ${S.p.resets}回　腕試し最高 ${S.rec.streak||0}体　特命最高 ランク${S.rec.mrank||0}　刻印 ${ownedRunes(S.p).length}/${RUNE_IDS.length}</small></p><button onclick="closePanel()">閉じる</button></div>`;}
+ <p><small>総討伐数 ${S.p.cleared}　振り直し ${S.p.resets}回　腕試し最高 ${S.rec.streak||0}体　HR${hr()}${hrTitle()?'（'+hrTitle()+'）':''}　刻印 ${ownedRunes(S.p).length}/${RUNE_IDS.length}</small></p><button onclick="closePanel()">閉じる</button></div>`;}
 function statusHTML(){const d=derived(T),cur=derived(S.p).job;return`<div class="panel sheet one"><h2>育成</h2>${T.pts>0?`<p>残りポイント <b>${T.pts}</b>${T.auto?'<span class="tag">おまかせ中</span>':''}</p>`:`<p><small>ポイントはありません（レベルアップで3）。${T.auto?'次のレベルアップは「おまかせ」で自動配分。':'次のレベルアップは手動で振ります。'}</small></p>`}${presetRow()}${statRows(T,T.pts>0)}${jobBox(d.job,cur,T)}<p><small>経験値 ${S.p.exp}/${needExp(S.p.lv)}　待ち時間 ×${d.cdMul.toFixed(2)}　予告の長さ ×${d.teleMul.toFixed(2)}</small></p>${jobList()}<div class="row"><button class="pri" onclick="confirmStatus()">決定して閉じる</button>${T.auto?`<button class="small" onclick="T.auto=null;rerender()">おまかせをやめる</button>`:''}<button class="small" onclick="toTitle()">タイトルへ</button></div></div>`;}
 function springAskHTML(){const d=derived(S.p);return`<div class="panel center" style="text-align:center"><h2>本当にリセットしますか？</h2><p>今のジョブ <b style="color:${JOBS[d.job].dark}">${JOBS[d.job].name}</b> は失われ、<br>ステータスは初期値に戻ります。</p><p>戻ってくるポイント <b>${allocated()}</b>　使う薬草 <b>1</b>${RESET_LIMIT?`<br><small>残り回数 ${resetLeft()}</small>`:'<br><small>回数制限はありません</small>'}</p><div class="row" style="justify-content:center"><button class="pri" onclick="doSpring()">はい、リセットする</button><button onclick="closePanel()">やめる</button></div></div>`;}
 function sprungHTML(){return`<div class="panel center" style="text-align:center"><h2>湯から上がった</h2><p>ステータスが白紙に戻りました。<br>ポイント <b>${S.p.pts}</b> を振り直せます。</p><p><small>振らないと弱いままなので、今すぐ配分するのがおすすめ</small></p><div class="row" style="justify-content:center"><button class="pri" onclick="openStatus()">育成画面へ</button><button onclick="closePanel()">閉じる</button></div></div>`;}
@@ -2211,20 +2314,20 @@ function nextHint(){const P=S.p;
  if(P.pts>0)return'ポイントが '+P.pts+' 残っています（家で育成）';
  if(P.items.potion<2)return'回復薬が少なめです（道具屋か農場で）';
  const ow=ownedRunes(P);if(ow.length&&(P.runes||[]).length<runeSlots())return'刻印の枠が空いています（家の「刻印」で付けられます）';
- if(missionOpen())return'特命依頼 ランク'+missionCur().rank+'が受注できます（クリアでランクが上がります）';
+ if(missionOpen())return'HR'+hr()+'の壁：掲示板のHR昇格クエストに挑もう';
  const ac=advCond(P);if(ac&&!ac.ok){const miss=ac.list.filter(x=>!x.ok)[0];return'上位ジョブ「'+ac.adv.name+'」まであと：'+miss.t;}
  if(ow.length<RUNE_IDS.length)return'危険度3や挑戦の全達成で、新しい刻印が見つかります';
  const lockd=QUESTS.find(q=>!questOpen(q));
  if(lockd)return'★'.repeat(QUESTS.find(x=>x.id===lockd.unlock).rank)+'「'+QUESTS.find(x=>x.id===lockd.unlock).name+'」を達成すると新しい依頼が開きます';
  return'畑に種をまいておくと、次のクエストで実ります';}
 function resultHTML(){const R=RES;if(!R)return'';
- if(R.mission)return`<div class="panel center" style="text-align:center"><h1>特命 達成！</h1>
-  <p style="font-size:20px;color:var(--gold)"><b>ランク${R.mrank}</b> を突破</p>
+ if(R.mission)return`<div class="panel center" style="text-align:center"><h1>HR昇格！</h1>
+  <p style="font-size:20px;color:var(--gold)"><b>HR${R.wallClear}の壁</b> を突破</p>${R.newTitle?`<div class="job hrup"><b style="color:var(--gold)">称号「${R.newTitle}」を手に入れた！</b></div>`:''}${R.hrUp?`<p><b style="color:${hrBadge(R.hrUp)[1]}">HR${R.hrUp} になった！</b></p>`:''}
   <p>経験値 +${R.exp}　${R.gold}G　${Object.keys(R.drops).map(k=>MATS[k]+'×'+R.drops[k]).join(' ')}${R.items&&Object.keys(R.items).length?'<br>道具 '+Object.keys(R.items).map(k=>ITEMS[k].name+'×'+R.items[k]).join(' '):''}</p>
   ${R.ups.length?`<p><b>レベルアップ！ Lv${R.ups[R.ups.length-1]}</b></p>`:''}
   ${R.rune?'<div class="job"><b style="color:var(--gold)">刻印を発見！「'+RUNES[R.rune].name+'」</b><br><small>'+RUNES[R.rune].desc+'</small></div>':''}
   <p><small>タイム ${fmtTime(R.time)}　被弾 ${R.hits}回</small></p>
-  <div class="job"><small>次はランク${R.mrank+1}。相手と特性が変わります</small></div>
+  <div class="job"><small>次の壁はHR${Math.min(HR_MAX,(Math.floor(hr()/10)+1)*10)}。どの狩りでもHRポイントがたまります</small></div>
   <div class="row" style="justify-content:center">${S.p.pts>0?`<button class="pri" onclick="openStatus()">ポイントを振る</button>`:''}${(!NET.on||NET.host)?`<button class="pri" onclick="startQuest('m')">次のランクへ</button>`:''}<button onclick="closePanel()">村へ</button></div></div>`;
  if(R.endless)return`<div class="panel center" style="text-align:center"><h1>腕試し終了</h1><p style="font-size:22px;color:var(--gold)"><b>${R.waves}体</b> 撃破</p>
   ${R.newStreak?'<p><b style="color:var(--gold)">自己最高記録！</b></p>':`<p><small>最高記録 ${R.best}体</small></p>`}
@@ -2233,7 +2336,7 @@ function resultHTML(){const R=RES;if(!R)return'';
   ${R.rune?'<div class="job"><b style="color:var(--gold)">刻印を発見！「'+RUNES[R.rune].name+'」</b><br><small>'+RUNES[R.rune].desc+'</small><br><small>入手：'+(R.runeFrom||'')+'</small></div>':''}
   <div class="job"><small>${nextHint()}</small></div>
   <div class="row" style="justify-content:center">${S.p.pts>0?`<button class="pri" onclick="openStatus()">ポイントを振る</button>`:''}${(!NET.on||NET.host)?`<button onclick="startQuest('e')">もう一度</button>`:''}<button onclick="closePanel()">村へ</button></div></div>`;
- return`<div class="panel center" style="text-align:center"><h1>${R.win?'クエスト達成！':'村へ帰還'}</h1>${R.win?'':'<p><small>倒れてもペナルティなし。経験値は少しもらえます。</small></p>'+rescueBoxHTML(R)}<p>経験値 +${R.exp}　${R.gold?`${R.gold}G　`:''}${Object.keys(R.drops).map(k=>MATS[k]+'×'+R.drops[k]).join(' ')}</p>${R.dl&&R.dl>1?'<p><small style="color:#ff9a8a">危険度'+R.dl+' 報酬 ×'+DANGER[R.dl-1].rew+'</small></p>':''}${R.helped?'<div class="job"><b style="color:#9fe07a">'+esc(R.helped)+' の救援に成功！</b><br><small>'+R.helpGold+'Gと素材を受け取った</small></div>':''}${R.vlvUp?'<div class="job"><b style="color:var(--gold)">村が発展した！ 村レベル '+R.vlvUp+'</b><br><small>'+VBEN[R.vlvUp]+'</small></div>':''}${R.varGot&&R.varGot.length?'<div class="job"><b style="color:var(--gold)">亜種を討伐！ '+R.varGot.join('・')+'</b><br><small>亜種の輝片×'+R.varGot.length+' を手に入れた</small></div>':''}${R.weekly?'<div class="job"><b style="color:#ff9a8a">週の獣を討伐！</b><br><small>'+(R.weekFirst?'今週の初回報酬：獣の心珠×3・亜種の輝片×2':'今週2回目以降：獣の心珠×1')+'</small></div>':''}${R.tbTo?'<p><small style="color:#9fd8f5">時間が進んだ：'+TB_NAME[R.tbFrom]+' → '+TB_NAME[R.tbTo]+'</small></p>':''}${R.todayDone?'<div class="job"><b style="color:var(--gold)">今日の3本 達成！</b><br><small>600Gと獣の心珠×1</small></div>':(R.today?'<p><small style="color:#9fd8f5">今日の3本　'+R.today+'/3</small></p>':'')}${R.parts&&R.parts.length?'<div class="job"><b style="color:var(--gold)">部位破壊：'+R.parts.join('・')+'</b>'+(R.allParts?'<br><b style="color:var(--gold)">全部位破壊！ '+(300*(RES.qid!==undefined?(QUESTS.find(x=>x.id===RES.qid)||{rank:1}).rank:1))+'Gと追加素材</b>':'')+'<br><small>追加の素材を手に入れた</small></div>':''}${R.newMat&&R.newMat.length?'<div class="job"><b style="color:var(--gold)">新しい素材「'+R.newMat.map(k=>MATS[k]).join('・')+'」を手に入れた！</b><br><small>鍛冶屋に新しい装備が並びました</small></div>':''}${R.rare?'<p><small style="color:var(--gold)">稀少素材「獣の心珠」を手に入れた！</small></p>':''}${R.rune?'<div class="job"><b style="color:var(--gold)">刻印を発見！「'+RUNES[R.rune].name+'」</b><br><small>'+RUNES[R.rune].desc+'</small><br><small>入手：'+(R.runeFrom||'')+'／家の「刻印」で付け替えできます</small></div>':''}${R.newCh&&R.newCh.length?'<div class="job"><b style="color:var(--gold)">挑戦達成！</b><br><small>'+R.newCh.join('／')+'　ボーナス '+R.chBonus+'G と素材</small>'+(R.chAll?'<br><small style="color:var(--gold)">この依頼の挑戦を全て達成！</small>':'')+'</div>':''}${R.daily?'<p><small style="color:#7fc8f5">今日の依頼ボーナス ×1.5</small></p>':''}${R.absent?'<p><small style="color:var(--gold)">久しぶりの狩り ×1.3</small></p>':''}${R.ups.length?`<p><b>レベルアップ！ Lv${R.ups[R.ups.length-1]}</b><br><small>${R.auto?'おまかせでポイントを配分しました':'ポイントを振ろう'}</small></p>`:''}${R.jobAfter!==R.jobBefore?`<div class="job"><b style="color:${JOBS[R.jobAfter].dark}">${JOBS[R.jobAfter].name}</b> が目覚めた！</div>`:''}${R.win?`<p><small>タイム ${fmtTime(R.time)}${R.newBest?' <b style="color:var(--gold)">自己最速！</b>':'（最速 '+fmtTime(R.best)+'）'}　討伐 ${R.count}回</small></p>`:''}${R.unlocked?`<div class="job"><b style="color:var(--gold)">${'★'.repeat(R.unlocked.rank)} ${R.unlocked.name}</b> が解禁された！</div>`:''}${R.farm?'<p><small>農場の畑が実った</small></p>':''}<div class="job"><small>${nextHint()}</small></div><div class="row" style="justify-content:center">${S.p.pts>0?`<button class="pri" onclick="openStatus()">ポイントを振る</button>`:''}${(!NET.on||NET.host)?`<button onclick="startQuest(${typeof R.qid==='number'?R.qid:0},${R.dl||1})">もう一度</button>`:''}${(!NET.on||NET.host)&&R.win&&R.dl<3&&dlOpen(R.qid,(R.dl||1)+1)?`<button class="pri" onclick="startQuest(${typeof R.qid==='number'?R.qid:0},${(R.dl||1)+1})">危険度${(R.dl||1)+1}へ</button>`:''}<button onclick="closePanel()">村へ</button></div></div>`;}
+ return`<div class="panel center" style="text-align:center"><h1>${R.win?'クエスト達成！':'村へ帰還'}</h1>${R.win?'':'<p><small>倒れてもペナルティなし。経験値は少しもらえます。</small></p>'+rescueBoxHTML(R)}<p>経験値 +${R.exp}　${R.gold?`${R.gold}G　`:''}${Object.keys(R.drops).map(k=>MATS[k]+'×'+R.drops[k]).join(' ')}</p>${R.dl&&R.dl>1?'<p><small style="color:#ff9a8a">危険度'+R.dl+' 報酬 ×'+DANGER[R.dl-1].rew+'</small></p>':''}${R.helped?'<div class="job"><b style="color:#9fe07a">'+esc(R.helped)+' の救援に成功！</b><br><small>'+R.helpGold+'Gと素材を受け取った</small></div>':''}${R.vlvUp?'<div class="job"><b style="color:var(--gold)">村が発展した！ 村レベル '+R.vlvUp+'</b><br><small>'+VBEN[R.vlvUp]+'</small></div>':''}${R.varGot&&R.varGot.length?'<div class="job"><b style="color:var(--gold)">亜種を討伐！ '+R.varGot.join('・')+'</b><br><small>亜種の輝片×'+R.varGot.length+' を手に入れた</small></div>':''}${R.weekly?'<div class="job"><b style="color:#ff9a8a">週の獣を討伐！</b><br><small>'+(R.weekFirst?'今週の初回報酬：獣の心珠×3・亜種の輝片×2':'今週2回目以降：獣の心珠×1')+'</small></div>':''}${R.tbTo?'<p><small style="color:#9fd8f5">時間が進んだ：'+TB_NAME[R.tbFrom]+' → '+TB_NAME[R.tbTo]+'</small></p>':''}${R.todayDone?'<div class="job"><b style="color:var(--gold)">今日の3本 達成！</b><br><small>600Gと獣の心珠×1</small></div>':(R.today?'<p><small style="color:#9fd8f5">今日の3本　'+R.today+'/3</small></p>':'')}${R.parts&&R.parts.length?'<div class="job"><b style="color:var(--gold)">部位破壊：'+R.parts.join('・')+'</b>'+(R.allParts?'<br><b style="color:var(--gold)">全部位破壊！ '+(300*(RES.qid!==undefined?(QUESTS.find(x=>x.id===RES.qid)||{rank:1}).rank:1))+'Gと追加素材</b>':'')+'<br><small>追加の素材を手に入れた</small></div>':''}${R.newMat&&R.newMat.length?'<div class="job"><b style="color:var(--gold)">新しい素材「'+R.newMat.map(k=>MATS[k]).join('・')+'」を手に入れた！</b><br><small>鍛冶屋に新しい装備が並びました</small></div>':''}${R.rare?'<p><small style="color:var(--gold)">稀少素材「獣の心珠」を手に入れた！</small></p>':''}${R.rune?'<div class="job"><b style="color:var(--gold)">刻印を発見！「'+RUNES[R.rune].name+'」</b><br><small>'+RUNES[R.rune].desc+'</small><br><small>入手：'+(R.runeFrom||'')+'／家の「刻印」で付け替えできます</small></div>':''}${R.newCh&&R.newCh.length?'<div class="job"><b style="color:var(--gold)">挑戦達成！</b><br><small>'+R.newCh.join('／')+'　ボーナス '+R.chBonus+'G と素材</small>'+(R.chAll?'<br><small style="color:var(--gold)">この依頼の挑戦を全て達成！</small>':'')+'</div>':''}${R.daily?'<p><small style="color:#7fc8f5">今日の依頼ボーナス ×1.5</small></p>':''}${R.absent?'<p><small style="color:var(--gold)">久しぶりの狩り ×1.3</small></p>':''}${R.ups.length?`<p><b>レベルアップ！ Lv${R.ups[R.ups.length-1]}</b><br><small>${R.auto?'おまかせでポイントを配分しました':'ポイントを振ろう'}</small></p>`:''}${R.jobAfter!==R.jobBefore?`<div class="job"><b style="color:${JOBS[R.jobAfter].dark}">${JOBS[R.jobAfter].name}</b> が目覚めた！</div>`:''}${R.win?`<p><small>タイム ${fmtTime(R.time)}${R.newBest?' <b style="color:var(--gold)">自己最速！</b>':'（最速 '+fmtTime(R.best)+'）'}　討伐 ${R.count}回</small></p>`:''}${R.hrp?`<p><small>HRポイント <b style="color:var(--gold)">+${R.hrp}</b>${atWall()?'（HR昇格クエストに挑むと反映）':'　次のHRまで '+(S.hrp||0)+' / '+hrpNeed(hr())}</small></p>`:''}${R.hrUp?`<div class="job hrup"><b style="color:${hrBadge(R.hrUp)[1]};font-size:18px">ハンターランクが上がった！ HR${R.hrUp}</b>${R.hrNew&&R.hrNew.length?'<br><small>新しい依頼：'+R.hrNew.join('・')+'</small>':''}${R.hrWall?'<br><small>HR'+R.hrUp+'の壁：掲示板のHR昇格クエストに挑もう</small>':''}</div>`:''}${R.finalWin?`<div class="job hrup"><b style="color:var(--gold);font-size:18px">獣の王を討ち取った！</b><br><small>村へ戻ると、古参の狩人が待っている</small></div>`:''}${R.farm?'<p><small>農場の畑が実った</small></p>':''}<div class="job"><small>${nextHint()}</small></div><div class="row" style="justify-content:center">${S.p.pts>0?`<button class="pri" onclick="openStatus()">ポイントを振る</button>`:''}${(!NET.on||NET.host)?`<button onclick="startQuest(${typeof R.qid==='number'?R.qid:0},${R.dl||1})">もう一度</button>`:''}${(!NET.on||NET.host)&&R.win&&R.dl<3&&dlOpen(R.qid,(R.dl||1)+1)?`<button class="pri" onclick="startQuest(${typeof R.qid==='number'?R.qid:0},${(R.dl||1)+1})">危険度${(R.dl||1)+1}へ</button>`:''}<button onclick="closePanel()">村へ</button></div></div>`;}
 // ===== 通信層（差し替え可能） =====
 /* メッセージ仕様（ホスト権威型）
    hello  {t:'hello',name,lv,job,power,d}      参加者→ホスト：自己紹介
@@ -2415,9 +2518,9 @@ function beginQuest(qid,party,dl){const q=(qid==='e')?ENDLESS_Q:(qid==='m')?miss
   m:mkMon(q.tier,1)};
  B.me=me;B.host=party?party.host:true;B.net=!!party;B.ps[me]=B.p;B.p.id=me;
  B.endless=(q.id==='e');B.wave=1;B.chain=q.chain?q.chain.slice():[q.tier];B.ci=0;B.partyN=1+(party?party.others.length:0);
- B.absent=!!(S.lastPlay&&Date.now()-S.lastPlay>12*3600*1000);B.dl=DL.n;B.dmgMul=DL.dmg;B.teleMul=DL.tele;B.hits=0;B.pots=0;
+ B.absent=!!(S.lastPlay&&Date.now()-S.lastPlay>12*3600*1000);B.dl=DL.n;B.dmgMul=DL.dmg*(q.dmgMul||1);B.teleMul=DL.tele;B.hits=0;B.pots=0;
  if(party){party.others.forEach(o=>{B.ps[o.id]=makePS(o.id,o.name,o.d);});}
- B.m=B.endless?mkMon(waveTier(1),B.partyN,1):mkMon(B.chain[0],B.partyN,DL.hp);
+ B.m=B.endless?mkMon(waveTier(1),B.partyN,1):mkMon(B.chain[0],B.partyN,DL.hp*(q.hpMul||1));
  {const c={};pouch().forEach(id=>{if(id)c[id]=Math.min(POUCH_CAP,S.p.items[id]||0);});if(!c.potion)c.potion=Math.min(POUCH_CAP,S.p.items.potion||0);B.carry=c;}
  if(q.weekly){const W0=weekly();let hp=3.2,dmg=1.7,tele=0.78,wait=1;
   W0.mods.forEach(k=>{const mo=MODS[k];if(mo.hp)hp*=mo.hp;if(mo.dmg)dmg*=mo.dmg;if(mo.tele)tele*=mo.tele;if(mo.wait)wait*=mo.wait;
@@ -2483,7 +2586,7 @@ function actAttack(e,who){if(e&&e.preventDefault)e.preventDefault();if(!B||B.ove
  if(p===B.p&&B.tutor&&!B.tutor.free&&B.tutor.step===0)setTimeout(()=>{if(B&&B.tutor&&B.tutor.step===0)tutorNext();},600);const j=p.job,J=JOBS[j];
  if(!B.host){netSend({t:'act',a:'atk'});if(p===B.p)sfx(J.ranged?'shot':'swing');return;}
  if(p===B.p)sfx(J.ranged?'shot':'swing');
- const base=J.ranged?(j==='karyudo'?p.d.atkD*0.9:p.d.atkM*0.85):p.d.atk*(j==='shugo'?0.85:j==='iyashi'?0.7:1);
+ const base=J.ranged?(j==='karyudo'?p.d.atkD*0.9:p.d.atkM*(j==='madou'?0.95:0.85)):(j==='iyashi'?Math.max(p.d.atk*0.7,p.d.heal*0.72):p.d.atk*(j==='shugo'?0.85:1));
  const dmg=Math.round(base*rowMult(j,p)*(p.buff>0?1.4:1)*(p.momentum>0?1.5:1)*useMikiri(p)*runeAtkMul(p));
  if(J.ranged)fireShot(dmg,j==='karyudo'?'#f6f1dc':j==='madou'?'#ff8a5a':'#d6a8ff',j==='karyudo'?2:3,0,p);
  else{p.lunge=0.22;p.anim={k:'melee',t:0,d:0.36};hitMon(dmg,'#fff');B.fx.push({t:'slash2',x:EX()-6,y:GY()-12,tt:-0.06,dur:0.3,col:'#fff',a:0});B.fx.push({t:'spark',x:EX()-10,y:GY()-12,tt:-0.07,dur:0.18,col:'#fff2a0'});}
@@ -2494,6 +2597,24 @@ const SKILL_SHORT={kenshi:'大ダメージ',karyudo:'矢を3連射',shugo:'反�
  kensei:'3連撃',karyusei:'矢を5連射',daijun:'強い構え',daikenja:'大回復＋魔法',daimadou:'大爆発',seiyu:'強い継続回復',boukenou:'全員攻撃UP'};
 function skillOf(p){const a=p.adv||(typeof computeAdv==='function'&&p.stats?computeAdv(p):null);const j=p.job||computeJob(p.stats);
  const src=a?ADV_JOBS[a]:JOBS[j];return {key:a||j,name:src.skill,desc:src.skillDesc,short:SKILL_SHORT[a||j]||'',cd:src.cd||JOBS[j].cd,adv:!!a,job:j};}
+function hrInfoHTML(){const h=hr(),bd=hrBadge(h),pq=promoQ();
+ const steps=[1,2,3,4,5,6,7].map(k=>{const q=QUESTS.find(x=>x.id===PROMO[k]);const done=h>k;const cur=h===k;
+  return`<div class="item${cur?' recw':''}"><div style="flex:1"><b style="color:${done?'var(--gold)':cur?'#fff':'#8c8474'}">${done?'✓':cur?'▶':'・'} HR${k} → HR${k+1}</b><br><small>${'★'.repeat(q.rank)} ${q.name}${done?'（達成）':''}</small></div></div>`;}).join('');
+ const fin=S.ending?'<div class="item"><div><b style="color:var(--gold)">✓ 獣の王を討伐</b></div></div>':`<div class="item${h>=8?' recw':''}"><div><b style="color:${h>=8?'#fff':'#8c8474'}">${h>=8?'▶':'・'} 最後の狩り</b><br><small>★★★★★★★★ 獣の王</small></div></div>`;
+ if(S.ending){const need=hrpNeed(h),cur=S.hrp||0,nw=Math.min(HR_MAX,Math.ceil((h+1)/10)*10);
+  const tl=Object.keys(HR_TITLES).map(Number).sort((a,b)=>a-b).map(k=>{const got=k===HR_MAX?h>=HR_MAX:(S.wallDone||0)>=k/10;return`<div class="item"><div><b style="color:${got?'var(--gold)':'#8c8474'}">${got?'✓':'・'} HR${k}「${got?HR_TITLES[k]:'？？？'}」</b></div></div>`;}).join('');
+  return`<div class="panel sheet one"><h2>ハンターランク</h2>
+  <div class="job" style="border-color:${bd[1]}"><b style="font-size:22px;color:${bd[1]}">HR${h}</b> <span class="tag" style="color:${bd[1]}">${bd[2]}の勲章</span>${hrTitle()?'<br><small>称号：<b>'+hrTitle()+'</b></small>':''}
+   ${h>=HR_MAX?'<p><b style="color:var(--gold)">最高のHRに到達した！</b></p>':`<div class="hrbar"><i style="width:${atWall()?100:Math.min(100,cur/need*100)}%"></i></div><small>${atWall()?'<b style="color:var(--gold)">HR'+h+'の壁：掲示板のHR昇格クエストに挑もう</b>（たまったHRポイント '+cur+'）':'次のHRまで '+cur+' / '+need}</small>`}
+   <p style="margin:6px 0 0"><small>次のHR昇格クエスト：HR${nw}　／　勲章は HR50で金、200で白金、500で虹</small></p></div>
+  <p style="margin-top:10px"><small style="color:var(--gold)">称号</small></p>${tl}
+  <p><small>HRポイントは、★が高い依頼・危険度が高い依頼・週の獣ほど多くもらえます</small></p>
+  <button onclick="closePanel()">閉じる</button></div>`;}
+ return`<div class="panel sheet one"><h2>ハンターランク</h2>
+ <div class="job" style="border-color:${bd[1]}"><b style="font-size:22px;color:${bd[1]}">HR${h}</b> <span class="tag" style="color:${bd[1]}">${bd[2]}の勲章</span>
+  <p style="margin:6px 0 0"><small>${pq?'次の目標：<b>昇格クエスト「'+pq.name+'」</b>'+(pq.id===FINAL_Q?'（最後の狩り）':'')+'<br>クリアすると HR'+(h+1)+' になり、新しい依頼が開きます':'獣の王を倒した狩人。上位の獣たちが待っている'}</small></p></div>
+ <p style="margin-top:10px"><small style="color:var(--gold)">昇格の道のり</small></p>${steps}${fin}
+ <button onclick="closePanel()">閉じる</button></div>`;}
 function jobInfoHTML(){const P=S.p,d=derived(P);const sk=skillOf(Object.assign({},P,{job:d.job,adv:d.adv}));const J=JOBS[d.job];
  const rw=recWeapon(d.job);const ranged=J.ranged;
  const all=Object.keys(JOBS);const seen=(S.rec&&S.rec.jobs)||{};
@@ -2537,7 +2658,7 @@ if(e&&e.preventDefault)e.preventDefault();if(!B||B.over)return;const p=who||B.p,
   case'daijun':{p.guard=2.6;p.ironwall=true;heal(p,Math.round(p.maxhp*0.15));B.fx.push({t:'ring',x:0,y:0,tt:0,dur:2.6,col:'#9fb6ff',r:15,who:p.id});if(p===B.p)toast('鉄壁：仲間をほぼ完全にかばう');break;}
   case'daikenja':{heal(p,Math.round(p.maxhp*0.6));alivePS().forEach(q=>{if(q!==p)heal(q,Math.round(p.d.heal*1.4*(1+(p.d.r.healOut||0))));});hitMon(Math.round(p.d.atkM*2.2*rm*mk),'#d6a8ff');B.fx.push({t:'ring',x:EX(),y:GY()-10,tt:0,dur:0.5,col:'#d6a8ff',r:36});if(p===B.p)flash('神威','#d6a8ff');break;}
   case'daimadou':{fireShot(Math.round(p.d.atkM*3.0*rm*mk),'#ff5a2a',5,28,p,0.6);break;}
-  case'seiyu':{p.regen=8;p.pulse=0;alivePS().forEach(q=>{if(q!==p)heal(q,Math.round(p.d.heal*0.8*(1+(p.d.r.healOut||0))));});
+  case'seiyu':{p.regen=8;p.pulse=0;hitMon(Math.round(p.d.heal*1.4*rm),'#fff2a0');alivePS().forEach(q=>{if(q!==p)heal(q,Math.round(p.d.heal*0.8*(1+(p.d.r.healOut||0))));});
    psList().forEach(q=>{if(q.down){q.downT=Math.max(0.5,q.downT-8);if(p===B.p)flash(q.name+'の復帰が大きく早まった','#fff2a0');}});if(p===B.p)toast('祈り：継続回復と仲間の立て直し');break;}
   case'boukenou':{heal(p,Math.round(p.maxhp*0.3));alivePS().forEach(q=>{q.buff=8;B.fx.push({t:'ring',x:0,y:0,tt:0,dur:0.4,col:'#ffd35a',r:18,who:q.id});});if(p===B.p)flash('鼓舞！ 全員の攻撃アップ','#ffd35a');break;}
  }return;}
@@ -2546,8 +2667,8 @@ if(e&&e.preventDefault)e.preventDefault();if(!B||B.over)return;const p=who||B.p,
  case'karyudo':{for(let i=0;i<3;i++)setTimeout(()=>{if(scene==='battle'&&B&&!B.over&&B.host)fireShot(Math.round(p.d.atkD*0.8*rowMult('karyudo',p)*(i===0?mk:1)),'#ffe08a',2,0,p);},i*120);break;}
  case'shugo':{p.guard=2.5;B.fx.push({t:'ring',x:0,y:0,tt:0,dur:2.5,col:'#9fb6ff',r:14,who:p.id});if(p===B.p)toast('構え：受けるダメージ大幅減＋反撃');break;}
  case'kenja':{heal(p,Math.round(p.maxhp*0.5));alivePS().forEach(q=>{if(q!==p)heal(q,Math.round(p.d.heal*0.9*(1+(p.d.r.healOut||0))));});hitMon(Math.round(p.d.atkM*1.8*rm*mk),'#d6a8ff');B.fx.push({t:'ring',x:EX(),y:GY()-10,tt:0,dur:0.4,col:'#d6a8ff',r:30});if(psList().length>1&&p===B.p)flash('仲間を回復した','#d6a8ff');break;}
- case'madou':{fireShot(Math.round(p.d.atkM*2.4*rm*mk),'#ff5a2a',4,20,p,0.35);break;}
- case'iyashi':{p.regen=6;p.pulse=0;alivePS().forEach(q=>{if(q!==p)heal(q,Math.round(p.d.heal*0.5*(1+(p.d.r.healOut||0))));});psList().forEach(q=>{if(q.down){q.downT=Math.max(0.5,q.downT-4);if(p===B.p)flash(q.name+'の復帰が早まった','#fff2a0');}});if(p===B.p)toast('再生の光：自分は継続回復、仲間も回復');break;}
+ case'madou':{fireShot(Math.round(p.d.atkM*2.8*rm*mk),'#ff5a2a',4,20,p,0.35);break;}
+ case'iyashi':{p.regen=6;p.pulse=0;hitMon(Math.round(p.d.heal*1.35*rm),'#fff2a0');B.fx.push({t:'pillar',x:EX(),y:GY()-4,tt:-0.1,dur:0.5,col:'#fff2a0'});alivePS().forEach(q=>{if(q!==p)heal(q,Math.round(p.d.heal*0.5*(1+(p.d.r.healOut||0))));});psList().forEach(q=>{if(q.down){q.downT=Math.max(0.5,q.downT-4);if(p===B.p)flash(q.name+'の復帰が早まった','#fff2a0');}});if(p===B.p)toast('再生の光：自分は継続回復、仲間も回復');break;}
  case'yugeki':{for(let i=0;i<2;i++)setTimeout(()=>{if(scene==='battle'&&B&&!B.over&&B.host){p.lunge=0.22;hitMon(Math.round(p.d.atk*1.35*rowMult('yugeki',p)*runeAtkMul(p)*(i===0?mk:1)),'#ffb06a');B.fx.push({t:'slash',x:EX()-8,y:GY()-10,tt:0,dur:0.18,col:'#fff',a:0});}},i*160);break;}
  case'seikishi':{p.guard=1.6;alivePS().forEach(q=>heal(q,Math.round(p.d.heal*(q===p?1.2:0.8)*(1+(p.d.r.healOut||0)))));B.fx.push({t:'ring',x:0,y:0,tt:0,dur:1.6,col:'#9fd8f5',r:14,who:p.id});if(p===B.p)toast('護りの祈り：構えと全員回復');break;}
  case'makenshi':{p.lunge=0.26;hitMon(Math.round(p.d.atk*1.5*rm*mk),'#ff8ab0');
@@ -2768,7 +2889,7 @@ function updateBattle(dt){const p=B.p,m=B.m;tutTick(dt);const _tuHold=tutorHold(
     if(mo.armor){B.m.def=Object.assign({},B.m.def,{armor:mo.armor,weak:mo.weak});}
     B.waveModName=mo.name;}else B.waveModName='';
    flash('WAVE '+B.wave+' '+MONSTER_TIERS[nt].name+(B.waveModName?'（'+B.waveModName+'）':''),'#ffd35a');sfx('warn');psList().forEach(q=>{q.mikiri=false;});}
-  else if(B.chain&&B.ci<B.chain.length-1){B.ci++;const nt=B.chain[B.ci];B.m=mkMon(nt,B.partyN,DANGER[(B.dl||1)-1].hp);B.shots=[];
+  else if(B.chain&&B.ci<B.chain.length-1){B.ci++;const nt=B.chain[B.ci];B.m=mkMon(nt,B.partyN,DANGER[(B.dl||1)-1].hp*((B.q&&B.q.hpMul)||1));B.shots=[];
    flash((B.ci+1)+'頭目 あらわれた！','#ffd35a');toast(MONSTER_TIERS[nt].name+'があらわれた');sfx('warn');
    psList().forEach(q=>{q.mikiri=false;});}
   else{B.over='win';B.overT=0;toast('討伐成功！');sfx('win');netSend({t:'end',win:true,clock:B.clock});}}
@@ -2790,8 +2911,8 @@ function finishQuest(win){const P=S.p,q=B.q;RESNEW={};const vlvB=villageLv();con
   const mk=['tusk','hide','hane','kara'];for(let i=0;i<Math.floor(w/3);i++){const k=mk[(i+hashStr(''+Date.now()+i))%mk.length];P.mats[k]=(P.mats[k]||0)+1;R.drops[k]=(R.drops[k]||0)+1;seeMat(k,1);}
   const ik=['antidote','parapill','potion','vial','stunball','atkpot'];R.items={};for(let i=0;i<Math.floor(w/3);i++){const k=ik[(i+hashStr('it'+Date.now()+i))%ik.length];P.items[k]=(P.items[k]||0)+1;R.items[k]=(R.items[k]||0)+1;}
   if(!S.rec.streak||w>S.rec.streak){S.rec.streak=w;R.newStreak=true;if(w>=5){const rid=grantRune();if(rid){R.rune=rid;R.runeFrom='腕試しの記録更新';}}}R.best=S.rec.streak;
-  if(w>0){P.cleared+=w;R.farm=farmQuestBoost();}}
- else if(B.weekly&&win){const Wr=weeklyRec();Wr.n++;R.weekly=true;
+  if(w>0){P.cleared+=w;R.farm=farmQuestBoost();if(S.ending){R.hrp=w*5;addHrp(R.hrp,R);}}}
+ else if(B.weekly&&win){const Wr=weeklyRec();Wr.n++;R.weekly=true;if(S.ending){R.hrp=120;addHrp(120,R);}
   R.exp=q.exp;R.gold=q.gold;P.gold+=R.gold;
   if(!Wr.claimed){Wr.claimed=true;R.weekFirst=true;
    P.mats.shin=(P.mats.shin||0)+3;R.drops.shin=3;seeMat('shin',3);
@@ -2803,11 +2924,13 @@ function finishQuest(win){const P=S.p,q=B.q;RESNEW={};const vlvB=villageLv();con
   R.exp=q.exp;R.gold=q.gold;P.gold+=R.gold;
   for(const k in q.drops){P.mats[k]=(P.mats[k]||0)+q.drops[k];R.drops[k]=q.drops[k];seeMat(k,q.drops[k]);}
   const extra=1+Math.floor(M.rank/3);P.mats.shin=(P.mats.shin||0)+extra;R.drops.shin=(R.drops.shin||0)+extra;seeMat('shin',extra);
-  if(Math.random()<0.5){const rid=grantRune();if(rid){R.rune=rid;R.runeFrom='特命依頼';}}
+  if(Math.random()<0.5){const rid=grantRune();if(rid){R.rune=rid;R.runeFrom='HR昇格クエスト';}}
   P.cleared++;R.farm=farmQuestBoost();R.hits=B.hits||0;R.pots=B.pots||0;R.time=Math.round(B.clock*1000);
   if(!S.rec.mrank||M.rank>S.rec.mrank)S.rec.mrank=M.rank;
-  S.mission=missionGen(M.rank+1);}
- else if(win){let mul=1;const dq=dailyQuest();const dl=B.dl||1,DL=DANGER[dl-1];
+  const hBefore=hr();S.wallDone=Math.max(S.wallDone||0,M.rank);R.wallClear=hBefore;const nt=HR_TITLES[hBefore];if(nt)R.newTitle=nt;
+  S.mission=null;addHrp(150+10*M.rank,R);}
+ else if(win){if(S.ending){R.hrp=hrpFor(q,B.dl||1,!!(B.m&&B.m.variant));addHrp(R.hrp,R);}
+  let mul=1;const dq=dailyQuest();const dl=B.dl||1,DL=DANGER[dl-1];
   mul*=DL.rew;R.dl=dl;
   if(dq&&dq.id===q.id&&!dailyDone()){mul*=1.5;S.daily={date:dateKey(),done:true};R.daily=true;}
   if(B.absent){mul*=1.3;R.absent=true;}
@@ -2831,7 +2954,9 @@ function finishQuest(win){const P=S.p,q=B.q;RESNEW={};const vlvB=villageLv();con
   if(R.newCh.length)R.chBonus=200*q.rank*R.newCh.length;
   R.chAll=ch.every(x=>x);
   if(R.newCh.length&&R.chAll){const rid=grantRune();if(rid){R.rune=rid;R.runeFrom='挑戦3つ全達成';}}
-  const unlocked=QUESTS.find(x=>x.unlock===q.id&&r.n===1);if(unlocked)R.unlocked=unlocked;}
+  if(PROMO[S.hr||1]===q.id){S.hr=(S.hr||1)+1;R.hrUp=S.hr;R.hrNew=QUESTS.filter(x=>x.rank===S.hr).map(x=>x.name);
+   if(S.hr>=8&&!S.ending)R.hrNew=['獣の王'];}
+  if(q.id===FINAL_Q&&!S.ending){R.finalWin=true;S.endingPending=true;}}
  else R.exp=Math.round(q.exp*0.25);
  R.ups=gainExp(P,R.exp);if(R.ups.length){sfx('lvup');if(P.auto){allocAuto(P,P.auto);R.auto=true;}}
  R.newMat=Object.keys(RESNEW||{});RESNEW=null;
@@ -2847,6 +2972,7 @@ const STAGES={
  plain:{name:'草原',sky:['#5fa8d8','#a8dcf0'],far:'#8fbf7a',tree:['#2b5f26','#37752f'],ground:tGrass,ring:tDirt,dot:'#8a6f47'},
  forest:{name:'深い森',sky:['#1d4436','#3f7a5c'],far:'#2c5c3e',tree:['#16331a','#22551f'],ground:tGrass,ring:tSoil,dot:'#5a4a28',dark:0.26,fog:1,canopy:1,clouds:false,fireflies:1},
  rock:{name:'岩場',sky:['#8a7a62','#d8c9a8'],far:'#9a8a6a',tree:['#6b5f48','#8a7a5a'],ground:tGravel,ring:tDirt,dot:'#6b5a3a',rocks:1,cloud:'#efe4cc',wind:5,dust:1},
+ lair:{name:'王の棲み処',sky:['#12060c','#4a1420'],far:'#241016',tree:['#12080c','#20101a'],ground:tGravel,ring:tDirt,dot:'#4a2a22',dark:0.28,rocks:1,clouds:false,embers:1},
  night:{name:'夜',sky:['#111530','#26314f'],far:'#1e2840',tree:['#10161c','#18231f'],ground:tGrass,ring:tDirt,dot:'#4a4030',dark:0.46,stars:1,clouds:false,fireflies:1},
 };
 const TB_ORDER=['morning','day','evening','night'];
@@ -2870,7 +2996,7 @@ const VARIANTS={   // 種族ごとの亜種の色と専用素材
 const VAR_RATE=0.03;
 function varRate(sp){let r=(S&&S.p&&S.p.eq&&S.p.eq.c==='c_gold')?0.06:VAR_RATE;const t=timeBand();
  if(t==='evening')r*=1.5;if(t==='night'&&sp==='wolf')r*=3;return r;}
-const MON_STAGE={boar:'plain',bird:'plain',beetle:'rock',dragon:'rock',wolf:'night',snake:'forest',spider:'forest'};
+const MON_STAGE={boar:'plain',bird:'plain',beetle:'rock',dragon:'rock',wolf:'night',snake:'forest',spider:'forest',king:'lair'};
 function curStage(){const t=(B&&B.m)?B.m.tier:0;const D=MONSTER_TIERS[t];let k=MON_STAGE[D.spr]||'plain';
  if(B&&B.q&&B.q.stage)k=B.q.stage;
  if(B&&B.endless&&B.wave>=10)k='night';
@@ -3389,6 +3515,8 @@ function drawBattle(){const p=B.p,m=B.m,gy=GY();
  if(stg.canopy){ctx.fillStyle=stg.tree[0];for(let i=-4;i<LW+8;i+=9){const h=8+Math.round(rnd(i,5,51)*7);ctx.beginPath();ctx.ellipse(i,-2,8,h,0,0,Math.PI*2);ctx.fill();}
   ctx.fillStyle='rgba(30,74,34,.55)';for(let i=6;i<LW;i+=26){const l=10+rnd(i,7,52)*14;ctx.fillRect(i,6,1,l);ctx.fillRect(i-1,6+l,3,2);}}
  if(stg.dust){ctx.fillStyle='rgba(216,201,168,.35)';for(let i=0;i<14;i++){const ph=(B.t*0.35+i/14)%1;ctx.fillRect(Math.round(((i*37)%LW+ph*30)%LW),Math.round(gy-40+((i*23)%34)),2,1);}}
+ if(stg.embers){for(let i=0;i<14;i++){const ph=(B.t*0.35+i/14)%1;const a=0.9-ph*0.8;
+  ctx.fillStyle='rgba(255,'+(120+((i*37)%80))+',60,'+a.toFixed(2)+')';ctx.fillRect(Math.round(((i*29)%LW)+Math.sin((B.t+i)*1.3)*4),Math.round(gy-4-ph*(gy-20)),1,2);}}
  if(stg.fireflies){for(let i=0;i<10;i++){const ph=(B.t*0.5+i/10)%1;const a=0.35+Math.sin((B.t*2+i)*1.7)*0.35;
   ctx.fillStyle='rgba(200,255,150,'+Math.max(0,a).toFixed(2)+')';ctx.fillRect(Math.round(((i*41)%LW+ph*24)%LW),Math.round(gy-56+((i*29)%40)),2,2);}}
  // 列マーカー
@@ -3406,7 +3534,7 @@ function drawBattle(){const p=B.p,m=B.m,gy=GY();
   ctx.fillStyle='rgba(255,200,110,.95)';ctx.beginPath();ctx.moveTo(b2-dir*7,my);ctx.lineTo(b2-dir*12,my-3);ctx.lineTo(b2-dir*12,my+3);ctx.closePath();ctx.fill();}
  // 敵
  if(m.hp>0){const D=m.def;const _fr=m.dash>0||D.spr==='bird'?Math.floor(B.t*(m.dash>0?14:4))%2:0;const img=m.variant?monSpriteV(m.tier,_fr,m.variant):monSprite(m.tier,_fr,m.rage);const MS=D.scale*1.0;const w=img.width*MS,h=img.height*MS;
-  let ex=EX(),crouch=0;
+  let ex=EX()+(m.def.exOff||0),crouch=0;
   if(m.state==='tele'&&m.atk){const k=Math.min(1,m.st/Math.max(0.01,m.teleDur));const rows0=m.atk.seq?[m.atk.seq[0]]:m.atk.rows;const sty=atkStyle(m.atkKey,rows0);
    ex+=Math.round(Math.min(k,0.85)/0.85*5);crouch=Math.round(Math.min(k,0.85)/0.85*2);
    if(sty==='lunge'&&k>0.85){const t=(k-0.85)/0.15;const tx=(m.atk.seq?posX(m.atk.seq[0]):posX(rows0.length===1?rows0[0]:'front'))+14;ex+=Math.round((tx-EX()-5)*t*0.5);}}
@@ -3615,6 +3743,7 @@ function loop(now){const dt=Math.min(0.05,(now-last)/1000)||0;last=now;try{
  else if(scene==='world'){updateWorld(dt);drawWorld(dt);}
  else if(scene==='splash'||scene==='title'){vt+=dt;drawTitleBg(dt);}
  else if(scene==='opening'){vt+=dt;if(OP){OP.t+=dt;if(OP.t>3.6)opNext();}drawOpeningBg();}
+ else if(scene==='ending'){edTick(dt);drawEndingBg(dt);}
  else{vt+=dt;ctx.fillStyle='#24402a';ctx.fillRect(0,0,LW,LH);if(S){ctx.save();const cam=mapCam();ctx.translate(-Math.round(cam.cx),-Math.round(cam.cy));ctx.drawImage(getMap(W.map),0,0);ctx.restore();}}
  }catch(err){showErr(err&&err.message?err.message:String(err));}
  requestAnimationFrame(loop);}
@@ -3628,7 +3757,7 @@ function loop(now){const dt=Math.min(0.05,(now-last)/1000)||0;last=now;try{
  ADV_IDS.forEach(k=>{if(!JOBS[ADV_JOBS[k].base])bad.push('adv '+k+' base');});
  Object.keys(JOBS).forEach(k=>{if(!JOB_GEAR[k]&&!JOB_GEAR[JOB_GEAR_ALIAS[k]])bad.push('job art '+k);});
  HYBRIDS.forEach(k=>{if(!JOBS[k]||!JOBS[k].pair)bad.push('hybrid '+k);});
- const MAT_OF={boar:['tusk','hide','king'],bird:['hane'],beetle:['kara'],wolf:['kemo','hide'],snake:['doku'],spider:['ito','kara'],dragon:['rin','kara']};
+ const MAT_OF={king:['king','gold'],boar:['tusk','hide','king'],bird:['hane'],beetle:['kara'],wolf:['kemo','hide'],snake:['doku'],spider:['ito','kara'],dragon:['rin','kara']};
  QUESTS.forEach(q=>{const tiers=q.chain||[q.tier];
   const allow=[].concat.apply([],tiers.map(t=>MAT_OF[MONSTER_TIERS[t].spr]||[]));
   Object.keys(q.drops).forEach(k=>{if(k!=='shin'&&allow.indexOf(k)<0)bad.push('依頼#'+q.id+'の素材'+k+'が相手と不一致');});});
