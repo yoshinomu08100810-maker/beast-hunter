@@ -59,6 +59,8 @@ input[type=text]{font:inherit;font-size:16px;padding:9px;border:2px solid var(--
 .tlinks button{margin:0;padding:5px 10px;font-size:12px}
 .xcode{width:100%;min-height:70px;margin:6px 0;padding:6px;font-size:11px;font-family:monospace;background:#0f1418;color:var(--bone);border:2px solid #6b6152;word-break:break-all;resize:vertical}
 .ofl{white-space:pre-wrap;font-size:10px;line-height:1.4;max-height:40vh;overflow:auto;background:#0f1418;padding:6px;border:1px solid #444d57;font-family:monospace}
+.legal{text-align:left}
+.legal p small{line-height:1.6}
 .titlescr .ver{position:absolute;bottom:10px;color:var(--bone2)}
 .opening{justify-content:flex-end;padding-bottom:22vh}
 .optext{color:#fff;font-size:17px;text-shadow:2px 2px 0 #000;padding:0 20px;animation:ft .8s ease-out}
@@ -1391,7 +1393,7 @@ function settingsHTML(){const v=volMul();
  ${row('「つぎにやること」の表示',!S.guideOff,S.guideOff?'showGuide()':'hideGuide()')}
  <div class="item"><div><b>戦闘の手引きをもう一度見る</b><br><small>最初の戦闘で出た説明を、次の戦闘からまた出します</small></div><button class="small" onclick="resetTut()">戻す</button></div>
  <p style="margin-top:10px"><small style="color:var(--gold)">このゲームについて</small></p>
- <div class="row"><button class="small" onclick="openPanel('changelog')">更新履歴</button><button class="small" onclick="openPanel('credits')">クレジット</button><small style="margin-left:auto;color:var(--bone2)">v${APP_VER}</small></div>
+ <div class="row"><button class="small" onclick="openPanel('changelog')">更新履歴</button><button class="small" onclick="openPanel('credits')">クレジット</button><button class="small" onclick="openPanel('terms')">利用規約</button><button class="small" onclick="openPanel('privacy')">プライバシー</button><small style="margin-left:auto;color:var(--bone2)">v${APP_VER}</small></div>
  <button onclick="closePanel()">閉じる</button></div>`;}
 function showGuide(){S.guideOff=false;save();toast('手引きを再開しました');rerender();}
 const NPCS=[
@@ -1781,7 +1783,7 @@ function bootTap(e){if(e&&e.preventDefault)e.preventDefault();if(BOOTED)return;B
  try{ac();if(AU.ctx&&AU.ctx.state==='suspended')AU.ctx.resume();}catch(er){}
  try{sfx('ui');}catch(er){}
  showTitle();}
-function showTitle(){scene='title';panel=null;try{ambient(null);if(BOOTED)playBgm('title');}catch(e){}
+function showTitle(){scene='title';panel=null;if(!legalAgreed()){showConsent();return;}try{ambient(null);if(BOOTED)playBgm('title');}catch(e){}
 const has=!!load();setUI(`<div class="titlescr"><div class="logo big"><b>BEAST HUNTER</b><small>ビーストハンター</small></div>
  <div class="tbtns">${has?'<button class="pri" onclick="continueGame()">つづきから</button>':''}<button class="${has?'':'pri'}" onclick="startNewGame()">はじめから</button></div>
  <div class="tlinks">${canInstall()?'<button class="small pri" onclick="doInstall()">ホーム画面に追加</button>':''}<button class="small" onclick="XFER={code:'',msg:'',mode:''};showTransfer()">データを引き継ぐ</button><button class="small" onclick="showCredits()">クレジット</button></div>
@@ -1805,8 +1807,9 @@ function renderOpening(){if(!OP)return;const sc=OPENING[OP.i];
 function opNext(e){if(e&&e.preventDefault)e.preventDefault();if(!OP)return;OP.i++;OP.t=0;if(OP.i>=OPENING.length){opSkip();return;}renderOpening();}
 function opSkip(e){if(e&&e.preventDefault)e.preventDefault();OP=null;startCreate();}
 function toTitle(){save();T=null;showTitle();}
-const APP_VER='0.9.4';
+const APP_VER='0.9.5';
 const CHANGELOG=[
+ {v:'0.9.5',d:'2026-09-23',items:['利用規約とプライバシーポリシー（初回起動時に同意）','設定・クレジットからいつでも読めるように']},
  {v:'0.9.4',d:'2026-09-22',items:['オンライン機能の荒らし対策（自動の匿名ログインと、持ち主だけが変更できる仕組み）','通信の診断に「匿名ログイン」「荒らし対策」の確認を追加']},
  {v:'0.9.3',d:'2026-09-22',items:['アイコンを index.html と同じ場所に置く形に変更（フォルダ不要）']},
  {v:'0.9.2',d:'2026-09-22',items:['「ホーム画面に追加」ボタンを常に表示','アプリ化の状態を自分で確認できる機能（アップロードのミスが分かる）']},
@@ -1827,9 +1830,53 @@ function creditsHTML(back){return`<div class="panel ${back==='title'?'center':'s
  <div class="item"><div><small>音楽・効果音</small><br>ゲーム内で合成（外部の音源は使っていません）</div></div>
  <div class="item"><div><small>フォント</small><br><b>DotGothic16</b><br><small>Copyright 2020 The DotGothic16 Project Authors<br>(https://github.com/fontworks-fonts/DotGothic16)<br>SIL Open Font License, Version 1.1 のもとで使用しています</small>
   <details><summary><small>ライセンス全文を見る</small></summary><pre class="ofl">${esc(OFL_TEXT)}</pre></details></div></div>
+ <div class="row" style="justify-content:center"><button class="small" onclick="${back==='title'?"showLegal('terms','title')":"openPanel('terms')"}">利用規約</button><button class="small" onclick="${back==='title'?"showLegal('privacy','title')":"openPanel('privacy')"}">プライバシーポリシー</button></div>
  <p style="text-align:center"><small>Beast Hunter v${APP_VER}</small></p>
  <button onclick="${back==='title'?'showTitle()':"openPanel('settings')"}">もどる</button></div>`;}
 function showCredits(){setUI(`<div class="titlescr">${creditsHTML('title')}</div>`);}
+
+// ===== 利用規約・プライバシーポリシー（初回に同意） =====
+const LEGAL_VER='2026-09-23';          // 内容を変えたらこの日付を変える → 次回起動時に再同意
+const LEGAL_CONTACT='（準備中：決まり次第ここに記載します）';
+const TERMS_TEXT=[
+ ['この規約について','この規約は、ゲーム「Beast Hunter（ビーストハンター）」（以下「本ゲーム」）を遊ぶときの約束ごとです。本ゲームを遊ぶ方は、この規約に同意したものとみなします。18歳未満の方は、保護者の方の同意を得てから遊んでください。'],
+ ['料金','本ゲームは無料で遊べます。今後、広告の表示や、見た目を変えるアイテムの販売などを始める場合があります。その場合は、ゲーム内でお知らせします。'],
+ ['禁止していること','次のことはしないでください。\n・ゲームを改ざんする、不正な手段で有利に進める\n・オンライン機能（救援札・集会所など）を妨害する、荒らす\n・他の人を傷つける、差別的な、わいせつな、または他人になりすます名前を付ける\n・他の遊び手や運営者に迷惑をかける行為\n・法律に反する行為\n運営者は、これらの行為を見つけた場合、オンライン機能の利用を止めるなどの対応をすることがあります。'],
+ ['セーブデータ','セーブデータは、お使いの端末（ブラウザ）の中に保存されます。ブラウザのデータ削除や機種変更で消えることがあるため、大切なデータは設定の「データの引き継ぎ」でコードを控えておいてください。引き継ぎコードは他の人に教えないでください。'],
+ ['内容の変更・停止','運営者は、本ゲームの内容を予告なく変更したり、公開を一時的に止めたり、終了したりすることがあります。'],
+ ['責任について','運営者は本ゲームを正しく動かすよう努めますが、不具合がないことを保証するものではありません。本ゲームの利用によって生じた損害について、運営者は責任を負いません。ただし、運営者の故意または重大な過失による場合は除きます。'],
+ ['規約の変更','この規約を変更した場合は、ゲームを起動したときにお知らせし、あらためて同意をお願いします。'],
+ ['準拠法','この規約は日本の法律に従って解釈されます。'],
+ ['お問い合わせ',LEGAL_CONTACT],
+];
+const PRIVACY_TEXT=[
+ ['基本の考え方','本ゲームは、遊ぶために必要な最小限の情報だけを扱います。本名・住所・メールアドレス・電話番号などを入力していただくことはありません。'],
+ ['端末の中だけに保存するもの','名前（ゲーム内で付けたもの）、レベル、装備、進行状況などのセーブデータは、お使いの端末（ブラウザ）の中に保存されます。運営者のサーバーには送信しません。'],
+ ['オンライン機能を使ったときに送るもの','集会所の「救援札」や「仲間と狩る」を使ったときに限り、次の情報をGoogleのサービス「Firebase」に送ります。\n・自動で発行される匿名のID（本名などとは結びつきません）\n・救援札の内容（ゲーム内の名前、レベル、総合力、依頼、日時）\n・仲間とつなぐための接続情報\n仲間と直接つなぐ仕組み（WebRTC）のため、接続する相手の端末と、IPアドレスなどの通信経路の情報がやりとりされます。'],
+ ['使う目的','オンライン機能（救援札・仲間との接続）を提供するため、荒らしを防ぐため、不具合を調べるためにだけ使います。'],
+ ['保存する期間','救援札は、およそ3日で一覧から外れ、報酬を受け取った時点で削除されます。仲間とつなぐための情報は、接続が終わると削除されます。'],
+ ['外部のサービス','本ゲームは次のサービスを利用しています。各サービスでの情報の扱いは、それぞれの方針に従います。\n・Firebase（Google LLC）：オンライン機能\n・GitHub Pages（GitHub, Inc.）：ゲームの配信（アクセスの記録が残る場合があります）\n・Googleの接続補助サーバー（STUN）：仲間と直接つなぐための通信経路の確認'],
+ ['第三者への提供','法律で求められる場合を除き、取得した情報を第三者に渡すことはありません。'],
+ ['広告について','現在、本ゲームは広告を表示していません。広告を始める場合は、このポリシーを更新してお知らせします。'],
+ ['未成年の方','18歳未満の方は、保護者の方と一緒にこのポリシーを確認してください。'],
+ ['ポリシーの変更','このポリシーを変更した場合は、ゲームを起動したときにお知らせします。'],
+ ['お問い合わせ',LEGAL_CONTACT],
+];
+function legalAgreed(){try{const c=JSON.parse(localStorage.getItem('bh_consent')||'null');return !!(c&&c.ver===LEGAL_VER);}catch(e){return false;}}
+function legalAgree(){try{localStorage.setItem('bh_consent',JSON.stringify({ver:LEGAL_VER,ts:Date.now()}));}catch(e){}try{sfx('ui');}catch(e){}showTitle();}
+function legalBody(list){return list.map(([h,t])=>`<p style="margin:10px 0 2px"><b style="color:var(--gold)">${esc(h)}</b></p><p style="margin:0;white-space:pre-wrap"><small>${esc(t)}</small></p>`).join('');}
+function legalDoc(kind){return kind==='terms'?{title:'利用規約',list:TERMS_TEXT}:{title:'プライバシーポリシー',list:PRIVACY_TEXT};}
+function showLegal(kind,back){const d=legalDoc(kind);
+ setUI(`<div class="titlescr"><div class="panel center legal"><h2>${d.title}</h2><p><small style="color:var(--bone2)">制定日：${LEGAL_VER.replace(/-/g,'/')}</small></p>${legalBody(d.list)}
+ <button onclick="${back==='consent'?'showConsent()':'showTitle()'}">もどる</button></div></div>`);}
+function showConsent(){const changed=(()=>{try{return !!localStorage.getItem('bh_consent');}catch(e){return false;}})();
+ setUI(`<div class="titlescr"><div class="panel center" style="text-align:center"><h2>${changed?'規約が新しくなりました':'はじめる前に'}</h2>
+ <p>ご利用の前に、<b>利用規約</b>と<b>プライバシーポリシー</b>をお読みください。</p>
+ <p><small>・本名や連絡先を入力していただくことはありません<br>・セーブデータはお使いの端末の中に保存されます<br>・オンライン機能を使うと、ゲーム内の名前などを送信します<br>・荒らしや不正な行為は禁止しています</small></p>
+ <div class="row" style="justify-content:center;margin:8px 0"><button class="small" onclick="showLegal('terms','consent')">利用規約を読む</button><button class="small" onclick="showLegal('privacy','consent')">プライバシーポリシーを読む</button></div>
+ <p><small>18歳未満の方は、保護者の方の同意を得てください。</small></p>
+ <button class="pri" onclick="legalAgree()">同意して始める</button></div></div>`);}
+function legalPanelHTML(kind){const d=legalDoc(kind);return`<div class="panel sheet one legal"><h2>${d.title}</h2><p><small style="color:var(--bone2)">制定日：${LEGAL_VER.replace(/-/g,'/')}</small></p>${legalBody(d.list)}<button onclick="openPanel('settings')">もどる</button></div>`;}
 function continueGame(){const s=load();if(!s)return;S=s;migrate();goVillage();}
 function startCreate(){T=newPlayer('');T.look=Object.assign({},DEF_LOOK);T._floor=Object.assign({},T.stats);scene='create';renderCreate();}
 const NAME_POOL=['ハヤテ','ミナト','ツバキ','カエデ','アサヒ','シオン','ヒビキ','コハク','リン','ソラ','ユウ','ナギ','レン','アオイ','スバル','ホムラ','イブキ','カイ','トウマ','サクヤ'];
@@ -1915,7 +1962,7 @@ function openPanel(p){panel=p;T=null;renderWorld();}
 function closePanel(){if(FS&&FS.timer){clearTimeout(FS.timer);FS=null;}panel=null;T=null;bubSig='';renderWorld();}
 function openStatus(){T=JSON.parse(JSON.stringify(S.p));T._floor=Object.assign({},S.p.stats);panel='status';renderWorld();}
 function confirmStatus(){if(T){const spent=T.pts<S.p.pts;S.p.stats=T.stats;S.p.pts=T.pts;S.p.auto=T.auto;if(spent)S.statDone=true;}save();closePanel();}
-const PANELS={xfer:()=>`<div class="panel sheet one"><h2>データの引き継ぎ</h2>${xferBody(false)}<button onclick="XFER={code:'',msg:'',mode:''};openPanel('settings')">もどる</button></div>`,changelog:changelogHTML,credits:()=>creditsHTML('settings'),jobinfo:jobInfoHTML,tour:tourHTML,intro:introHTML,settings:settingsHTML,fish:fishHTML,pouch:pouchHTML,rescue:rescueHTML,diag:diagHTML,village:villageHTML,brew:brewHTML,runes:runesHTML,lobby:lobbyHTML,join:joinHTML,board:boardHTML,itemshop:itemshopHTML,shop:shopHTML,smith:smithHTML,equip:equipHTML,note:noteHTML,status:statusHTML,result:resultHTML,springAsk:springAskHTML,sprung:sprungHTML};
+const PANELS={terms:()=>legalPanelHTML('terms'),privacy:()=>legalPanelHTML('privacy'),xfer:()=>`<div class="panel sheet one"><h2>データの引き継ぎ</h2>${xferBody(false)}<button onclick="XFER={code:'',msg:'',mode:''};openPanel('settings')">もどる</button></div>`,changelog:changelogHTML,credits:()=>creditsHTML('settings'),jobinfo:jobInfoHTML,tour:tourHTML,intro:introHTML,settings:settingsHTML,fish:fishHTML,pouch:pouchHTML,rescue:rescueHTML,diag:diagHTML,village:villageHTML,brew:brewHTML,runes:runesHTML,lobby:lobbyHTML,join:joinHTML,board:boardHTML,itemshop:itemshopHTML,shop:shopHTML,smith:smithHTML,equip:equipHTML,note:noteHTML,status:statusHTML,result:resultHTML,springAsk:springAskHTML,sprung:sprungHTML};
 let smithTab='craft';
 function renderWorld(){const body=PANELS[panel]?PANELS[panel]():'';
  const signs=curMap().spots.map(sp=>`<div class="sign" data-id="${sp.id}">${sp.name}</div>`).join('');
