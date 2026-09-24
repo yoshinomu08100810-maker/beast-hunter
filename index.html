@@ -828,6 +828,24 @@ const BOAR=[[
 "........kk....kkkk....kk..",
 "........KK....KKKK....KK.."]];
 
+const GFX={canary:null,flushes:0,hiddenAt:0};
+// iPhoneは裏に回った時や、記憶領域が足りない時に、保存しておいた絵を黙って消すことがある。
+// 消えたと分かったら、保存しておいた絵を全部捨てて作り直す（次に描く時に自動で作られる）
+function flushGfx(){try{sprCache.clear();}catch(e){}try{for(const k in mapCache)delete mapCache[k];}catch(e){}
+ try{bgCache=null;}catch(e){}try{for(const k in SIL)delete SIL[k];}catch(e){}GFX.canary=null;GFX.flushes++;}
+// 目印の小さな絵を1枚置いておき、消えていないか定期的に確かめる
+function gfxCheck(){try{
+ if(!GFX.canary){const c=document.createElement('canvas');c.width=c.height=2;const g=c.getContext('2d');if(!g)return;g.fillStyle='#ff0000';g.fillRect(0,0,2,2);GFX.canary=c;return;}
+ const g=GFX.canary.getContext('2d');const d=g&&GFX.canary.width>0?g.getImageData(0,0,1,1).data:null;
+ let lost=!d||d[3]===0;
+ // 今の地図の絵も確かめる（地図は必ず塗りつぶされているはず）
+ if(!lost&&typeof W!=='undefined'&&W&&W.map&&mapCache[W.map]){const mc=mapCache[W.map];const cv=mc.c||mc;if(cv&&cv.getContext){
+   if(cv.width===0)lost=true;else{const md=cv.getContext('2d').getImageData(Math.floor(cv.width/2),Math.floor(cv.height/2),1,1).data;if(md[3]===0)lost=true;}}}
+ if(lost)flushGfx();}catch(e){}}
+setInterval(gfxCheck,1500);
+document.addEventListener('visibilitychange',()=>{if(document.hidden){GFX.hiddenAt=Date.now();try{if(AU.ctx&&AU.ctx.state==='running'){const r=AU.ctx.suspend();if(r&&r.catch)r.catch(()=>{});}}catch(e){}}
+ else{if(GFX.hiddenAt&&Date.now()-GFX.hiddenAt>800)flushGfx();GFX.hiddenAt=0;gfxCheck();}});
+addEventListener('pageshow',e=>{if(e.persisted)flushGfx();});
 const sprCache=new Map();
 const OUTLINE='#1a1219';
 function lighten(hex,k){const n=parseInt(hex.slice(1),16);let r=(n>>16)&255,g=(n>>8)&255,b=n&255;r=Math.round(r+(255-r)*k);g=Math.round(g+(255-g)*k);b=Math.round(b+(255-b)*k);return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
@@ -1339,7 +1357,7 @@ function ambient(kind){ // 環境音（村＝小鳥、農場＝風、夜＝虫�
 function sfxOn(){return !S||!S.opt||S.opt.sfx!==false;}
 function ac(){if(AU.dead)return null;
  if(!AU.ctx){try{const C=window.AudioContext||window.webkitAudioContext;if(!C){AU.dead=true;return null;}AU.ctx=new C();}catch(e){AU.dead=true;return null;}}
- try{if(AU.ctx.state==='suspended')AU.ctx.resume();}catch(e){}
+ try{if(AU.ctx.state==='suspended'){const r=AU.ctx.resume();if(r&&r.catch)r.catch(()=>{});}}catch(e){}
  return AU.ctx;}
 function nbuf(c){if(AU.nb)return AU.nb;const n=c.createBuffer(1,c.sampleRate*0.4,c.sampleRate),d=n.getChannelData(0);
  for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;AU.nb=n;return n;}
@@ -2023,7 +2041,7 @@ function showIOSInstall(){const html=`<div class="iosguide" onclick="this.remove
 function showUpdateBar(){if(document.getElementById('updbar'))return;const d=document.createElement('div');d.id='updbar';d.className='updbar';
  d.innerHTML='新しい版があります <button onclick="applyUpdate()">更新する</button>';document.body.appendChild(d);}
 function applyUpdate(){try{save();}catch(e){}if(PWA.waiting)PWA.waiting.postMessage('skipWaiting');else location.reload();}
-(function(){const unlock=()=>{try{const c=ac();if(c&&c.state==='suspended')c.resume();}catch(e){}};
+(function(){const unlock=()=>{try{const c=ac();if(c&&c.state==='suspended'){const r=c.resume();if(r&&r.catch)r.catch(()=>{});}}catch(e){}};
  document.addEventListener('click',unlock,{passive:true});document.addEventListener('touchend',unlock,{passive:true});})();
 function warmCaches(){try{Object.keys(JOBS).forEach(j=>{[0,1,2].forEach(f=>playerSprite(j,f,null));});
  MONSTER_TIERS.forEach((D,i)=>{monSprite(i,0);monSprite(i,1);});}catch(e){}}
@@ -2061,8 +2079,9 @@ function renderOpening(){if(!OP)return;const sc=OPENING[OP.i];
 function opNext(e){if(e&&e.preventDefault)e.preventDefault();if(!OP)return;OP.i++;OP.t=0;if(OP.i>=OPENING.length){opSkip();return;}renderOpening();}
 function opSkip(e){if(e&&e.preventDefault)e.preventDefault();OP=null;startCreate();}
 function toTitle(){save();T=null;showTitle();}
-const APP_VER='0.21.3';
+const APP_VER='0.21.4';
 const CHANGELOG=[
+ {v:'0.21.4',d:'2026-09-24',items:['iPhoneでアプリに戻った時などに、村の地面や建物・キャラの絵が消える不具合を修正（消えたら自動で描き直す）','音を出す準備に失敗した時に、不具合の表示が出ていたのを修正']},
  {v:'0.21.3',d:'2026-09-24',items:['薬師を弓が得意な後衛のジョブに（弓の技が主で、回復の力が上乗せ。スキル「手当て」はそのまま）','お問い合わせフォームのリンクを修正']},
  {v:'0.21.2',d:'2026-09-24',items:['装備画面の「おすすめ」が今のジョブの得意な武器を考えていなかった不具合を修正（見出しに得意な武器も表示）','癒し手のおすすめ武器を杖に修正','狩猟術士を弓が得意なジョブに（弓の技が主で、魔が上乗せ。スキル「追尾矢」）']},
  {v:'0.21.1',d:'2026-09-24',items:['肩代わりの表示を短く：予告は「🛡×3」、引きつけた時は「COVER ×3」、反撃は「COUNTER ×4」']},
@@ -4246,8 +4265,9 @@ function showErr(msg){errCount++;if(errCount>6)return;
   const t=document.createElement('div');t.id='errtxt';d.appendChild(t);document.body.appendChild(d);}
  const t=document.getElementById('errtxt');
  t.textContent='不具合の記録（ダムさんに伝えてください）:\n'+msg+(errCount>1?'  ／他'+(errCount-1)+'件':'');}
-addEventListener('error',e=>showErr((e.message||'error')+' @'+(e.lineno||'?')));
-addEventListener('unhandledrejection',e=>showErr('promise: '+(e.reason&&e.reason.message||e.reason)));
+addEventListener('error',e=>{const m=String(e.message||'error');if(HARMLESS_ERR.test(m))return;showErr(m+' @'+(e.lineno||'?'));});
+const HARMLESS_ERR=/audio device|AudioContext|NotAllowedError|AbortError|play\(\) request|The operation was aborted|interrupted by|ResizeObserver loop/i;
+addEventListener('unhandledrejection',e=>{const m=String(e.reason&&e.reason.message||e.reason||'');if(HARMLESS_ERR.test(m)){e.preventDefault&&e.preventDefault();return;}showErr('promise: '+m);});
 function drawTitleBg(dt){const g=ctx;const H=LH,Wd=LW;
  const sky=g.createLinearGradient(0,0,0,H*0.62);sky.addColorStop(0,'#1d2a4a');sky.addColorStop(0.55,'#c86a4a');sky.addColorStop(1,'#f2c46a');g.fillStyle=sky;g.fillRect(0,0,Wd,H);
  g.fillStyle='#fff2c8';g.beginPath();g.arc(Wd*0.5,H*0.6,16,0,Math.PI*2);g.fill();
@@ -4323,6 +4343,7 @@ function loop(now){const dt=Math.min(0.05,(now-last)/1000)||0;last=now;try{
  if(bad.length)showErr('データ不整合: '+bad.join(', '));})();
 try{langInit();}catch(e){}
 try{portalLoad();}catch(e){}
+try{document.querySelectorAll('canvas').forEach(c=>c.addEventListener('contextrestored',flushGfx));}catch(e){}
 showSplash();requestAnimationFrame(t=>{last=t;loop(t);});
 </script>
 </body>
