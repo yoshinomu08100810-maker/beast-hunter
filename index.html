@@ -2061,8 +2061,10 @@ function renderOpening(){if(!OP)return;const sc=OPENING[OP.i];
 function opNext(e){if(e&&e.preventDefault)e.preventDefault();if(!OP)return;OP.i++;OP.t=0;if(OP.i>=OPENING.length){opSkip();return;}renderOpening();}
 function opSkip(e){if(e&&e.preventDefault)e.preventDefault();OP=null;startCreate();}
 function toTitle(){save();T=null;showTitle();}
-const APP_VER='0.19.0';
+const APP_VER='0.19.2';
 const CHANGELOG=[
+ {v:'0.19.2',d:'2026-09-24',items:['仲間と同じ列に並ぶ時の並び方を改善：手前と奥の2段に分け、奥の人は手前の人の間から顔が見えるように。大きい敵の時は隊列ごと下がる']},
+ {v:'0.19.1',d:'2026-09-24',items:['仲間と狩る時、同じ列のキャラが重ならないよう前後にずらして並べる（敵にもめり込まない）']},
  {v:'0.19.0',d:'2026-09-23',items:['配信サイト（CrazyGames・Poki）用の版を追加。報酬型の動画広告で「お助け」（温泉の薬草・道具屋の回復薬）がもらえる','配信サイト版ではAdMax・アプリ化・オンライン機能・外部リンクを止める']},
  {v:'0.18.2',d:'2026-09-23',items:['最終チェック：護符を持っていると装備画面が開けない不具合を修正','壊れたデータ（知らない装備・刻印・道具）でも画面が開けるように','防具の色・調合・温泉・販売店などの英語化']},
  {v:'0.18.1',d:'2026-09-23',items:['護符を持っていると装備画面が開けなくなる不具合を修正']},
@@ -2866,7 +2868,19 @@ function makePS(id,name,d){const J=d.adv?Object.assign({},JOBS[d.job],{cd:ADV_JO
  guard:0,regen:0,pulse:0,buff:0,hurt:0,lunge:0,moveT:0,inv:0,streak:0,st:{poison:0,para:0,weak:0},bf:{atk:0,def:0,haste:0},stTick:0,mikiri:false,moved:false,down:false,downT:0,dodgeT:0,d,job:d.job,adv:d.adv||null};}
 function psList(){return Object.keys(B.ps).map(k=>B.ps[k]);}
 function alivePS(){return psList().filter(p=>!p.down);}
-function slotX(p){const same=psList().filter(q=>q.row===p.row);const i=Math.max(0,same.indexOf(p));const n=same.length;return posX(p.row)+8+Math.round((i-(n-1)/2)*14);}
+function rowMates(p){return psList().filter(q=>q.row===p.row);}
+// 同じ列の仲間は「手前の段」と「奥の段」の2段に並べる。奥の段は手前の人と人の間に立つので、顔が隠れない
+const SLOT_STEP=11, SLOT_BACK_Y=-9, SLOT_FRONT_Y=3;
+function slotXs(row){const same=psList().filter(q=>q.row===row);const n=same.length;
+ const base=posX(row)+8;let xs=same.map((q,i)=>base+Math.round((i-(n-1)/2)*SLOT_STEP));
+ if(n){ // 敵にめり込む時は隊列ごと左へ、画面の左端をはみ出す時は右へずらす（間隔は保つ）
+  if(row==='front'&&typeof EX==='function'){const lim=EX()-(B&&B.m?Math.round(monSprite(B.m.tier,0).width*(B.m.def.scale||1)/2):20)-12;
+   const over=Math.max(...xs)-lim;if(over>0)xs=xs.map(x=>x-over);}
+  const under=12-Math.min(...xs);if(under>0)xs=xs.map(x=>x+under);}
+ return {same,xs};}
+function slotX(p){const {same,xs}=slotXs(p.row);const i=same.indexOf(p);return i<0?posX(p.row)+8:xs[i];}
+function slotY(p){const same=rowMates(p);if(same.length<=1)return 0;const i=Math.max(0,same.indexOf(p));
+ return (i%2===0)?SLOT_FRONT_Y:SLOT_BACK_Y;}           // 偶数番目が手前、奇数番目が奥
 function beginQuest(qid,party,dl){try{portalPlay(true);}catch(e){}const q=(qid==='e')?ENDLESS_Q:(qid==='m')?missionQuest():(qid==='w')?weeklyQuest():QUESTS.find(x=>x.id===qid);if(!q)return;
  const DL=DANGER[clamp((party&&party.dl)||dl||1,1,3)-1];WPOS.village={x:W.x,y:W.y};const d=derived(S.p),D=MONSTER_TIERS[q.tier],J=JOBS[d.job];
  const me=party?party.me:'me';
@@ -3941,9 +3955,9 @@ function drawBattle(){const p=B.p,m=B.m,gy=GY();
   if(m.state==='tired'&&D.weak){const py=y-6+Math.sin(B.t*10)*1.5;ctx.strokeStyle='#ff6a4a';ctx.lineWidth=1;ctx.beginPath();ctx.arc(ex,py,4,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#ffd35a';ctx.fillRect(ex-1,py-1,2,2);}
   if(m.state==='tired'&&!D.weak){ctx.fillStyle='#fff';for(let i=0;i<3;i++)ctx.fillRect(Math.round(ex-5+i*4),Math.round(y-5),2,2);}}
  // 自分
- psList().sort((a,b)=>(a.row===b.row?0:a.row==='front'?1:-1)).forEach(q=>{
+ psList().sort((a,b)=>(a.row===b.row?(slotY(a)-slotY(b)):a.row==='front'?1:-1)).forEach(q=>{
   let px=slotX(q)-10;if(q.moveT>0)px+=(q.row==='front'?-1:1)*Math.round(q.moveT/0.2*(posX('front')-posX('back')));
-  let py=gy-24,wAng=0;
+  let py=gy-24+slotY(q),wAng=0;
   if(q.anim){const k=q.anim.t/q.anim.d,reach=Math.max(0,Math.min(52,EX()-32-(slotX(q)-10)));
    if(q.anim.k==='melee'){if(k<0.2){px-=Math.round(k/0.2*3);wAng=-1.3*k/0.2;}
     else if(k<0.55){const t=(k-0.2)/0.35;px+=Math.round(-3+t*(reach+3));wAng=-1.3+2.6*t;}
