@@ -2061,8 +2061,9 @@ function renderOpening(){if(!OP)return;const sc=OPENING[OP.i];
 function opNext(e){if(e&&e.preventDefault)e.preventDefault();if(!OP)return;OP.i++;OP.t=0;if(OP.i>=OPENING.length){opSkip();return;}renderOpening();}
 function opSkip(e){if(e&&e.preventDefault)e.preventDefault();OP=null;startCreate();}
 function toTitle(){save();T=null;showTitle();}
-const APP_VER='0.19.2';
+const APP_VER='0.19.3';
 const CHANGELOG=[
+ {v:'0.19.3',d:'2026-09-24',items:['亜種の表示の瞬間に敵が入れ替わるとエラーになる不具合を修正','倒れた仲間の復活までの数字を、本人の真上に表示']},
  {v:'0.19.2',d:'2026-09-24',items:['仲間と同じ列に並ぶ時の並び方を改善：手前と奥の2段に分け、奥の人は手前の人の間から顔が見えるように。大きい敵の時は隊列ごと下がる']},
  {v:'0.19.1',d:'2026-09-24',items:['仲間と狩る時、同じ列のキャラが重ならないよう前後にずらして並べる（敵にもめり込まない）']},
  {v:'0.19.0',d:'2026-09-23',items:['配信サイト（CrazyGames・Poki）用の版を追加。報酬型の動画広告で「お助け」（温泉の薬草・道具屋の回復薬）がもらえる','配信サイト版ではAdMax・アプリ化・オンライン機能・外部リンクを止める']},
@@ -2911,7 +2912,7 @@ function beginQuest(qid,party,dl){try{portalPlay(true);}catch(e){}const q=(qid==
  renderBattleUI();
  if(firstTut)tutorShow();                              // 画面が出た瞬間にロックと案内
  else setTimeout(()=>{if(B&&!B.over){tutSay('start','下のボタンで攻撃。まずは「攻撃」を押してみよう');if(!B.tutMsg)toast('舞台：'+curStage().name);}},900);
- if(B.m.variant){setTimeout(()=>{if(B&&!B.over){flash('亜種だ！ 【'+VARIANTS[B.m.variant].name+'】','#ffd35a');try{sfx('crit');}catch(e){}}},400);}
+ if(B.m.variant&&VARIANTS[B.m.variant]){const vn=VARIANTS[B.m.variant].name,vm=B.m;setTimeout(()=>{if(B&&!B.over&&B.m===vm){flash('亜種だ！ 【'+vn+'】','#ffd35a');try{sfx('crit');}catch(e){}}},400);}
  toast(B.endless?'腕試し：倒れるまで連戦':(q.name+(B.dl>1?'（危険度'+B.dl+'）':'')+'：'+B.m.def.name+'があらわれた'+(party?'（'+(1+party.others.length)+'人）':'')));
  if(B.absent&&!B.endless)flash('久しぶりの狩り：報酬アップ','#ffd35a');}
 function renderBattleUI(){setUI(`<div class="hud"><div id="pn"></div><div class="hpbar"><i id="php"></i></div><div id="prow"></div><div id="party"></div>${signUI()}</div><div class="msgs" id="msgs"></div><div class="flash" id="flash"></div><div class="rowlab" id="rlF"></div><div class="rowlab" id="rlB"></div><div class="hud r"><div id="mn"></div><div class="mhp"><i id="mhp"></i></div><div id="mparts"></div></div><button class="small quit" onclick="quitQuest()">村へ戻る</button><div class="tele" id="tele"></div><div class="bctl"><button class="a" id="bAtk" onpointerdown="actAttack(event)">攻撃<em></em></button><button class="s" id="bSkl" onpointerdown="actSkill(event)"><span id="skn"></span><em></em></button><button class="m" id="bMov" onpointerdown="actMove(event)"><span id="mvn"></span><em></em></button><button class="i" id="bItm" onpointerdown="useSlot(0,event)"><span id="itl">道具</span><small id="itn"></small><em></em></button></div>
@@ -3989,7 +3990,7 @@ function drawBattle(){const p=B.p,m=B.m,gy=GY();
   ctx.fillStyle='rgba(0,0,0,.28)';ctx.beginPath();ctx.ellipse(px+10,py+24,8,3,0,0,Math.PI*2);ctx.fill();
   if(q.down){ctx.globalAlpha=0.45;drawSpr(playerSprite(q.job,0,q.d.aid,q.d.look),px,py+4,false,1);ctx.globalAlpha=1;
    ctx.strokeStyle='#ff7070';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(px+4,py+7);ctx.lineTo(px+16,py+18);ctx.moveTo(px+16,py+7);ctx.lineTo(px+4,py+18);ctx.stroke();
-   drawNum(String(Math.ceil(q.downT)),px+10,py-8,'#ff9a8a');return;}
+   drawNum(String(Math.ceil(q.downT)),px+10,py+1,'#ff9a8a');return;}
   if(q===B.p){ctx.strokeStyle='rgba(240,201,106,.85)';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(px+10,py+24,9,4,0,0,Math.PI*2);ctx.stroke();}
   if(q.inv>0){ctx.globalAlpha=0.55;drawSpr(playerSprite(q.job,1,q.d.aid,q.d.look),px,py,false,1);ctx.globalAlpha=1;
    ctx.strokeStyle='rgba(159,224,122,.9)';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(px+10,py+13,11,14,0,0,Math.PI*2);ctx.stroke();}
